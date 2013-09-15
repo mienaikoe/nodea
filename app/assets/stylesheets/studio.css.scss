@@ -1,0 +1,95 @@
+$drawer_width: 150px;
+
+$panel_width: 800px;
+
+
+$machine_width: 800px;
+
+$nodes_padding: 10px;
+
+$node_height: 50px;
+$node_width: 60px;
+$node_margin: 5px;
+
+$control_dimension: 30px;
+
+
+
+
+
+#studio{
+  background-color: #555;
+
+  .drawer{
+      width: $drawer_width;
+      height: 100%;
+      background-color: #89A;
+      position: fixed;
+  }
+  
+  #machine_container{
+    text-align: center;
+
+    #machine{
+      width: $machine_width;
+      overflow: hidden;
+
+      #ideas{
+          background-color: #AAA;
+      }
+
+      #nodes{
+          background-color: #333;
+          padding: $nodes_padding;
+          overflow: hidden;
+          margin-left: auto;
+          margin-right: auto;
+
+          .nodesContainer{
+              background-color: #057;
+              padding: 5px;
+              margin: 10px;
+              .node{
+                  width: $node_width;
+                  height: $node_height;
+                  margin: $node_margin;
+                  background-color: #CCC;
+                  &.active{
+                    background-color: #CFF;
+                  } 
+                  text-align: center;
+                  line-height: $node_height;
+              }
+          }
+      }
+    }
+  }
+   
+
+
+
+
+    #controls{
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        text-align: center;
+        background-color: transparent;
+        #controls_center{
+            background-color: #123;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 4px 16px 0px;
+            .control{
+                width: $control_dimension;
+                height: $control_dimension;
+                border: 1px solid black;
+                border-radius: $control_dimension / 2;
+                background-color: #5AE;
+                margin: 5px;
+            }
+        }
+    }
+
+}

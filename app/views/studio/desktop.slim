@@ -1,0 +1,30 @@
+hide id='loadies'
+    hide class='loadie' id='samples'
+    hide class='loadie' id='ditties'
+
+
+
+
+
+div id='studio' class='left right bottom top'
+  
+    div id='machine_container' class='bottom left right'
+        spiv id='machine' class='center'
+          div id='ideas'
+            =render partial: 'ideas', locals: {}
+          div id='nodes'      
+            =render partial: 'nodes', locals: {}
+
+
+    div id='sample_drawer' class='drawer right front'
+    div id='ditty_drawer' class='drawer left front'
+
+/
+  div id='controls'
+    spiv id='controls_center'
+      -['beginning','rewind','stop','record','play','forward','end'].each do |control|
+        spiv class='control' id="control_#{control}"
+
+
+  
+   
