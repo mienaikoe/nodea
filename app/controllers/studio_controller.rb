@@ -14,7 +14,7 @@ class StudioController < ApplicationController
    
     # Determine which view to render based on platform
     
-    @keys = KEYS
+    @keys ||= KEYS
     
     render 'desktop'
   end
