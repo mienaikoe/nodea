@@ -49,3 +49,4 @@ gem 'therubyracer'
 # for js runtime environment
 
 gem 'slim'
+gem 'paperclip'
