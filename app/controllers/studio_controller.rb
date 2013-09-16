@@ -14,7 +14,13 @@ class StudioController < ApplicationController
    
     # Determine which view to render based on platform
     
+    samples = Sample.find_all_by_description(nil)
     @keys ||= KEYS
+    
+    @samples = []
+    @keys.flatten.each_with_index do |k,i|
+      @samples[k.ord] = samples[i];
+    end
     
     render 'desktop'
   end

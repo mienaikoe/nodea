@@ -3,9 +3,6 @@ hide id='loadies'
     hide class='loadie' id='ditties'
 
 
-
-
-
 div id='studio' class='left right bottom top'
   
     div id='machine_container' class='bottom left right'
@@ -27,4 +24,9 @@ div id='studio' class='left right bottom top'
 
 
   
-   
+javascript:
+    var sampleFiles = #{raw @samples.map{|s|s ? s.file.url : nil}.to_json};
+    var studio;
+    $(function() {
+        studio = new Studio(sampleFiles);
+    });
