@@ -10,7 +10,7 @@ var Studio = function(sound_files) {
             this.buffer = buffer;
         };
         Noda.prototype.on = function(){
-            if( !this.src ){
+            if( this.buffer && !this.src ){
                 this.src = this.context.createBufferSource();
                 this.src.buffer = this.buffer;
                 this.src.connect(this.context.destination);
@@ -24,7 +24,7 @@ var Studio = function(sound_files) {
                 this.src.disconnect(0);
                 this.src = null;
             }
-             $(this.div).removeClass('active');
+            $(this.div).removeClass('active');
         };
         
         
@@ -64,6 +64,8 @@ var Studio = function(sound_files) {
                 var ascii = $(v).text().toUpperCase().charCodeAt(0);
                 if (ascii < 48) {
                     ascii = ascii + 144;
+                } else if( ascii === 59 ){
+                    ascii = 186;
                 }
                 var noda = new Noda($(v), ctx);
                 bufferFromUrl(sound_files[ascii], noda);
@@ -73,9 +75,15 @@ var Studio = function(sound_files) {
             });
 
             $("body").keydown(function(ev) {
+                if(ev.which < 48 || ev.which > 200 ){
+                    return;
+                }
                 nodas[ev.which].on();
                 ev.preventDefault();
             }).keyup(function(ev) {
+                if( ev.which < 48 || ev.which > 200 ){
+                    return;
+                }
                 nodas[ev.which].off();
             });
         }
