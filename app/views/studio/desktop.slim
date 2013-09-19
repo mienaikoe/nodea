@@ -5,16 +5,15 @@ hide id='loadies'
 
 div id='studio' class='left right bottom top'
   
-    div id='machine_container' class='bottom left right'
-        spiv id='machine' class='center'
-          div id='ideas'
+    div id='machine' class='center'
+        div id='ideas' class='bottom'
             =render partial: 'ideas', locals: {}
-          div id='nodes'      
-            =render partial: 'nodes', locals: {}
+        div id='circuit'  class='bottom charm'
+            =render partial: 'circuit', locals: {}
 
 
-    div id='sample_drawer' class='drawer right front'
-    div id='ditty_drawer' class='drawer left front'
+    div id='sample_drawer' class='drawer right top bottom charm'
+    div id='ditty_drawer' class='drawer left top bottom charm'
 
 /
   div id='controls'
@@ -26,7 +25,7 @@ div id='studio' class='left right bottom top'
   
 javascript:
     var sampleFiles = #{raw @samples.map{|s|s ? s.file.url : nil}.to_json};
-    var studio;
+    var machine;
     $(function() {
-        studio = new Studio(sampleFiles);
+        machine = new Machine(sampleFiles);
     });

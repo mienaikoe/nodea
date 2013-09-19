@@ -14,7 +14,7 @@ class StudioController < ApplicationController
    
     # Determine which view to render based on platform
     
-    samples = Sample.find_all_by_description(nil)
+    samples = Sample.find_all_by_user_id(1)
     @keys ||= KEYS
     
     @samples = []

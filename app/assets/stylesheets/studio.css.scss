@@ -1,11 +1,22 @@
-$drawer_width: 150px;
+$drawer_width: 160px;
 
 $machine_width: 800px;
+$machine_color: #333;
 
-$nodes_padding: 10px;
-$node_height: 50px;
+$circuit_padding: 10px;
+$circuit_width: $machine_width - (2 * $circuit_padding);
+$circuit_color: #057;
+
+$node_height: 48px;
 $node_width: 60px;
-$node_margin: 5px;
+$node_margin: 6px;
+$node_color: #CCC;
+$node_text_color: #222;
+$node_active_color: #CFF;
+
+$track_width: 18px;
+$track_color: #777;
+
 
 $control_dimension: 30px;
 
@@ -21,58 +32,92 @@ $control_dimension: 30px;
     user-select: none;
 }
 
+@mixin track($border_color) {  
+    width: $track_width;
+    border-right: 1px dotted $border_color;
+    &.first{
+        border-left: 1px dotted $border_color;
+    }
+}
+
+@mixin node_color {
+    background-color: $node_color;
+    color: $node_text_color;
+    &.active{
+        background-color: $node_active_color;
+    }
+} 
+
 
 
 
 #studio{
-  background-color: #555;
+    background-color: #555;
 
-  .drawer{
-      width: $drawer_width;
-      height: 100%;
-      background-color: #89A;
-      position: fixed;
-  }
-  
-  #machine_container{
-    text-align: center;
+    .drawer{
+        width: $drawer_width;
+        height: 100%;
+        background-color: #89A;
+        position: fixed;
+    }
 
     #machine{
-      width: $machine_width;
-      overflow: hidden;
+        width: $machine_width;
+        overflow: hidden;
+        height: 100%;
 
-      #ideas{
-          background-color: #AAA;
-      }
+        #ideas{
+            background-color: $machine_color;
+            padding: $circuit_padding;
+            overflow: hidden;
+            margin-left: auto;
+            margin-right: auto;
+            height: 100%;
+            width: $circuit_width;
+            text-align: center;
+            .nodeTrack{
+                @include track($node_text_color);
+                height: 100%;
+                background-color: $track_color;
+            }
+        }
 
-      #nodes{
-          background-color: #333;
-          padding: $nodes_padding;
-          overflow: hidden;
-          margin-left: auto;
-          margin-right: auto;
+        #circuit{
+            width: $circuit_width;
+            background-color: $machine_color;
+            padding: 0px $circuit_padding;
+            overflow: hidden;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
 
-          .nodesContainer{
-              background-color: #057;
-              padding: 5px;
-              margin: 10px;
-              .node{
-                  width: $node_width;
-                  height: $node_height;
-                  margin: $node_margin;
-                  background-color: #CCC;
-                  &.active{
-                    background-color: #CFF;
-                  } 
-                  text-align: center;
-                  line-height: $node_height;
-                  @include unselectable;
-              }
-          }
-      }
+            .trackSwitch{
+                height: $track_width;
+                line-height: $track_width;
+                @include node_color;
+                color: $node_text_color;
+                text-align: center;
+                @include track($node_text_color);
+            }
+
+            .nodesContainer{
+                background-color: $circuit_color;
+                padding: 5px;
+                margin: 10px;
+                .node{
+                    width: $node_width;
+                    height: $node_height;
+                    margin: $node_margin;
+                    @include node_color;
+                    text-align: center;
+                    line-height: $node_height;
+                    @include unselectable;
+                }
+            }
+        }
     }
-  }
-   
+    
+
 
 
 

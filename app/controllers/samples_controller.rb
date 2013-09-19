@@ -25,9 +25,6 @@ class SamplesController < ApplicationController
   # POST /samples.json
   def create
     #extract sample file from params
-    
-    puts '===================================================='
-    puts sample_params.inspect
     @sample = Sample.new(sample_params)
     puts '===================================================='
     puts @sample.inspect

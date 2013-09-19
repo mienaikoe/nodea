@@ -1,0 +1,13 @@
+/* 
+    Document   : test
+    Created on : Sep 19, 2013, 4:20:50 PM
+    Author     : mienaikoe
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+    border-collapse:collapse;
+}
+

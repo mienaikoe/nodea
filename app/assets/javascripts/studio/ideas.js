@@ -1,0 +1,5 @@
+var Ideas = function(nodes) {
+
+};
+
+
