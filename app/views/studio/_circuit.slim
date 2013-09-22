@@ -1,8 +1,9 @@
--first=true
--@keys.flatten.each do |ascii|
-    spiv class="trackSwitch#{first ? ' first' : ''}"
-        -first = false
-        =ascii.chr
+spiv id='track_switches'
+    -first=true
+    -@keys.flatten.each do |ascii|
+        spiv class="trackSwitch#{first ? ' first' : ''}"
+            -first = false
+            =ascii.chr
 
 
 spiv class='nodesContainer' id='bottomleft_nodes'

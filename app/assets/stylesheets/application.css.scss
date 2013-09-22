@@ -3,6 +3,11 @@
 *= require_tree .
 */
 
+@mixin bottom( $dist ){
+    position: fixed;
+    bottom: $dist;
+}
+
 ditch{
     display:block;
     width: 10px;

@@ -1,4 +1,4 @@
-var Circuit = function(sound_files) {
+var Circuit = function(bindings, ideas) {
 
     function applyBuffer(url, noda) {
         if (!url) {
@@ -11,13 +11,9 @@ var Circuit = function(sound_files) {
         request.responseType = "arraybuffer";
         request.onload = function() {
             ctx.decodeAudioData(
-                    request.response,
-                    function(buffer) {
-                        noda.setBuffer(buffer);
-                    },
-                    function(buffer) {
-                        console.log("Error decoding drum samples!");
-                    }
+                request.response,
+                function(buffer) { noda.setBuffer(buffer); },
+                function(buffer) { console.log("Error decoding samples!"); }
             );
         };
         request.send();
@@ -36,9 +32,8 @@ var Circuit = function(sound_files) {
 
 
     // show a loading circle
-
+    this.ideas = ideas;
     var ctx = new webkitAudioContext();
-    this.context = ctx;
     var nodas = [];
     
     {
@@ -62,30 +57,11 @@ var Circuit = function(sound_files) {
             var actionPair = actionPairs[i];
             if( actionPair && actionPair.noda && actionPair.swytche ){
                 var noda = new Noda(actionPair.noda, actionPair.swytche, ctx);
-                applyBuffer(sound_files[i], noda);
+                applyBuffer(bindings[i], noda);
                 nodas[i] = noda;
             }
         }        
         
-        // should be able to enter music as a typewriter
-        // enter key should skip to next increment a configurable number of times 
-        // (smallest chunk is 132)
-        $("body").keydown(function(ev) {
-            console.log(ev.which);
-            if (ev.which < 48 || ev.which > 200) {
-                return;
-            } else if(ev.which === 13){
-                advanceIdeas();
-            }
-            nodas[ev.which].on();
-            ev.preventDefault();
-        }).keyup(function(ev) {
-            if (ev.which < 48 || ev.which > 200) {
-                return;
-            }
-            nodas[ev.which].off();
-        });
     }
     this.nodas = nodas;
-    this.final = this.context.destination;
 };

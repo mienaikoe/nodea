@@ -1,4 +1,7 @@
--first=true
--@keys.flatten.each do |ascii|
-    spiv class="nodeTrack#{first ? ' first' : ''}"
-        -first = false
+div id='tracks'
+    -first=true
+    -@keys.flatten.each do |ascii|
+        spiv id="track_#{ascii.ord}" class="nodeTrack#{first ? ' first' : ''}"
+            -first = false
+
+div id='barlines'

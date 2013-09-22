@@ -1,10 +1,11 @@
 $drawer_width: 160px;
 
-$machine_width: 800px;
+$machine_width: 801px;
 $machine_color: #333;
 
 $circuit_padding: 10px;
 $circuit_width: $machine_width - (2 * $circuit_padding);
+$circuit_height: 300px;
 $circuit_color: #057;
 
 $node_height: 48px;
@@ -14,9 +15,11 @@ $node_color: #CCC;
 $node_text_color: #222;
 $node_active_color: #CFF;
 
+$tracks_width: 761px;
 $track_width: 18px;
 $track_color: #777;
 
+$quarter_height: 48px;
 
 $control_dimension: 30px;
 
@@ -67,23 +70,48 @@ $control_dimension: 30px;
         height: 100%;
 
         #ideas{
+            position: fixed;
+            bottom: $circuit_height;
             background-color: $machine_color;
-            padding: $circuit_padding;
+            padding: 10px 20px 0px;
             overflow: hidden;
             margin-left: auto;
             margin-right: auto;
-            height: 100%;
-            width: $circuit_width;
+            width: $circuit_width - 20;
             text-align: center;
-            .nodeTrack{
-                @include track($node_text_color);
+            #tracks{
+                position: absolute;
+                bottom: 0px;
+                width: $tracks_width;
                 height: 100%;
-                background-color: $track_color;
+                .nodeTrack{
+                    @include track($node_text_color);
+                    height: 100%;
+                    background-color: $track_color;
+                    .note{
+                        background-color: rgba(230,230,180,0.6);
+                        position: absolute;
+                        width: $track_width;
+                    }
+                }
+            }
+            #barlines{ 
+                position: absolute;
+                bottom: 0px;
+                width: $tracks_width;
+                border-bottom: 1px solid #555;
+                .beat{
+                    width: 100%;
+                    border-bottom: 1px dotted #555;
+                    border-collapse: collapse;
+                    height: 48px;
+                }
             }
         }
 
         #circuit{
             width: $circuit_width;
+            height: $circuit_height;
             background-color: $machine_color;
             padding: 0px $circuit_padding;
             overflow: hidden;
@@ -91,19 +119,28 @@ $control_dimension: 30px;
             margin-right: auto;
             text-align: center;
 
-            .trackSwitch{
-                height: $track_width;
-                line-height: $track_width;
-                @include node_color;
-                color: $node_text_color;
-                text-align: center;
-                @include track($node_text_color);
+            #track_switches{
+                .trackSwitch{
+                    height: $track_width;
+                    line-height: $track_width;
+                    @include node_color;
+                    color: $node_text_color;
+                    text-align: center;
+                    @include track($node_text_color);
+                }
             }
 
             .nodesContainer{
                 background-color: $circuit_color;
                 padding: 5px;
                 margin: 10px;
+                &#bottomleft_nodes{
+                    float:left;
+                }
+                &#bottomright_nodes{
+                    float:right;
+                }
+
                 .node{
                     width: $node_width;
                     height: $node_height;
