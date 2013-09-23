@@ -26,33 +26,14 @@ div id='studio' class='left right bottom top'
 javascript:
     var bindings = #{raw @samples.map{|s|s ? s.file.url : nil}.to_json};
     var timings = [ // open song 
-        [ // open 2/4 bar
-            [ // open beat
-                { keyOn: '1', time: 0 },
-                { keyOn: '2', time: 32 }
-            ],
-            [ // open beat
-                { keyOff: '1', time: 0 },
-                { keyOff: '2', time: 32 }
-            ]
-        ],
-        [ // open 3/4 bar
-            [], //empty beat
-            [], //empty beat
-            [], //empty beat
-        ],
-        [ // open 4/4 bar
-            [ // open beat
-                { keyOn: '1', time: 0 },
-                { keyOn: '2', time: 32 }
-            ],
-            [], //empty beat
-            [], //empty beat
-            [ // open beat
-                { keyOff: '1', time: 0 },
-                { keyOff: '2', time: 32 }
-            ]
-        ]
+        { key: '1',     start: 0,      end: 100},
+        { key: '2',     start: 32,     end: 100},
+        { key: '1',     start: 109,     end: 150},
+        { key: '3',     start: 49,     end: 100},
+        { key: '1',     start: 199,    end: 220},
+        { key: '3',     start: 329,    end: 500},
+        { key: '1',     start: 240,    end: 400},
+        { key: '2',     start: 399,    end: 500},
     ];
     var beat = 4;
     var bpm = 144;
@@ -60,26 +41,38 @@ javascript:
     var project, ideas, circuit;
     $(function() {
         project = new Project(bindings, timings, beat, bpm);
-        ideas = new Ideas(project);
-        circuit = new Circuit(project.bindings, ideas);
+        circuit = new Circuit(project);
+        ideas = new Ideas(project, circuit);
+        
 
 
         // should be able to enter music as a typewriter
         // enter key should skip to next increment a configurable number of times 
         // (smallest chunk is 132)
         $("body").keydown(function(ev) {
-            console.log(ev.which);
-            if (ev.which < 48 || ev.which > 200) { //perhaps this should be handled by dummy nodas
+            var ascii = ev.which
+            if(ascii === 13){
+                ideas.start();
+            } else if (ascii === 59) {
+                ascii = 186;
+            } else if (ascii < 48) {
+                ascii = ascii + 144;
+            } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
                 return;
-            } else if(ev.which === 13){
-                ideas.advance();
-            }
-            circuit.nodas[ev.which].on();
+            } 
+            circuit.nodas[ascii].on();
             ev.preventDefault();
         }).keyup(function(ev) {
-            if (ev.which < 48 || ev.which > 200) {
+            var ascii = ev.which
+            if(ascii === 13){
+                ideas.start();
+            } else if (ascii === 59) {
+                ascii = 186;
+            } else if (ascii < 48) {
+                ascii = ascii + 144;
+            } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
                 return;
-            }
+            } 
             circuit.nodas[ev.which].off();
         });
     });

@@ -1,72 +1,54 @@
-var Ideas = function(project) {
-        
+var Ideas = function(project, circuit) {
+    
     this.project = project;
     this.numBars = project.timings.length;
+    this.circuit = circuit;
     this.container = $("#ideas");
+    
+    this.sliversPerBeat = (192 / project.beat);
     var tracksContainer = this.container.children("#tracks");
     var barsContainer = this.container.children("#barlines");
     
-    var numBeats = 0;
-    var activeNotes = {};
-        
-    var timeToPixels = function( time ){
-        return (numBeats*192/this.project.beat) + time;
-    };
-    
-    
-    var cutActiveNote = function( key, endTime, key ){
-        var startTime = activeNotes[key];
-        if( assert(startTime) ){
-            var height = endTime - startTime;
+    var numSlivers = 0;
+            
+    var createNote = function(note){
+        if( assert(note) ){
+            var height = note.end - note.start;
             jQuery('<div/>',{
                 class: 'note',
-                style: 'bottom: '+startTime+'px; height: '+height+'px;'
-            }).prependTo(tracksContainer.children('#track_'+key.charCodeAt(0)));
-            delete activeNotes[key];
+                style: 'bottom: '+note.start+'px; height: '+height+'px;'
+            }).prependTo(tracksContainer.children('#track_'+note.key.charCodeAt(0)));
         }
     };
     
     
 
     for( _i in project.timings ){
-        var bar = project.timings[_i];
-        for( _j in bar ){
-            var beat = bar[_j];
-            var beatclass = 'beat';
-            if( _j === bar.length-1 ){
-                beatclass += ' upbeat';
-            }
-            jQuery('<div/>',{
-                class: beatclass
-            }).prependTo(barsContainer);
-            for( _k in beat ){
-                var action = beat[_k];
-                if( assert(action.keyOn) ){
-                    var note = activeNotes[action.keyOn];
-                    if( !assert(note) ){
-                        activeNotes[action.keyOn] = timeToPixels(action.time);
-                    }
-                } else if( assert(action.keyOff) ){
-                    cutActiveNote( action.keyOff, timeToPixels(action.time), action.keyOff );
-                }
-            }
-            numBeats++;
+        var note = project.timings[_i];
+        if( note.end > numSlivers ){
+            numSlivers = note.end;
         }
+        createNote(note);
     }
+            
+    this.numBeats = numSlivers / this.sliversPerBeat;
+    for( var _i=0; _i < this.numBeats; _i++  ){
+        jQuery('<div/>',{class: 'beat'}).prependTo(barsContainer);
+    } // probably a better way to do this
     
-    var thisTimeInPixels = timeToPixels(0);
-    for( _l in activeNotes ){
-        var note = activeNotes[_l];
-        if( assert(note) ){
-            console.log(_l);
-            cutActiveNote( note, (thisTimeInPixels), _l );
-        }
-    }
     
-    this.numBeats = numBeats;
-    this.container.css('height', thisTimeInPixels + 1);
+    var containerHeight = (this.numBeats*this.sliversPerBeat)+1;
+    this.container.css('height', containerHeight+'px' );
+    this.minBottom = this.circuitHeight - containerHeight;
     
 };
+
+Ideas.prototype.framesPerSecond = 20;
+Ideas.prototype.circuitHeight = 300;
+
+
+
+
 
 Ideas.prototype.constructPlayIntervalFxn = function( ){
     var ides = this;
@@ -74,17 +56,25 @@ Ideas.prototype.constructPlayIntervalFxn = function( ){
 };
 
 Ideas.prototype.start = function(){
-    this.playInterval = window.setInterval(this.constructPlayIntervalFxn(), 50);
+    // schedule all notes to play?
+    var nodas = this.circuit.nodas;
+    var secPerSliver = 60 / (this.project.bpm * this.sliversPerBeat);
+    for( var _i in nodas ){
+        nodas[_i].startSources( secPerSliver );
+    }
+    
+    this.playInterval = window.setInterval(this.constructPlayIntervalFxn(), 1000/this.framesPerSecond);
 };
 
 Ideas.prototype.pause = function(){
+    this.startTime = null;
     clearInterval(this.playInterval);
 };
 
 Ideas.prototype.advance = function(amt){
     console.log('advancing');
     var currBott = parseFloat(this.container.css('bottom'));
-    if( currBott <= -parseFloat(this.container.css('height'))+300 ){
+    if( currBott <= this.minBottom ){
         this.pause();
     } else {
         this.container.css('bottom', currBott+amt+'px');
@@ -93,5 +83,10 @@ Ideas.prototype.advance = function(amt){
 
 Ideas.prototype.reset = function(){
     this.pause();
-    this.container.css('bottom','300px');
+    this.container.css('bottom',this.circuitHeight+'px');
+};
+
+Ideas.prototype.end = function(){
+    this.pause();
+    this.container.css('bottom', this.minBottom+'px');
 };

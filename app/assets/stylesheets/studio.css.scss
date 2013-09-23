@@ -19,7 +19,7 @@ $tracks_width: 761px;
 $track_width: 18px;
 $track_color: #777;
 
-$quarter_height: 48px;
+$beat_height: 47px;
 
 $control_dimension: 30px;
 
@@ -99,12 +99,11 @@ $control_dimension: 30px;
                 position: absolute;
                 bottom: 0px;
                 width: $tracks_width;
-                border-bottom: 1px solid #555;
                 .beat{
                     width: 100%;
                     border-bottom: 1px dotted #555;
                     border-collapse: collapse;
-                    height: 48px;
+                    height: $beat_height;
                 }
             }
         }
