@@ -69,6 +69,10 @@ Ideas.prototype.start = function(){
 Ideas.prototype.pause = function(){
     this.startTime = null;
     clearInterval(this.playInterval);
+    var nodas = this.circuit.nodas;
+    for( var _i in nodas ){
+        nodas[_i].resetSources();
+    }
 };
 
 Ideas.prototype.advance = function(amt){

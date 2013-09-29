@@ -1,6 +1,7 @@
 var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
     this.noda = noda;
     this.swytche = swytche;
+    this.ascii = $(swytche).text();
     this.context = ctx;
     this.notes = notes;
     
@@ -17,9 +18,7 @@ var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
             request.response,
             function(buffer) { 
                 thisNoda.buffer = buffer; 
-                for( var _i in thisNoda.notes ){
-                    thisNoda.notes[_i].source = thisNoda.allocateSource();
-                }
+                thisNoda.resetSources();
             },
             function(buffer) { console.log("Error decoding sample for "+bufferUrl); }
         );
@@ -34,7 +33,7 @@ Noda.prototype.allocateSource = function(){
     var src = this.context.createBufferSource();
     src.buffer = this.buffer;
     src.connect(this.context.destination);
-    src.onended = function(){console.log('ended');}
+    src.onended = function(){console.log('ended');};
     return src;
 };
 
@@ -48,10 +47,11 @@ Noda.prototype.deallocateSource = function(src){
 
 
 Noda.prototype.startSources = function(secPerSliver){
+    var startTime = this.context.currentTime;
     for( var _i in this.notes ){
         var note = this.notes[_i];
-        note.source.start(note.start*secPerSliver);
-        note.source.stop(note.end*secPerSliver);
+        note.source.start((note.start*secPerSliver)+startTime);
+        note.source.stop((note.end*secPerSliver)+startTime);
     }
 };
 
@@ -60,6 +60,12 @@ Noda.prototype.stopSources = function(){
         var note = this.notes[_i];
         this.deallocateSource(note.source);
         note.source = null;
+    }
+};
+
+Noda.prototype.resetSources = function(){
+    for( var _i in this.notes ){
+        this.notes[_i].source = this.allocateSource();
     }
 };
 
