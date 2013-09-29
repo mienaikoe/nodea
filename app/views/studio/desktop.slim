@@ -26,14 +26,14 @@ div id='studio' class='left right bottom top'
 javascript:
     var bindings = #{raw @samples.map{|s|s ? s.file.url : nil}.to_json};
     var timings = [ // open song 
-        { key: '1',     start: 0,      end: 100},
-        { key: '2',     start: 32,     end: 100},
-        { key: '1',     start: 109,     end: 150},
-        { key: '3',     start: 49,     end: 100},
-        { key: '1',     start: 199,    end: 220},
-        { key: '3',     start: 329,    end: 500},
-        { key: '1',     start: 240,    end: 400},
-        { key: '2',     start: 399,    end: 500},
+        { key: '1',     start: 0,      end: 24},
+        { key: '2',     start: 32,     end: 48},
+        { key: '1',     start: 48,     end: 95},
+        { key: '3',     start: 72,     end: 95},
+        { key: '1',     start: 96,    end: 143},
+        { key: '3',     start: 96,    end: 108},
+        { key: '1',     start: 288,    end: 480},
+        { key: '2',     start: 144,    end: 480},
     ];
     var beat = 4;
     var bpm = 144;
@@ -51,8 +51,9 @@ javascript:
         // (smallest chunk is 132)
         $("body").keydown(function(ev) {
             var ascii = ev.which
-            if(ascii === 13){
-                ideas.start();
+            if(ascii === 32){
+                if( ideas.startTime == null ){ ideas.start(); } 
+                else { ideas.pause(); }
             } else if (ascii === 59) {
                 ascii = 186;
             } else if (ascii < 48) {

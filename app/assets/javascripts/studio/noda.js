@@ -3,7 +3,11 @@ var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
     this.swytche = swytche;
     this.ascii = $(swytche).text();
     this.context = ctx;
+    
     this.notes = notes;
+    for( var ni in notes ){
+        notes[ni].noda = this;
+    }
     
 
     if (!bufferUrl) {
@@ -26,7 +30,12 @@ var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
     request.send();
 };
 
-
+Noda.prototype.addNote = function(note){
+    if( note !== null ){
+        note.source = this.allocateSource();
+        this.notes.push(note);
+    }
+};
 
 
 Noda.prototype.allocateSource = function(){
@@ -46,12 +55,16 @@ Noda.prototype.deallocateSource = function(src){
 
 
 
-Noda.prototype.startSources = function(secPerSliver){
+// playback
+
+Noda.prototype.startSources = function(sliversPerSecond, startingAt){
     var startTime = this.context.currentTime;
     for( var _i in this.notes ){
         var note = this.notes[_i];
-        note.source.start((note.start*secPerSliver)+startTime);
-        note.source.stop((note.end*secPerSliver)+startTime);
+        if( note.start >= startingAt ){
+            note.source.start((note.start/sliversPerSecond)+startTime);
+            note.source.stop((note.end/sliversPerSecond)+startTime);
+        }
     }
 };
 
@@ -73,11 +86,17 @@ Noda.prototype.resetSources = function(){
 
 
 
+// inline play
+
 Noda.prototype.on = function() {
     if (this.buffer && !this.src) {
         this.src = this.allocateSource();
         this.src.start(0);
     }
+    this.lightOn();
+};
+
+Noda.prototype.lightOn = function(){
     $(this.noda).addClass('active');
     $(this.swytche).addClass('active');
 };
@@ -87,6 +106,10 @@ Noda.prototype.off = function() {
         this.deallocateSource(this.src);
         this.src = null;
     }
+    this.lightOff();
+};
+
+Noda.prototype.lightOff = function(){
     $(this.noda).removeClass('active');
     $(this.swytche).removeClass('active');
 };
