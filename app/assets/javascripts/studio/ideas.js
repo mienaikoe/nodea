@@ -1,14 +1,14 @@
-var Ideas = function(project, circuit) {
+var Ideas = function(project) {
     
     this.project = project;
     this.numBars = project.timings.length;
-    this.circuit = circuit;
     this.container = $("#ideas");
     
     this.sliversPerBeat = (192 / project.beat); // 48 for a quarter note, 24 for an eight note, ...
     this.sliversPerSecond = (this.project.bpm * this.sliversPerBeat) / 60;
     
     this.startTime = null;
+    this.recording = false;
     
     var tracksContainer = this.container.children("#tracks");
     var barsContainer = this.container.children("#barlines");
@@ -25,8 +25,6 @@ var Ideas = function(project, circuit) {
         }
     };
     
-    
-
     for( _i in project.timings ){
         var note = project.timings[_i];
         if( note.end > numSlivers ){
@@ -42,17 +40,25 @@ var Ideas = function(project, circuit) {
     
     
     var containerHeight = (this.numBeats*this.sliversPerBeat)+1;
-    this.container.css('height', containerHeight+'px' );
+    this.container.css('height', containerHeight+'px' ).css('bottom', this.maxBottom+'px');
     this.minBottom = this.maxBottom - containerHeight;
     
 };
 
 Ideas.prototype.framesPerSecond = 20;
-Ideas.prototype.maxBottom = 300;
+Ideas.prototype.maxBottom = 330;
+
+
+// Settings Toggles
+Ideas.prototype.toggleRecording = function(){
+    this.recording = !this.recording;
+};
 
 
 
 
+
+// Playback
 
 Ideas.prototype.constructPlayIntervalFxn = function( ){
     var ides = this;
@@ -62,7 +68,6 @@ Ideas.prototype.constructPlayIntervalFxn = function( ){
 Ideas.prototype.start = function(){
     // schedule all notes to play
     this.lastFrameSliver = this.maxBottom - parseFloat(this.container.css('bottom'));
-    var nodas = this.circuit.nodas;
     for( var _i in nodas ){
         nodas[_i].startSources( this.sliversPerSecond, this.lastFrameSliver );
     }
@@ -73,11 +78,18 @@ Ideas.prototype.start = function(){
 Ideas.prototype.pause = function(){
     this.startTime = null;
     clearInterval(this.playInterval);
-    var nodas = this.circuit.nodas;
     for( var _i in nodas ){
         var noda = nodas[_i];
         noda.stopSources();
         noda.resetSources();
+    }
+};
+
+Ideas.prototype.playpause = function(){
+    if( ideas.startTime === null ){ 
+        ideas.start(); 
+    } else { 
+        ideas.pause(); 
     }
 };
 
@@ -109,9 +121,13 @@ Ideas.prototype.frame = function(){
 
 Ideas.prototype.reset = function(){
     this.pause();
+    for( var _i in nodas ){
+       nodas[_i].lightOff();
+    }
     this.container.css('bottom',this.maxBottom+'px');
 };
 
+// not sure you'd ever need this...
 Ideas.prototype.end = function(){
     this.pause();
     this.container.css('bottom', this.minBottom+'px');
