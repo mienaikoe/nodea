@@ -1,4 +1,4 @@
-spiv id='track_switches'
+div id='swytches'
     -first=true
     -@keys.flatten.each do |ascii|
         spiv class="trackSwitch#{first ? ' first' : ''}"
@@ -6,24 +6,35 @@ spiv id='track_switches'
             =ascii.chr
 
 
-spiv class='nodesContainer' id='bottomleft_nodes'
-  -(0..3).each do |i|
-    div class="nodeRow" 
-      -(0..4).each do |j|
-        -key = @keys[i][j]
-        spiv id="key_#{key.ord}" class="node" =key
-    -if i==0
-      ditch
+div id='controls'
+    spiv class='controls_box' id='playback_controls'
+        spiv class='button' id='reset' onclick='ideas.reset();' St
+        spiv class='button' id='playpause' onclick='$(this).toggleClass("active");ideas.playpause();' Pl
+    ditch class='float'
+    spiv class='controls_box' id='mode_controls'
+        spiv class='button' id='record' onclick='$(this).toggleClass("active");ideas.toggleRecording();' Re
+    ditch class='float'
+    spiv class='controls_box' id='beat_controls'
+        input type='text' name='bpm_box' id='bpm_box' value="${bpm}"  
+
+div id='nodes'
+    spiv class='nodesContainer' id='bottomleft_nodes'
+      -(0..3).each do |i|
+        div class="nodeRow" 
+          -(0..4).each do |j|
+            -key = @keys[i][j]
+            spiv id="key_#{key.ord}" class="node" =key
+        -if i==0
+          ditch
 
 
-spiv class='nodesContainer' id='bottomright_nodes'
-  -(0..3).each do |i|
-    div class="nodeRow" 
-      -(5..9).each do |j|
-        -key = @keys[i][j]
-        spiv id="key_#{key.ord}" class="node" =key
-    -if i==0
-      ditch
+    spiv class='nodesContainer' id='bottomright_nodes'
+      -(0..3).each do |i|
+        div class="nodeRow" 
+          -(5..9).each do |j|
+            -key = @keys[i][j]
+            spiv id="key_#{key.ord}" class="node" =key
+        -if i==0
+          ditch
 
 
-/style="margin-left: #{i*20}px"

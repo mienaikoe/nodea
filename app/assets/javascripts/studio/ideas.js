@@ -17,18 +17,18 @@ var Ideas = function(project) {
             
     var createNote = function(note){
         if( assert(note) ){
-            var height = note.end - note.start;
+            var slivers = note.off - note.on;
             jQuery('<div/>',{
                 class: 'note',
-                style: 'bottom: '+note.start+'px; height: '+height+'px;'
+                style: 'bottom: '+note.on+'px; height: '+slivers+'px;'
             }).prependTo(tracksContainer.children('#track_'+note.key.charCodeAt(0)));
         }
     };
     
     for( _i in project.timings ){
         var note = project.timings[_i];
-        if( note.end > numSlivers ){
-            numSlivers = note.end;
+        if( note.off > numSlivers ){
+            numSlivers = note.off;
         }
         createNote(note);
     }
@@ -110,9 +110,9 @@ Ideas.prototype.frame = function(){
     // handle lighting
     for( _i in project.timings ){
         var note = project.timings[_i];
-        if( note.start <= sliver && note.start > this.lastFrameSliver ){
+        if( note.on <= sliver && note.on > this.lastFrameSliver ){
             note.noda.lightOn();
-        } else if( note.end <= sliver && note.end > this.lastFrameSliver ){
+        } else if( note.off <= sliver && note.off > this.lastFrameSliver ){
             note.noda.lightOff();
         }
     }

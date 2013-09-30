@@ -24,27 +24,44 @@ div id='studio' class='left right bottom top'
 
   
 javascript:
-    var bindings = #{raw @samples.map{|s|s ? s.file.url : nil}.to_json};
-    var timings = [ // open song 
-        { key: '1',     start: 0,      end: 24},
-        { key: '2',     start: 32,     end: 48},
-        { key: '1',     start: 48,     end: 95},
-        { key: '3',     start: 72,     end: 95},
-        { key: '1',     start: 96,    end: 143},
-        { key: '3',     start: 96,    end: 108},
-        { key: '1',     start: 288,    end: 480},
-        { key: '2',     start: 144,    end: 480},
-    ];
-    var beat = 4;
-    var bpm = 144;
+    var project = #{raw @project.to_json}
 
-    var project, ideas, circuit;
-    $(function() {
-        project = new Project(bindings, timings, beat, bpm);
-        circuit = new Circuit(project);
-        ideas = new Ideas(project, circuit);
-        
+    var ideas = new Ideas(project);
 
+    var nodas;
+
+    
+    $(function() {        
+        nodas = [];
+        var actionPairs = [];
+
+        $("#circuit .node").each(function(i,v) {
+            var ascii = $(v).text().toUpperCase().charCodeAt(0);
+            actionPairs[ascii] = {noda: $(v)};
+        }).click(function() {
+            // should control the actions of the key. not play note.
+        });
+
+        $("#circuit .trackSwitch").each(function(i,v){
+            var ascii = $(v).text().toUpperCase().charCodeAt(0);
+            actionPairs[ascii].swytche = $(v);
+        }).click(function(){
+            // something..?
+        });
+
+        var ctx = new webkitAudioContext();
+        for( var i in actionPairs ){
+            var actionPair = actionPairs[i];
+            if( actionPair && actionPair.noda && actionPair.swytche ){
+                var nodeNotes = [];
+                for( _j in project.timings ){
+                    if( project.timings[_j].key.toUpperCase().charCodeAt(0).toString() === i ){
+                        nodeNotes.push(timings[_j]);
+                    }
+                }
+                nodas[i] = new Noda(actionPair.noda, actionPair.swytche, ctx, nodeNotes, bindings[i]);
+            }
+        }        
 
         // should be able to enter music as a typewriter
         // enter key should skip to next increment a configurable number of times 
@@ -52,8 +69,7 @@ javascript:
         $("body").keydown(function(ev) {
             var ascii = ev.which
             if(ascii === 32){
-                if( ideas.startTime == null ){ ideas.start(); } 
-                else { ideas.pause(); }
+                ideas.playpause();
             } else if (ascii === 59) {
                 ascii = 186;
             } else if (ascii < 48) {
@@ -61,7 +77,7 @@ javascript:
             } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
                 return;
             } 
-            circuit.nodas[ascii].on();
+            nodas[ascii].on();
             ev.preventDefault();
         }).keyup(function(ev) {
             var ascii = ev.which
@@ -74,6 +90,6 @@ javascript:
             } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
                 return;
             } 
-            circuit.nodas[ev.which].off();
+            nodas[ev.which].off();
         });
     });

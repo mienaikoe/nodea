@@ -21,6 +21,22 @@ class StudioController < ApplicationController
     @keys.flatten.each_with_index do |k,i|
       @samples[k.ord] = samples[i];
     end
+        
+    @project = {
+      bindings: @samples.map{|s|s ? s.file.url : nil},
+      timings: [ 
+          { key: '1', on: 0,   off: 24},
+          { key: '2', on: 32,  off: 48},
+          { key: '1', on: 48,  off: 95},
+          { key: '3', on: 72,  off: 95},
+          { key: '1', on: 96,  off: 143},
+          { key: '3', on: 96,  off: 108},
+          { key: '1', on: 288, off: 480},
+          { key: '2', on: 144, off: 480},
+      ],
+      beat: 4,
+      bpm: 144
+    }
     
     render 'desktop'
   end

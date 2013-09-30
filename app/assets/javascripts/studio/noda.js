@@ -61,9 +61,9 @@ Noda.prototype.startSources = function(sliversPerSecond, startingAt){
     var startTime = this.context.currentTime;
     for( var _i in this.notes ){
         var note = this.notes[_i];
-        if( note.start >= startingAt ){
-            note.source.start((note.start/sliversPerSecond)+startTime);
-            note.source.stop((note.end/sliversPerSecond)+startTime);
+        if( note.on >= startingAt ){
+            note.source.start((note.on/sliversPerSecond)+startTime);
+            note.source.stop((note.off/sliversPerSecond)+startTime);
         }
     }
 };
