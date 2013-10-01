@@ -1,58 +1,94 @@
-var Ideas = function(project) {
+var Ideas = function() {
     
-    this.project = project;
-    this.numBars = project.timings.length;
     this.container = $("#ideas");
     
     this.sliversPerBeat = (192 / project.beat); // 48 for a quarter note, 24 for an eight note, ...
-    this.sliversPerSecond = (this.project.bpm * this.sliversPerBeat) / 60;
+    this.sliversPerSecond = (project.bpm * this.sliversPerBeat) / 60;
     
     this.startTime = null;
     this.recording = false;
+    this.recordingNotes = {};
     
-    var tracksContainer = this.container.children("#tracks");
-    var barsContainer = this.container.children("#barlines");
-    
-    var numSlivers = 0;
-            
-    var createNote = function(note){
-        if( assert(note) ){
-            var slivers = note.off - note.on;
-            jQuery('<div/>',{
-                class: 'note',
-                style: 'bottom: '+note.on+'px; height: '+slivers+'px;'
-            }).prependTo(tracksContainer.children('#track_'+note.key.charCodeAt(0)));
-        }
-    };
-    
+    this.tracksContainer = this.container.children("#tracks");
+
     for( _i in project.timings ){
-        var note = project.timings[_i];
-        if( note.off > numSlivers ){
-            numSlivers = note.off;
-        }
-        createNote(note);
+        this.createNoteContainer(project.timings[_i]);
     }
             
-    this.numBeats = numSlivers / this.sliversPerBeat;
-    for( var _i=0; _i < this.numBeats; _i++  ){
+    var barsContainer = this.container.children("#barlines");        
+    for( var _i=0; _i < project.numBeats; _i++  ){
         jQuery('<div/>',{class: 'beat'}).prependTo(barsContainer);
-    } // probably a better way to do this
+    }
     
-    
-    var containerHeight = (this.numBeats*this.sliversPerBeat)+1;
-    this.container.css('height', containerHeight+'px' ).css('bottom', this.maxBottom+'px');
+    var containerHeight = (project.numBeats*this.sliversPerBeat)+1;    
+    this.maxBottom = $('#circuit').outerHeight();
     this.minBottom = this.maxBottom - containerHeight;
-    
+    this.container.css('height', containerHeight+'px' ).css('bottom', this.maxBottom+'px');
 };
 
 Ideas.prototype.framesPerSecond = 20;
-Ideas.prototype.maxBottom = 330;
 
 
-// Settings Toggles
+
+
+
+
+// Recording
 Ideas.prototype.toggleRecording = function(){
     this.recording = !this.recording;
+    if( this.recording === false ) {
+        for( _i in this.recordingNotes ){
+            this.recordingNotes[_i].noda.turnOffPassiveRecording();
+        }
+        this.recordingNotes = {};
+    }
 };
+
+Ideas.prototype.noteOn = function( noda ){
+    var note = {key: noda.key, on: this.sliverFor(Date.now()), noda: noda};
+    this.recordingNotes[noda.key] = note;
+    this.createNoteContainer(note);
+};
+
+Ideas.prototype.noteOff = function( noda ){
+    console.log('note off');
+    var note = this.recordingNotes[noda.key];
+    if( typeof note === 'undefined' ){ 
+        return;
+    }
+    
+    var thisSliver = this.sliverFor(Date.now());
+    if( note.on === thisSliver ){
+        note.container.remove();
+    } else {
+        note.off = thisSliver;
+        note.noda.addNote(note);
+    }
+
+    delete this.recordingNotes[noda.key];
+};
+
+Ideas.prototype.createNoteContainer = function(note){
+    if( assert(note) ){
+        var clazz = 'note';
+        if( typeof note.off === 'undefined' ){
+            note.off = note.on+1;
+            clazz = 'note recording';
+        } 
+        var slivers = note.off - note.on;
+        note.container = jQuery('<div/>',{
+            class: clazz,
+            style: 'bottom: '+note.on+'px; height: '+slivers+'px;'
+        }).prependTo(this.tracksContainer.children('#track_'+note.key.charCodeAt(0)));
+    }
+};
+
+Ideas.prototype.removeNoteContainer = function(note){
+    note.container.remove();
+};
+
+
+
 
 
 
@@ -67,7 +103,7 @@ Ideas.prototype.constructPlayIntervalFxn = function( ){
 
 Ideas.prototype.start = function(){
     // schedule all notes to play
-    this.lastFrameSliver = this.maxBottom - parseFloat(this.container.css('bottom'));
+    this.lastFrameSliver = this.currentSliver();
     for( var _i in nodas ){
         nodas[_i].startSources( this.sliversPerSecond, this.lastFrameSliver );
     }
@@ -82,17 +118,40 @@ Ideas.prototype.pause = function(){
         var noda = nodas[_i];
         noda.stopSources();
         noda.resetSources();
+        noda.lightOff('active');
+    }
+    for( var key in this.recordingNotes ){
+        var note = this.recordingNotes[key];
+        console.log(note);
+        note.noda.turnOffPassiveRecording();
+        if( note.container ){
+            note.container.css('height',note.off-note.on+'px');
+        }
     }
 };
 
 Ideas.prototype.playpause = function(){
-    if( ideas.startTime === null ){ 
-        ideas.start(); 
+    if( this.startTime === null ){ 
+        this.start(); 
     } else { 
-        ideas.pause(); 
+        this.pause(); 
     }
+    
 };
 
+
+
+Ideas.prototype.currentSliver = function(){
+    return Math.ceil( this.maxBottom - parseFloat(this.container.css('bottom')) );
+};
+
+Ideas.prototype.sliverFor = function(epoch){
+    if( this.startTime === null ){
+        return this.currentSliver();
+    } else {
+        return Math.ceil( (epoch - this.startTime) * this.sliversPerSecond / 1000 );
+    }
+};
 
 Ideas.prototype.frame = function(){
     if( this.startTime === null ){
@@ -104,26 +163,30 @@ Ideas.prototype.frame = function(){
         return this.pause();
     } 
       
-    var sliver = this.sliversPerSecond * ((Date.now()-this.startTime)/1000);
+    var sliver = this.sliverFor(Date.now());
     this.container.css('bottom', this.maxBottom-sliver+'px');
     
     // handle lighting
     for( _i in project.timings ){
         var note = project.timings[_i];
         if( note.on <= sliver && note.on > this.lastFrameSliver ){
-            note.noda.lightOn();
+            note.noda.lightOn('active');
         } else if( note.off <= sliver && note.off > this.lastFrameSliver ){
-            note.noda.lightOff();
+            note.noda.lightOff('active');
         }
     }
+    for( _j in this.recordingNotes ){
+        var note = this.recordingNotes[_j];
+        if( note.container ){
+            note.container.css('height', sliver-note.start+'px');
+        }
+    }
+    
     this.lastFrameSliver = sliver;
 };
 
 Ideas.prototype.reset = function(){
     this.pause();
-    for( var _i in nodas ){
-       nodas[_i].lightOff();
-    }
     this.container.css('bottom',this.maxBottom+'px');
 };
 

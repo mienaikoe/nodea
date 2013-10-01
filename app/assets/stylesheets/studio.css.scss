@@ -12,7 +12,8 @@ $node_width: 60px;
 $node_margin: 5px;
 $node_color: #CCC;
 $node_text_color: #222;
-$node_active_color: #CFF;
+$node_active_color: #CCF;
+$node_recording_color: #FCC;
 
 $tracks_width: 761px;
 $track_width: 18px;
@@ -50,6 +51,10 @@ $control_dimension: 18px;
         background-color: $node_active_color;
         -webkit-box-shadow: none;
     }
+    &.recording{
+        background-color: $node_recording_color;
+        -webkit-box-shadow: none;
+    }   
 } 
 
 
@@ -89,9 +94,12 @@ $control_dimension: 18px;
                     height: 100%;
                     background-color: $track_color;
                     .note{
-                        background-color: rgba(230,230,180,0.6);
+                        background-color: rgba(200,200,230,0.6);
                         position: absolute;
                         width: $track_width;
+                        &.recording{
+                            background-color: rgba(230, 200, 200, 0.6);
+                        }
                     }
                 }
             }
@@ -149,6 +157,12 @@ $control_dimension: 18px;
                         width: $control_dimension;
                         font-weight: bold;
                         cursor: pointer;
+                    }
+                    #bpm_box{
+                        width: 32px;
+                    }
+                    label{  
+                        color: #ccc;
                     }
                 }
             }

@@ -26,15 +26,12 @@ div id='studio' class='left right bottom top'
 javascript:
     var project = #{raw @project.to_json}
 
-    var ideas = new Ideas(project);
+    var ideas, nodas;
 
-    var nodas;
-
-    
-    $(function() {        
+    $(function() {     
         nodas = [];
+        
         var actionPairs = [];
-
         $("#circuit .node").each(function(i,v) {
             var ascii = $(v).text().toUpperCase().charCodeAt(0);
             actionPairs[ascii] = {noda: $(v)};
@@ -56,10 +53,10 @@ javascript:
                 var nodeNotes = [];
                 for( _j in project.timings ){
                     if( project.timings[_j].key.toUpperCase().charCodeAt(0).toString() === i ){
-                        nodeNotes.push(timings[_j]);
+                        nodeNotes.push(project.timings[_j]);
                     }
                 }
-                nodas[i] = new Noda(actionPair.noda, actionPair.swytche, ctx, nodeNotes, bindings[i]);
+                nodas[i] = new Noda(actionPair.noda, actionPair.swytche, ctx, nodeNotes, project.bindings[i]);
             }
         }        
 
@@ -92,4 +89,6 @@ javascript:
             } 
             nodas[ev.which].off();
         });
+
+        ideas = new Ideas(project);
     });

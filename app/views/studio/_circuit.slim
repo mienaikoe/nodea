@@ -15,7 +15,7 @@ div id='controls'
         spiv class='button' id='record' onclick='$(this).toggleClass("active");ideas.toggleRecording();' Re
     ditch class='float'
     spiv class='controls_box' id='beat_controls'
-        input type='text' name='bpm_box' id='bpm_box' value="${bpm}"  
+        input type='text' name='bpm_box' id='bpm_box' value="#{@project[:bpm]}"  
 
 div id='nodes'
     spiv class='nodesContainer' id='bottomleft_nodes'

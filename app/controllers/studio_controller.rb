@@ -35,6 +35,7 @@ class StudioController < ApplicationController
           { key: '2', on: 144, off: 480},
       ],
       beat: 4,
+      numBeats: 81,
       bpm: 144
     }
     
