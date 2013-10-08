@@ -131,7 +131,7 @@ Noda.prototype.off = function() {
         
         if( ideas.recording ){
             if( ideas.startTime !== null ){ //active recording
-                ideas.noteOff(this.key);
+                ideas.noteOff(this);
                 this.lightOff('recording');
             }
         } else {

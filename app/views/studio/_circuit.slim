@@ -9,10 +9,10 @@ div id='swytches'
 div id='controls'
     spiv class='controls_box' id='playback_controls'
         spiv class='button' id='reset' onclick='ideas.reset();' St
-        spiv class='button' id='playpause' onclick='$(this).toggleClass("active");ideas.playpause();' Pl
+        spiv class='button' id='playpause' onclick='ideas.playpause();' Pl
     ditch class='float'
     spiv class='controls_box' id='mode_controls'
-        spiv class='button' id='record' onclick='$(this).toggleClass("active");ideas.toggleRecording();' Re
+        spiv class='button' id='record' onclick='ideas.toggleRecording();' Re
     ditch class='float'
     spiv class='controls_box' id='beat_controls'
         input type='text' name='bpm_box' id='bpm_box' value="#{@project[:bpm]}"  

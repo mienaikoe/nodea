@@ -42,6 +42,7 @@ Ideas.prototype.toggleRecording = function(){
         }
         this.recordingNotes = {};
     }
+    $('#controls #record').toggleClass("active");
 };
 
 Ideas.prototype.noteOn = function( noda ){
@@ -51,7 +52,6 @@ Ideas.prototype.noteOn = function( noda ){
 };
 
 Ideas.prototype.noteOff = function( noda ){
-    console.log('note off');
     var note = this.recordingNotes[noda.key];
     if( typeof note === 'undefined' ){ 
         return;
@@ -62,6 +62,7 @@ Ideas.prototype.noteOff = function( noda ){
         note.container.remove();
     } else {
         note.off = thisSliver;
+        note.container.css('height',(note.off-note.on)+'px');
         note.noda.addNote(note);
     }
 
@@ -122,7 +123,6 @@ Ideas.prototype.pause = function(){
     }
     for( var key in this.recordingNotes ){
         var note = this.recordingNotes[key];
-        console.log(note);
         note.noda.turnOffPassiveRecording();
         if( note.container ){
             note.container.css('height',note.off-note.on+'px');
@@ -131,12 +131,12 @@ Ideas.prototype.pause = function(){
 };
 
 Ideas.prototype.playpause = function(){
+    $('#controls #playpause').toggleClass("active");
     if( this.startTime === null ){ 
         this.start(); 
     } else { 
         this.pause(); 
     }
-    
 };
 
 
