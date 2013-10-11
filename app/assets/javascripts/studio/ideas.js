@@ -2,8 +2,7 @@ var Ideas = function() {
     
     this.container = $("#ideas");
     
-    this.sliversPerBeat = (192 / project.beat); // 48 for a quarter note, 24 for an eight note, ...
-    this.sliversPerSecond = (project.bpm * this.sliversPerBeat) / 60;
+    this.setSliverTiming();
     
     this.startTime = null;
     this.recording = false;
@@ -28,6 +27,13 @@ var Ideas = function() {
 
 Ideas.prototype.framesPerSecond = 20;
 
+
+
+// Calculation
+Ideas.prototype.setSliverTiming = function(){
+    this.sliversPerBeat = (192 / project.beat); // 48 for a quarter note, 24 for an eight note, ...
+    this.sliversPerSecond = (project.bpm * this.sliversPerBeat) / 60;
+};
 
 
 
@@ -104,6 +110,7 @@ Ideas.prototype.constructPlayIntervalFxn = function( ){
 
 Ideas.prototype.start = function(){
     // schedule all notes to play
+    this.setSliverTiming();
     this.lastFrameSliver = this.currentSliver();
     for( var _i in nodas ){
         nodas[_i].startSources( this.sliversPerSecond, this.lastFrameSliver );
@@ -115,12 +122,7 @@ Ideas.prototype.start = function(){
 Ideas.prototype.pause = function(){
     this.startTime = null;
     clearInterval(this.playInterval);
-    for( var _i in nodas ){
-        var noda = nodas[_i];
-        noda.stopSources();
-        noda.resetSources();
-        noda.lightOff('active');
-    }
+    nodas.map(function(noda){ noda.stopSources(); });
     for( var key in this.recordingNotes ){
         var note = this.recordingNotes[key];
         note.noda.turnOffPassiveRecording();

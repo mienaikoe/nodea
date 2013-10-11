@@ -31,6 +31,7 @@ javascript:
     $(function() {     
         nodas = [];
         
+        // DOM-JS Bindings
         var actionPairs = [];
         $("#circuit .node").each(function(i,v) {
             var ascii = $(v).text().toUpperCase().charCodeAt(0);
@@ -46,6 +47,8 @@ javascript:
             // something..?
         });
 
+
+        // Sample Fetching and Allocation
         var ctx = new webkitAudioContext();
         for( var i in actionPairs ){
             var actionPair = actionPairs[i];
@@ -60,9 +63,8 @@ javascript:
             }
         }        
 
-        // should be able to enter music as a typewriter
-        // enter key should skip to next increment a configurable number of times 
-        // (smallest chunk is 132)
+
+        // Event Handling
         $("body").keydown(function(ev) {
             var ascii = ev.which
             if(ascii === 32){
@@ -89,6 +91,8 @@ javascript:
             } 
             nodas[ev.which].off();
         });
+
+        $("#bpm_box").change( function(){ project.bpm = parseInt(this.value) } );
 
         ideas = new Ideas(project);
     });

@@ -7,15 +7,22 @@ div id='swytches'
 
 
 div id='controls'
-    spiv class='controls_box' id='playback_controls'
-        spiv class='button' id='reset' onclick='ideas.reset();' St
-        spiv class='button' id='playpause' onclick='ideas.playpause();' Pl
+    spiv class='controls_container' id='playback_controls'
+        spiv class='control_box'
+            div class='control button' id='reset' onclick='ideas.reset();' &#x982d;
+            div class='label' RESET
+        spiv class='control_box'
+            div class='control button' id='playpause' onclick='ideas.playpause();' &#x6f14;
+            div class='label' PLAY
     ditch class='float'
-    spiv class='controls_box' id='mode_controls'
-        spiv class='button' id='record' onclick='ideas.toggleRecording();' Re
+    spiv class='controls_container' id='mode_controls'
+        spiv class='control_box'
+            div class='control button' id='record' onclick='ideas.toggleRecording();' &#x9304;
+            div class='label' REC
     ditch class='float'
-    spiv class='controls_box' id='beat_controls'
-        input type='text' name='bpm_box' id='bpm_box' value="#{@project[:bpm]}"  
+    spiv class='controls_container' id='beat_controls'
+        input class='control field' type='number' name='bpm_box' id='bpm_box' value="#{@project[:bpm]}"  
+        div class='label' BPM
 
 div id='nodes'
     spiv class='nodesContainer' id='bottomleft_nodes'

@@ -21,7 +21,7 @@ $track_color: #777;
 
 $beat_height: 47px;
 
-$control_dimension: 18px;
+$control_dimension: 20px;
 
 @mixin unselectable{
     -moz-user-select: -moz-none;
@@ -74,6 +74,7 @@ $control_dimension: 18px;
         width: $machine_width;
         overflow: hidden;
         height: 100%;
+        background-color: $machine_color;
 
         #ideas{
             position: fixed;
@@ -143,26 +144,38 @@ $control_dimension: 18px;
             #controls{
                 width: $circuit_width;
                 margin: 6px 0px 5px;
-                .controls_box{
+                .controls_container{
                     float: left;
-                    spiv,input,td{
-                        height: $control_dimension;
+                    height: $control_dimension+16px;
+                    .control_box{
+                        width: $control_dimension+12px;
+                    }
+                    .control{
                         line-height: $control_dimension;
-                        padding: 3px;
+                        margin: 0px auto;
                         border: 1px solid #000;
-                        margin: 0px;
                         @include node_color;
+                        font-size: 14px;
+                        text-align: center;
+                        &.button{
+                            width: $control_dimension;
+                            cursor: pointer;
+                            padding: 3px 3px 2px 2px;
+                        }
+                        &.field{
+                            padding: 2px; 
+                        }
+                        &#bpm_box{
+                            width: 42px;
+                        }
                     }
-                    .button{
-                        width: $control_dimension;
-                        font-weight: bold;
-                        cursor: pointer;
-                    }
-                    #bpm_box{
-                        width: 32px;
-                    }
-                    label{  
-                        color: #ccc;
+                    
+                    .label{  
+                        color: white;
+                        font-size: 7px;
+                        font-family: sans-serif;
+                        line-height: 12px;
+                        text-align: center;
                     }
                 }
             }
