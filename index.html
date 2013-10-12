@@ -3,14 +3,589 @@
 <html>
 <head>
   <title>Nodea Studio</title>
-  <link  href="/application.css" media="all" rel="stylesheet" />
-<link  href="/studio.css" media="all" rel="stylesheet" />
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script  src="ideas.js"></script>
-<script  src="noda.js></script>
-<script  src="project.js"></script>
-<script  src="studio.js"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type='text/css'>
+
+ditch {
+  display: block;
+  width: 10px;
+  height: 10px; }
+  ditch.float {
+    float: left; }
+
+hide {
+  display: none; }
+
+spiv {
+  display: inline-block; }
+
+body, html {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans; }
+
+.left {
+  position: fixed;
+  left: 0px; }
+
+.right {
+  position: fixed;
+  right: 0px; }
+
+.bottom {
+  position: fixed;
+  bottom: 0px; }
+
+.top {
+  position: fixed;
+  top: 0px; }
+
+.charm {
+  z-index: 5; }
+
+.strange {
+  z-index: -5; }
+
+.center {
+  margin-left: auto;
+  margin-right: auto; }
+
+#studio {
+  background-color: #555; }
+  #studio .drawer {
+    width: 160px;
+    height: 100%;
+    background-color: #89A;
+    position: fixed; }
+  #studio #machine {
+    width: 801px;
+    overflow: hidden;
+    height: 100%;
+    background-color: #333333; }
+    #studio #machine #ideas {
+      position: fixed;
+      background-color: #333333;
+      padding: 10px 20px 0px;
+      overflow: hidden;
+      margin-left: auto;
+      margin-right: auto;
+      width: 761px;
+      text-align: center; }
+      #studio #machine #ideas #tracks {
+        position: absolute;
+        bottom: 0px;
+        width: 761px;
+        height: 100%; }
+        #studio #machine #ideas #tracks .nodeTrack {
+          width: 18px;
+          border-right: 1px dotted #222222;
+          height: 100%;
+          background-color: #777777; }
+          #studio #machine #ideas #tracks .nodeTrack.first {
+            border-left: 1px dotted #222222; }
+          #studio #machine #ideas #tracks .nodeTrack .note {
+            background-color: rgba(200, 200, 230, 0.6);
+            position: absolute;
+            width: 18px; }
+            #studio #machine #ideas #tracks .nodeTrack .note.recording {
+              background-color: rgba(230, 200, 200, 0.6); }
+      #studio #machine #ideas #barlines {
+        position: absolute;
+        bottom: 0px;
+        width: 761px; }
+        #studio #machine #ideas #barlines .beat {
+          width: 100%;
+          border-bottom: 1px dotted #555;
+          border-collapse: collapse;
+          height: 47px; }
+    #studio #machine #circuit {
+      width: 761px;
+      background-color: #333333;
+      padding: 0px 20px 11px;
+      overflow: hidden;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center; }
+      #studio #machine #circuit div {
+        overflow: hidden; }
+      #studio #machine #circuit #swytches .trackSwitch {
+        height: 18px;
+        line-height: 18px;
+        background-color: #cccccc;
+        color: #222222;
+        -webkit-box-shadow: inset 0 0 5px #999;
+        color: #222222;
+        text-align: center;
+        width: 18px;
+        border-right: 1px solid #222222; }
+        #studio #machine #circuit #swytches .trackSwitch.active {
+          background-color: #ccccff;
+          -webkit-box-shadow: none; }
+        #studio #machine #circuit #swytches .trackSwitch.recording {
+          background-color: #ffcccc;
+          -webkit-box-shadow: none; }
+        #studio #machine #circuit #swytches .trackSwitch.first {
+          border-left: 1px solid #222222; }
+      #studio #machine #circuit #controls {
+        width: 761px;
+        margin: 6px 0px 5px; }
+        #studio #machine #circuit #controls .controls_container {
+          float: left;
+          height: 36px; }
+          #studio #machine #circuit #controls .controls_container .button_box {
+            width: 32px; }
+          #studio #machine #circuit #controls .controls_container .control {
+            line-height: 20px;
+            margin: 0px auto;
+            border: 1px solid #000;
+            background-color: #cccccc;
+            color: #222222;
+            -webkit-box-shadow: inset 0 0 5px #999;
+            font-size: 14px;
+            text-align: center; }
+            #studio #machine #circuit #controls .controls_container .control.active {
+              background-color: #ccccff;
+              -webkit-box-shadow: none; }
+            #studio #machine #circuit #controls .controls_container .control.recording {
+              background-color: #ffcccc;
+              -webkit-box-shadow: none; }
+            #studio #machine #circuit #controls .controls_container .control.button {
+              width: 20px;
+              cursor: pointer;
+              padding: 3px 3px 2px 2px; }
+            #studio #machine #circuit #controls .controls_container .control.field {
+              padding: 2px;
+              line-height: 21px;
+              /* inputs have some weirdness */ }
+            #studio #machine #circuit #controls .controls_container .control.select {
+              padding: 2px;
+              height: 27px; }
+            #studio #machine #circuit #controls .controls_container .control#bpm_box {
+              width: 42px; }
+            #studio #machine #circuit #controls .controls_container .control#advance_box {
+              width: 44px; }
+          #studio #machine #circuit #controls .controls_container .label {
+            color: white;
+            font-size: 7px;
+            font-family: sans-serif;
+            line-height: 12px;
+            text-align: center; }
+      #studio #machine #circuit #nodes {
+        width: 759px;
+        background-color: #005577;
+        border: 1px solid black; }
+        #studio #machine #circuit #nodes .nodesContainer {
+          padding: 5px; }
+          #studio #machine #circuit #nodes .nodesContainer#bottomleft_nodes {
+            float: left; }
+          #studio #machine #circuit #nodes .nodesContainer#bottomright_nodes {
+            float: right; }
+          #studio #machine #circuit #nodes .nodesContainer .node {
+            border: 1px solid black;
+            width: 60px;
+            height: 48px;
+            margin: 5px;
+            background-color: #cccccc;
+            color: #222222;
+            -webkit-box-shadow: inset 0 0 5px #999;
+            text-align: center;
+            line-height: 48px;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            /*
+             Introduced in IE 10.
+             See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+            */
+            -ms-user-select: none;
+            user-select: none; }
+            #studio #machine #circuit #nodes .nodesContainer .node.active {
+              background-color: #ccccff;
+              -webkit-box-shadow: none; }
+            #studio #machine #circuit #nodes .nodesContainer .node.recording {
+              background-color: #ffcccc;
+              -webkit-box-shadow: none; }
+
+</style>
+<script type='text/javascript'>
+
+var Ideas = function() {
+    
+    this.container = $("#ideas");
+    
+    this.setSliverTiming();
+    
+    this.startTime = null;
+    this.recording = false;
+    this.recordingNotes = {};
+    
+    this.tracksContainer = this.container.children("#tracks");
+
+    for( _i in project.timings ){
+        this.createNoteContainer(project.timings[_i]);
+    }
+            
+    var barsContainer = this.container.children("#barlines");        
+    for( var _i=0; _i < project.numBeats; _i++  ){
+        jQuery('<div/>',{class: 'beat'}).prependTo(barsContainer);
+    }
+    
+    var containerHeight = (project.numBeats*this.sliversPerBeat)+1;    
+    this.maxBottom = $('#circuit').outerHeight();
+    this.minBottom = this.maxBottom - containerHeight;
+    this.container.css('height', containerHeight+'px' ).css('bottom', this.maxBottom+'px');
+};
+
+Ideas.prototype.framesPerSecond = 20;
+
+
+
+// Calculation
+Ideas.prototype.setSliverTiming = function(){
+    this.sliversPerBeat = (192 / project.beat); // 48 for a quarter note, 24 for an eight note, ...
+    this.sliversPerSecond = (project.bpm * this.sliversPerBeat) / 60;
+};
+
+
+
+
+
+// Recording
+Ideas.prototype.toggleRecording = function(){
+    this.recording = !this.recording;
+    if( this.recording === false ) {
+        for( _i in this.recordingNotes ){
+            this.recordingNotes[_i].noda.turnOffPassiveRecording();
+        }
+        this.recordingNotes = {};
+    }
+    $('#controls #record').toggleClass("active");
+};
+
+Ideas.prototype.noteOn = function( noda ){
+    var note = {key: noda.key, on: this.sliverFor(Date.now()), noda: noda};
+    this.recordingNotes[noda.key] = note;
+    this.createNoteContainer(note);
+};
+
+Ideas.prototype.noteOff = function( noda ){
+    var note = this.recordingNotes[noda.key];
+    if( typeof note === 'undefined' ){ 
+        return;
+    }
+    
+    var thisSliver = this.sliverFor(Date.now());
+    if( note.on === thisSliver ){
+        note.container.remove();
+    } else {
+        note.off = thisSliver;
+        note.container.css('height',(note.off-note.on)+'px');
+        note.noda.addNote(note);
+    }
+
+    delete this.recordingNotes[noda.key];
+};
+
+Ideas.prototype.createNoteContainer = function(note){
+    if( assert(note) ){
+        var clazz = 'note';
+        if( typeof note.off === 'undefined' ){
+            note.off = note.on+1;
+            clazz = 'note recording';
+        } 
+        var slivers = note.off - note.on;
+        note.container = jQuery('<div/>',{
+            class: clazz,
+            style: 'bottom: '+note.on+'px; height: '+slivers+'px;'
+        }).prependTo(this.tracksContainer.children('#track_'+note.key.charCodeAt(0)));
+    }
+};
+
+Ideas.prototype.removeNoteContainer = function(note){
+    note.container.remove();
+};
+
+
+
+
+
+
+
+
+// Playback
+
+Ideas.prototype.constructPlayIntervalFxn = function( ){
+    var ides = this;
+    return function(){ ides.frame(); };
+};
+
+Ideas.prototype.start = function(){
+    // schedule all notes to play
+    this.setSliverTiming();
+    this.lastFrameSliver = this.currentSliver();
+    for( var _i in nodas ){
+        nodas[_i].startSources( this.sliversPerSecond, this.lastFrameSliver );
+    }
+    this.startTime = Date.now() - (this.lastFrameSliver / (this.sliversPerSecond/1000));
+    this.playInterval = window.setInterval(this.constructPlayIntervalFxn(), 1000/this.framesPerSecond);
+};
+
+Ideas.prototype.pause = function(){
+    this.startTime = null;
+    clearInterval(this.playInterval);
+    nodas.map(function(noda){ noda.stopSources(); });
+    for( var key in this.recordingNotes ){
+        var note = this.recordingNotes[key];
+        note.noda.turnOffPassiveRecording();
+        if( note.container ){
+            note.container.css('height',note.off-note.on+'px');
+        }
+    }
+};
+
+Ideas.prototype.playpause = function(){
+    $('#controls #playpause').toggleClass("active");
+    if( this.startTime === null ){ 
+        this.start(); 
+    } else { 
+        this.pause(); 
+    }
+};
+
+
+
+Ideas.prototype.currentSliver = function(){
+    return Math.ceil( this.maxBottom - parseFloat(this.container.css('bottom')) );
+};
+
+Ideas.prototype.sliverFor = function(epoch){
+    if( this.startTime === null ){
+        return this.currentSliver();
+    } else {
+        return Math.ceil( (epoch - this.startTime) * this.sliversPerSecond / 1000 );
+    }
+};
+
+Ideas.prototype.frame = function(){
+    if( this.startTime === null ){
+        return this.pause();
+    }
+    
+    var currBott = parseFloat(this.container.css('bottom'));
+    if( currBott <= this.minBottom ){
+        return this.pause();
+    } 
+      
+    var sliver = this.sliverFor(Date.now());
+    this.container.css('bottom', this.maxBottom-sliver+'px');
+    
+    // handle lighting
+    for( _i in project.timings ){
+        var note = project.timings[_i];
+        if( note.on <= sliver && note.on > this.lastFrameSliver ){
+            note.noda.lightOn('active');
+        } else if( note.off <= sliver && note.off > this.lastFrameSliver ){
+            note.noda.lightOff('active');
+        }
+    }
+    for( _j in this.recordingNotes ){
+        var note = this.recordingNotes[_j];
+        if( note.container ){
+            note.container.css('height', sliver-note.start+'px');
+        }
+    }
+    
+    this.lastFrameSliver = sliver;
+};
+
+Ideas.prototype.reset = function(){
+    this.pause();
+    this.container.css('bottom',this.maxBottom+'px');
+};
+
+// not sure you'd ever need this...
+Ideas.prototype.end = function(){
+    this.pause();
+    this.container.css('bottom', this.minBottom+'px');
+};var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
+    this.noda = noda;
+    this.swytche = swytche;
+    this.key = $(swytche).text();
+    this.context = ctx;
+    
+    this.notes = notes;
+    for( var ni in notes ){
+        notes[ni].noda = this;
+    }
+    
+
+    if (!bufferUrl) {
+        return;
+    } 
+    var thisNoda = this;
+    var request = new XMLHttpRequest();
+    request.open("GET", bufferUrl, true);
+    request.responseType = "arraybuffer";
+    request.onload = function() {
+        thisNoda.context.decodeAudioData(
+            request.response,
+            function(buffer) { 
+                thisNoda.buffer = buffer; 
+                thisNoda.resetSources();
+            },
+            function(buffer) { console.log("Error decoding sample for "+bufferUrl); }
+        );
+    };
+    request.send();
+};
+
+Noda.prototype.addNote = function(note){
+    if( note !== null ){
+        note.source = this.allocateSource();
+        this.notes.push(note);
+        project.timings.push(note);
+    }
+};
+
+
+Noda.prototype.allocateSource = function(){
+    var src = this.context.createBufferSource();
+    src.buffer = this.buffer;
+    src.connect(this.context.destination);
+    src.onended = function(){console.log('ended');};
+    return src;
+};
+
+Noda.prototype.deallocateSource = function(src){
+    src.stop(0);
+    src.disconnect(0);
+};
+
+
+
+
+
+// playback
+
+Noda.prototype.startSources = function(sliversPerSecond, startingAt){
+    var startTime = this.context.currentTime;
+    this.notes.map( function(note){
+        if( note.on >= startingAt ){
+            note.source.start((note.on/sliversPerSecond)+startTime);
+            note.source.stop((note.off/sliversPerSecond)+startTime);
+        }
+    });
+};
+
+Noda.prototype.stopSources = function(){
+    for( var _i in this.notes ){
+        var note = this.notes[_i];
+        this.deallocateSource(note.source);
+        note.source = this.allocateSource();
+    }
+    this.lightOff('active');
+};
+
+Noda.prototype.resetSources = function(){
+    for( var _i in this.notes ){
+        this.notes[_i].source = this.allocateSource();
+    }
+};
+
+
+
+
+
+// recording
+
+Noda.prototype.on = function() {
+    // if recording, notify ideas of new note.
+    if (this.buffer && !this.src) {
+        this.src = this.allocateSource();
+        this.src.start(0);
+        
+        if( ideas.recording ){
+            if( ideas.startTime !== null ){ //active recording
+                ideas.noteOn(this);
+                this.lightOn('recording');
+            } else { // passive recording
+                if( this.passiveRecording ){
+                    this.turnOffPassiveRecording();
+                } else {
+                    ideas.noteOn(this);
+                    this.passiveRecording = true;
+                    this.lightOn('recording');
+                }
+            }
+            
+        } else {
+            this.lightOn('active');
+        }
+    }
+};
+
+
+Noda.prototype.turnOffPassiveRecording = function(){
+        ideas.noteOff(this);
+        this.passiveRecording = false;
+        this.lightOff('recording');
+};
+
+
+
+Noda.prototype.off = function() {
+    if (this.src) {
+        this.deallocateSource(this.src);
+        this.src = null;
+        
+        if( ideas.recording ){
+            if( ideas.startTime !== null ){ //active recording
+                ideas.noteOff(this);
+                this.lightOff('recording');
+            }
+        } else {
+            this.lightOff('active');
+        }
+    }
+};
+
+
+
+
+
+
+
+// lighting
+
+Noda.prototype.lightOn = function(lightType){
+    $(this.noda).addClass(lightType);
+    $(this.swytche).addClass(lightType);
+};
+Noda.prototype.lightOff = function(lightType){
+    $(this.noda).removeClass(lightType);
+    $(this.swytche).removeClass(lightType);
+};
+
+Noda.prototype.lightsOut = function(){
+    $(this.noda).removeClass('active').removeClass('recording');
+    $(this.swytche).removeClass('active').removeClass('recording');
+};var Project = function(bindings, timings, beat, bpm){
+    this.bindings = bindings;
+    this.timings = timings;
+    this.beat = beat;
+    this.bpm = bpm;  
+};//= require_tree .
+
+var assert = function(obj){
+    return (typeof(obj) !== 'undefined' && obj !== null);
+};
+
+</script>
 </head>
 <body>
 
