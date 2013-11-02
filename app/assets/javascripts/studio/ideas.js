@@ -25,11 +25,14 @@ var Ideas = function() {
     this.container.css('height', containerHeight+'px' ).css('bottom', this.maxBottom+'px');
 };
 
+
+
+
+
+// Timing
+
 Ideas.prototype.framesPerSecond = 20;
 
-
-
-// Calculation
 Ideas.prototype.setSliverTiming = function(){
     this.sliversPerBeat = (192 / project.beat); // 48 for a quarter note, 24 for an eight note, ...
     this.sliversPerSecond = (project.bpm * this.sliversPerBeat) / 60;
@@ -40,6 +43,7 @@ Ideas.prototype.setSliverTiming = function(){
 
 
 // Recording
+
 Ideas.prototype.toggleRecording = function(){
     this.recording = !this.recording;
     if( this.recording === false ) {
@@ -187,13 +191,16 @@ Ideas.prototype.frame = function(){
     this.lastFrameSliver = sliver;
 };
 
-Ideas.prototype.reset = function(){
+
+
+
+// Navigation
+
+Ideas.prototype.head = function(){
     this.pause();
     this.container.css('bottom',this.maxBottom+'px');
 };
-
-// not sure you'd ever need this...
-Ideas.prototype.end = function(){
+Ideas.prototype.tail = function(){
     this.pause();
     this.container.css('bottom', this.minBottom+'px');
 };

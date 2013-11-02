@@ -147,8 +147,11 @@ $control_dimension: 20px;
                 .controls_container{
                     float: left;
                     height: $control_dimension+16px;
-                    .control_box{
+                    .button_box{
                         width: $control_dimension+12px;
+                    }
+                    .wide_box{
+                        margin: 0px 2px;
                     }
                     .control{
                         line-height: $control_dimension;
@@ -164,9 +167,17 @@ $control_dimension: 20px;
                         }
                         &.field{
                             padding: 2px; 
+                            line-height: $control_dimension + 1px; /* inputs have some weirdness */
                         }
+                        &.select{
+                            padding: 2px;
+                            height: $control_dimension + 7px;
+                        }   
                         &#bpm_box{
                             width: 42px;
+                        }
+                        &#advance_box{
+                            width: 44px;
                         }
                     }
                     

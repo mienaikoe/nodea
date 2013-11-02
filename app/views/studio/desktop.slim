@@ -92,7 +92,10 @@ javascript:
             nodas[ev.which].off();
         });
 
-        $("#bpm_box").change( function(){ project.bpm = parseInt(this.value) } );
+        $("#bpm_box").
+            change(     function(){ project.bpm = parseInt(this.value) } ).
+            keydown(    function(ev){ ev.stopPropagation(); }).
+            keyup(      function(ev){ ev.stopPropagation(); });
 
         ideas = new Ideas(project);
     });
