@@ -3,6 +3,7 @@ class CreateSamples < ActiveRecord::Migration
     create_table :samples do |t|
       t.string :name
       t.text :description
+      t.string :url,        :limit=>2000
       t.belongs_to :user
 
       t.timestamps

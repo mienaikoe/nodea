@@ -14,16 +14,17 @@ class StudioController < ApplicationController
    
     # Determine which view to render based on platform
     
-    samples = Sample.find_all_by_user_id(1)
+    samples = Sample.find_all_by_user_id(5)
+    
     @keys ||= KEYS
     
-    @samples = []
+    @bindings = []
     @keys.flatten.each_with_index do |k,i|
-      @samples[k.ord] = samples[i];
+      @bindings[k.ord] = samples[i].url;
+      break if i>15
     end
-        
     @project = {
-      bindings: @samples.map{|s|s ? s.file.url : nil},
+      bindings: @bindings,
       timings: [ 
           { key: '1', on: 0,   off: 24},
           { key: '2', on: 32,  off: 48},

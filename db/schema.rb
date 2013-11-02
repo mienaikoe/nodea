@@ -11,18 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130916163525) do
+ActiveRecord::Schema.define(version: 20130916153634) do
 
   create_table "samples", force: true do |t|
     t.string   "name"
     t.text     "description"
+    t.string   "url",         limit: 2000
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "file_file_name"
-    t.string   "file_content_type"
-    t.integer  "file_file_size"
-    t.datetime "file_updated_at"
   end
 
   create_table "users", force: true do |t|
@@ -30,10 +27,6 @@ ActiveRecord::Schema.define(version: 20130916163525) do
     t.string   "nickname"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "avatar_file_name"
-    t.string   "avatar_content_type"
-    t.integer  "avatar_file_size"
-    t.datetime "avatar_updated_at"
   end
 
 end

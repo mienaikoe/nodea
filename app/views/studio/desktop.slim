@@ -34,14 +34,14 @@ javascript:
         // DOM-JS Bindings
         var actionPairs = [];
         $("#circuit .node").each(function(i,v) {
-            var ascii = $(v).text().toUpperCase().charCodeAt(0);
+            var ascii = $(v).text().charCodeAt(0);
             actionPairs[ascii] = {noda: $(v)};
         }).click(function() {
             // should control the actions of the key. not play note.
         });
 
         $("#circuit .trackSwitch").each(function(i,v){
-            var ascii = $(v).text().toUpperCase().charCodeAt(0);
+            var ascii = $(v).text().charCodeAt(0);
             actionPairs[ascii].swytche = $(v);
         }).click(function(){
             // something..?
@@ -55,7 +55,7 @@ javascript:
             if( actionPair && actionPair.noda && actionPair.swytche ){
                 var nodeNotes = [];
                 for( _j in project.timings ){
-                    if( project.timings[_j].key.toUpperCase().charCodeAt(0).toString() === i ){
+                    if( project.timings[_j].key.charCodeAt(0).toString() === i ){
                         nodeNotes.push(project.timings[_j]);
                     }
                 }
@@ -73,6 +73,8 @@ javascript:
                 ascii = 186;
             } else if (ascii < 48) {
                 ascii = ascii + 144;
+            } else if (ascii > 64 && ascii < 91){
+                ascii = ascii + 32;
             } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
                 return;
             } 
@@ -86,10 +88,12 @@ javascript:
                 ascii = 186;
             } else if (ascii < 48) {
                 ascii = ascii + 144;
+            } else if (ascii > 64 && ascii < 91){
+                ascii = ascii + 32;
             } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
                 return;
             } 
-            nodas[ev.which].off();
+            nodas[ascii].off();
         });
 
         $("#bpm_box").
