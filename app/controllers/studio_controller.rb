@@ -21,7 +21,7 @@ class StudioController < ApplicationController
     @bindings = []
     @keys.flatten.each_with_index do |k,i|
       @bindings[k.ord] = samples[i].url;
-      break if i>15
+      break if i>3
     end
     @project = {
       bindings: @bindings,

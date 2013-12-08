@@ -17,7 +17,7 @@
 
 <p>
   <strong>File:</strong>
-  <%= audio_tag @sample.file.url %>
+  <%= audio_tag @sample.url, autoplay: false, controls: true %>
 </p>
 
 <%= link_to 'Edit', edit_sample_path(@sample) %> |

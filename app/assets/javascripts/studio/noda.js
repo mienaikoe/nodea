@@ -44,7 +44,7 @@ Noda.prototype.allocateSource = function(){
     var src = this.context.createBufferSource();
     src.buffer = this.buffer;
     src.connect(this.context.destination);
-    src.onended = function(){console.log('ended');};
+    src.onended = function(){console.log('allocation complete');};
     return src;
 };
 
@@ -62,10 +62,9 @@ Noda.prototype.deallocateSource = function(src){
 Noda.prototype.startSources = function(sliversPerSecond, startingAt){
     var startTime = this.context.currentTime;
     this.notes.map( function(note){
-        console.log(note);
         if( note.on >= startingAt ){
-            note.source.start((note.on/sliversPerSecond)+startTime);
-            note.source.stop((note.off/sliversPerSecond)+startTime);
+            note.source.start(((note.on-startingAt)/sliversPerSecond)+startTime);
+            note.source.stop(((note.off-startingAt)/sliversPerSecond)+startTime);
         }
     });
 };
@@ -73,7 +72,6 @@ Noda.prototype.startSources = function(sliversPerSecond, startingAt){
 Noda.prototype.stopSources = function(){
     for( var _i in this.notes ){
         var note = this.notes[_i];
-        console.log(note);
         this.deallocateSource(note.source);
         note.source = this.allocateSource();
     }

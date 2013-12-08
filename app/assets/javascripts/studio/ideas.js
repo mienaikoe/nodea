@@ -5,6 +5,7 @@ var Ideas = function() {
     this.setSliverTiming();
     
     this.startTime = null;
+    this.startFrameTimestamp = null;
     this.recording = false;
     this.recordingNotes = {};
     
@@ -118,14 +119,18 @@ Ideas.prototype.start = function(){
     this.lastFrameSliver = this.currentSliver();
     for( var _i in nodas ){
         nodas[_i].startSources( this.sliversPerSecond, this.lastFrameSliver );
-    }
+    }  
+    
     this.startTime = Date.now() - (this.lastFrameSliver / (this.sliversPerSecond/1000));
-    this.playInterval = window.setInterval(this.constructPlayIntervalFxn(), 1000/this.framesPerSecond);
+    //this.playInterval = window.setInterval(this.constructPlayIntervalFxn(), 1000/this.framesPerSecond);
+    // investigating use of requestAnimationFrame
+    
+    requestAnimationFrame(this.frame.bind(this));
 };
 
 Ideas.prototype.pause = function(){
     this.startTime = null;
-    clearInterval(this.playInterval);
+    this.startFrameTimestamp = null;
     nodas.map(function(noda){ noda.stopSources(); });
     for( var key in this.recordingNotes ){
         var note = this.recordingNotes[key];
@@ -155,11 +160,16 @@ Ideas.prototype.sliverFor = function(epoch){
     if( this.startTime === null ){
         return this.currentSliver();
     } else {
-        return Math.ceil( (epoch - this.startTime) * this.sliversPerSecond / 1000 );
+        return this.sliverForProgress(epoch - this.startTime);
     }
 };
 
-Ideas.prototype.frame = function(){
+Ideas.prototype.sliverForProgress = function(progress){
+    return Math.ceil( progress / 1000 * this.sliversPerSecond );
+};
+
+
+Ideas.prototype.frame = function( timestamp ){
     if( this.startTime === null ){
         return this.pause();
     }
@@ -168,8 +178,12 @@ Ideas.prototype.frame = function(){
     if( currBott <= this.minBottom ){
         return this.pause();
     } 
+       
+    if( this.startFrameTimestamp === null ){
+        this.startFrameTimestamp = timestamp - (this.lastFrameSliver / (this.sliversPerSecond/1000));
+    }
       
-    var sliver = this.sliverFor(Date.now());
+    var sliver = this.sliverForProgress(timestamp-this.startFrameTimestamp);
     this.container.css('bottom', this.maxBottom-sliver+'px');
     
     // handle lighting
@@ -189,6 +203,8 @@ Ideas.prototype.frame = function(){
     }
     
     this.lastFrameSliver = sliver;
+    
+    requestAnimationFrame(this.frame.bind(this));
 };
 
 

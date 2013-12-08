@@ -19,7 +19,7 @@
         <td><%= sample.name %></td>
         <td><%= sample.description %></td>
         <td><%= sample.user_id %></td>
-        <td><%= audio_tag sample.file.url %></td>
+        <td><%= audio_tag sample.url %></td>
         <td><%= link_to 'Show', sample %></td>
         <td><%= link_to 'Edit', edit_sample_path(sample) %></td>
         <td><%= link_to 'Destroy', sample, method: :delete, data: { confirm: 'Are you sure?' } %></td>
