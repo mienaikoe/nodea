@@ -66,34 +66,25 @@ javascript:
 
         // Event Handling
         $("body").keydown(function(ev) {
-            var ascii = ev.which
-            if(ascii === 32){
-                ideas.playpause();
-            } else if (ascii === 59) {
-                ascii = 186;
-            } else if (ascii < 48) {
-                ascii = ascii + 144;
-            } else if (ascii > 64 && ascii < 91){
-                ascii = ascii + 32;
-            } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
+            if( ev.keyCode in Noda.prototype.keyCodeToAsciiMap ){
+                var noda = nodas[Noda.prototype.keyCodeToAsciiMap[ev.keyCode]];
+                if( noda ){ noda.on(); } 
+            } else if( ev.keyCode in Ideas.prototype.eventControlMap ){
+                Ideas.prototype.eventControlMap[ev.keyCode](ideas);
+            } else {
                 return;
-            } 
-            nodas[ascii].on();
+            }
             ev.preventDefault();
         }).keyup(function(ev) {
-            var ascii = ev.which
-            if(ascii === 13){
-                ideas.start();
-            } else if (ascii === 59) {
-                ascii = 186;
-            } else if (ascii < 48) {
-                ascii = ascii + 144;
-            } else if (ascii > 64 && ascii < 91){
-                ascii = ascii + 32;
-            } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
+            if( ev.keyCode in Noda.prototype.keyCodeToAsciiMap ){
+                var noda = nodas[Noda.prototype.keyCodeToAsciiMap[ev.keyCode]];
+                if( noda ){ noda.off(); }
+            } else if( ev.keyCode in Ideas.prototype.eventControlMap ){
+                // do nothing
+            } else {
                 return;
-            } 
-            nodas[ascii].off();
+            }
+            ev.preventDefault();
         });
 
         $("#bpm_box").

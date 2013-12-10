@@ -1,6 +1,9 @@
 var Ideas = function() {
     
     this.container = $("#ideas");
+    this.advanceBox = $("#advance_box");
+    this.advanceAmount = parseInt(this.advanceBox.val()) / project.beat;
+    this.advanceBox.change(function(){ ideas.advanceAmount = parseInt(this.value) / project.beat; });
     
     this.setSliverTiming();
     
@@ -41,6 +44,9 @@ Ideas.prototype.setSliverTiming = function(){
 
 
 
+Ideas.prototype.currentBottom = function(){
+    return parseFloat(this.container.css('bottom'));
+};
 
 
 // Recording
@@ -108,35 +114,30 @@ Ideas.prototype.removeNoteContainer = function(note){
 
 // Playback
 
-Ideas.prototype.constructPlayIntervalFxn = function( ){
-    var ides = this;
-    return function(){ ides.frame(); };
-};
-
 Ideas.prototype.start = function(){
-    // schedule all notes to play
-    this.setSliverTiming();
-    this.lastFrameSliver = this.currentSliver();
-    for( var _i in nodas ){
-        nodas[_i].startSources( this.sliversPerSecond, this.lastFrameSliver );
-    }  
-    
-    this.startTime = Date.now() - (this.lastFrameSliver / (this.sliversPerSecond/1000));
-    //this.playInterval = window.setInterval(this.constructPlayIntervalFxn(), 1000/this.framesPerSecond);
-    // investigating use of requestAnimationFrame
-    
-    requestAnimationFrame(this.frame.bind(this));
+    if( this.startTime === null ){
+        this.setSliverTiming();
+        this.lastFrameSliver = this.currentSliver();
+        for( var _i in nodas ){
+            nodas[_i].startSources( this.sliversPerSecond, this.lastFrameSliver );
+        }  
+
+        this.startTime = Date.now() - (this.lastFrameSliver / (this.sliversPerSecond/1000));    
+        requestAnimationFrame(this.frame.bind(this));
+    }
 };
 
 Ideas.prototype.pause = function(){
-    this.startTime = null;
-    this.startFrameTimestamp = null;
-    nodas.map(function(noda){ noda.stopSources(); });
-    for( var key in this.recordingNotes ){
-        var note = this.recordingNotes[key];
-        note.noda.turnOffPassiveRecording();
-        if( note.container ){
-            note.container.css('height',note.off-note.on+'px');
+    if( this.startTime !== null){
+        this.startTime = null;
+        this.startFrameTimestamp = null;
+        nodas.map(function(noda){ noda.stopSources(); });
+        for( var key in this.recordingNotes ){
+            var note = this.recordingNotes[key];
+            note.noda.turnOffPassiveRecording();
+            if( note.container ){
+                note.container.css('height',note.off-note.on+'px');
+            }
         }
     }
 };
@@ -153,7 +154,7 @@ Ideas.prototype.playpause = function(){
 
 
 Ideas.prototype.currentSliver = function(){
-    return Math.ceil( this.maxBottom - parseFloat(this.container.css('bottom')) );
+    return Math.ceil( this.maxBottom - this.currentBottom() );
 };
 
 Ideas.prototype.sliverFor = function(epoch){
@@ -174,8 +175,7 @@ Ideas.prototype.frame = function( timestamp ){
         return this.pause();
     }
     
-    var currBott = parseFloat(this.container.css('bottom'));
-    if( currBott <= this.minBottom ){
+    if( this.currentBottom <= this.minBottom ){
         return this.pause();
     } 
        
@@ -219,4 +219,28 @@ Ideas.prototype.head = function(){
 Ideas.prototype.tail = function(){
     this.pause();
     this.container.css('bottom', this.minBottom+'px');
+};
+
+
+Ideas.prototype.advance = function(howmuch){
+    this.pause();
+    var currentBottom = this.currentBottom();
+    var newBottom = currentBottom+(this.advanceAmount*howmuch);
+    if( newBottom < this.minBottom ){
+        newBottom = this.minBottom;
+    } else if( newBottom > this.maxBottom){
+        newBottom = this.maxBottom;
+    } 
+    if( newBottom !== currentBottom ){
+        this.container.css('bottom', newBottom+'px');
+    }
+};
+
+
+
+
+Ideas.prototype.eventControlMap = {
+    32: function(ides){ ides.playpause(); },
+    38: function(ides){ ides.advance(-1); },
+    40: function(ides){ ides.advance(1); }
 };
