@@ -20,7 +20,7 @@ class StudioController < ApplicationController
     
     @bindings = []
     @keys.flatten.each_with_index do |k,i|
-      @bindings[k.ord] = samples[i].url;
+      @bindings[k.ord] = 'http://upload.wikimedia.org/wikipedia/commons/3/33/ConstantSpectrumMelody.ogg';
       break if i>1
     end
     @project = {

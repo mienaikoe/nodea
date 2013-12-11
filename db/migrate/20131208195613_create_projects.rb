@@ -10,9 +10,7 @@ class CreateProjects < ActiveRecord::Migration
     end
     
     
-    create_table :users_projects, id: false do |t|
-      t.integer :project_id
-      t.integer :user_id
+    create_join_table :users, :projects do |t|
     end
     
   end

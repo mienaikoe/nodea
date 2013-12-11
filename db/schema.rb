@@ -20,10 +20,14 @@ ActiveRecord::Schema.define(version: 20131208195613) do
     t.datetime "updated_at"
   end
 
+  create_table "projects_users", id: false, force: true do |t|
+    t.integer "user_id",    null: false
+    t.integer "project_id", null: false
+  end
+
   create_table "samples", force: true do |t|
     t.string   "name"
     t.text     "description"
-    t.string   "url",         limit: 2000
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -32,13 +36,11 @@ ActiveRecord::Schema.define(version: 20131208195613) do
   create_table "users", force: true do |t|
     t.string   "alias"
     t.string   "nickname"
+    t.string   "passdigest"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "users_projects", id: false, force: true do |t|
-    t.integer "project_id"
-    t.integer "user_id"
-  end
+  add_index "users", ["alias"], name: "index_users_on_alias", unique: true
 
 end

@@ -116,6 +116,7 @@ Ideas.prototype.removeNoteContainer = function(note){
 
 Ideas.prototype.start = function(){
     if( this.startTime === null ){
+        $('#controls #playpause').addClass("active");
         this.setSliverTiming();
         this.lastFrameSliver = this.currentSliver();
         for( var _i in nodas ){
@@ -129,6 +130,7 @@ Ideas.prototype.start = function(){
 
 Ideas.prototype.pause = function(){
     if( this.startTime !== null){
+        $('#controls #playpause').removeClass("active");
         this.startTime = null;
         this.startFrameTimestamp = null;
         nodas.map(function(noda){ noda.stopSources(); });
@@ -143,12 +145,7 @@ Ideas.prototype.pause = function(){
 };
 
 Ideas.prototype.playpause = function(){
-    $('#controls #playpause').toggleClass("active");
-    if( this.startTime === null ){ 
-        this.start(); 
-    } else { 
-        this.pause(); 
-    }
+    this.startTime ? this.pause() : this.start(); 
 };
 
 
@@ -236,11 +233,33 @@ Ideas.prototype.advance = function(howmuch){
     }
 };
 
+Ideas.prototype.incrementAdvanceBox = function(forward){
+    var oldSelection = this.advanceBox.find("option:selected");
+    var newSelection = (forward) ? oldSelection.prev("option") : oldSelection.next("option");
+    if( newSelection.val() !== undefined ){
+        oldSelection.removeAttr("selected");
+        newSelection.attr("selected","selected");
+        this.advanceBox.trigger("change");
+    }
+};
+
 
 
 
 Ideas.prototype.eventControlMap = {
+    //spacebar
     32: function(ides){ ides.playpause(); },
+    
+    // home, page, end
+    33: function(ides){ ides.advance(-8); },
+    34: function(ides){ ides.advance(8); },
+    35: function(ides){ ides.head(); },
+    36: function(ides){ ides.tail(); },
+    
+    // arrow keys
+    // TODO: Find another use for these
+    37: function(ides){ ides.incrementAdvanceBox(false); },
     38: function(ides){ ides.advance(-1); },
+    39: function(ides){ ides.incrementAdvanceBox(true); },
     40: function(ides){ ides.advance(1); }
 };
