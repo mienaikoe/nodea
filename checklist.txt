@@ -2,14 +2,15 @@ Nodea Checklist
 
 
 Javascript
-- Make new bars when recording exceeds top
 - Make javascript create the UI and bindings instead of desktop.haml
 - Hotkey Record button
+- Pluggable Circuits
+- Ensure the project variable is getting updated so that a save would be simple.
+- Render Circuits and Controls in JS
 
 Models
-- Tie Project into Samples and other Bindings via Keyboard-key in a join table.
-- Make blobstore or table for notes
-- Give Project a bpm column
+- Determine Indexing
+- Deterine a Blobstore
 
 General Enhancements
 - Allow rapid saving of a Project with ctrl-s and a save button on ui.

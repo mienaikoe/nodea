@@ -11,11 +11,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131208195613) do
+ActiveRecord::Schema.define(version: 20131213045024) do
+
+  create_table "circuits", force: true do |t|
+    t.string   "name"
+    t.text     "description"
+    t.integer  "user_id"
+    t.string   "file_url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "keys", id: false, force: true do |t|
+    t.integer "circuit_id", null: false
+    t.integer "project_id", null: false
+    t.integer "ordinal"
+    t.text    "settings"
+  end
+
+  create_table "notes", id: false, force: true do |t|
+    t.integer "key_id"
+    t.integer "on"
+    t.integer "off"
+  end
 
   create_table "projects", force: true do |t|
     t.string   "name"
     t.text     "description"
+    t.integer  "bpm"
+    t.integer  "beat"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -23,14 +47,6 @@ ActiveRecord::Schema.define(version: 20131208195613) do
   create_table "projects_users", id: false, force: true do |t|
     t.integer "user_id",    null: false
     t.integer "project_id", null: false
-  end
-
-  create_table "samples", force: true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "users", force: true do |t|

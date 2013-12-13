@@ -1,0 +1,34 @@
+<h1>Listing circuits</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Author</th>
+      <th>File</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @circuits.each do |circuit| %>
+      <tr>
+        <td><%= circuit.name %></td>
+        <td><%= circuit.description %></td>
+        <td><%= circuit.user_id %></td>
+        <td><%= link_to 'File', circuit.file_url %></td>
+
+        <td><%= link_to 'Show', circuit %></td>
+        <td><%= link_to 'Edit', edit_circuit_path(circuit) %></td>
+        <td><%= link_to 'Destroy', circuit, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New circuit', new_circuit_path %>

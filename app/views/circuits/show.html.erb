@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @circuit.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @circuit.description %>
+</p>
+
+<p>
+  <strong>User:</strong>
+  <%= @circuit.user_id %>
+</p>
+
+<p>
+  <strong>
+  <%= link_to 'File', @circuit.file_url %>
+  </strong>
+</p>
+
+<%= link_to 'Edit', edit_circuit_path(@circuit) %> |
+<%= link_to 'Back', circuits_path %>

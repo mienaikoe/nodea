@@ -3,7 +3,6 @@
 <table>
   <thead>
     <tr>
-      <th>Avatar</th>
       <th>Alias</th>
       <th>Nickname</th>
       <th></th>
@@ -15,7 +14,6 @@
   <tbody>
     <% @users.each do |user| %>
       <tr>
-        <td><%= image_tag user.avatar.url, :size=>'100x100' %>
         <td><%= user.alias %></td>
         <td><%= user.nickname %></td>
         <td><%= link_to 'Show', user %></td>

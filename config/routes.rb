@@ -1,6 +1,7 @@
 Nodea::Application.routes.draw do
   
-  resources :samples
+  resources :circuits
+  resources :projects
   resources :users
 
   get "studio", to: 'studio#index'

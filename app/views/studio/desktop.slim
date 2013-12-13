@@ -7,9 +7,8 @@ div id='studio' class='left right bottom top'
   
     div id='machine' class='center'
         div id='ideas'
-            =render partial: 'ideas', locals: {}
-        div id='circuit'  class='bottom charm'
-            =render partial: 'circuit', locals: {}
+        div id='circuits' class='bottom charm'
+            =render partial: 'circuits', locals: {}
 
 
     div id='sample_drawer' class='drawer right top bottom charm'
@@ -33,14 +32,14 @@ javascript:
         
         // DOM-JS Bindings
         var actionPairs = [];
-        $("#circuit .node").each(function(i,v) {
+        $("#circuits .node").each(function(i,v) {
             var ascii = $(v).text().charCodeAt(0);
             actionPairs[ascii] = {noda: $(v)};
         }).click(function() {
             // should control the actions of the key. not play note.
         });
 
-        $("#circuit .trackSwitch").each(function(i,v){
+        $("#circuits .trackSwitch").each(function(i,v){
             var ascii = $(v).text().charCodeAt(0);
             actionPairs[ascii].swytche = $(v);
         }).click(function(){
@@ -65,32 +64,5 @@ javascript:
 
 
         // Event Handling
-        $("body").keydown(function(ev) {
-            if( ev.keyCode in Noda.prototype.keyCodeToAsciiMap ){
-                var noda = nodas[Noda.prototype.keyCodeToAsciiMap[ev.keyCode]];
-                if( noda ){ noda.on(); } 
-            } else if( ev.keyCode in Ideas.prototype.eventControlMap ){
-                Ideas.prototype.eventControlMap[ev.keyCode](ideas);
-            } else {
-                return;
-            }
-            ev.preventDefault();
-        }).keyup(function(ev) {
-            if( ev.keyCode in Noda.prototype.keyCodeToAsciiMap ){
-                var noda = nodas[Noda.prototype.keyCodeToAsciiMap[ev.keyCode]];
-                if( noda ){ noda.off(); }
-            } else if( ev.keyCode in Ideas.prototype.eventControlMap ){
-                // do nothing
-            } else {
-                return;
-            }
-            ev.preventDefault();
-        });
-
-        $("#bpm_box").
-            change(     function(){ project.bpm = parseInt(this.value) } ).
-            keydown(    function(ev){ ev.stopPropagation(); }).
-            keyup(      function(ev){ ev.stopPropagation(); });
-
-        ideas = new Ideas(project);
+        ideas = new Ideas();
     });

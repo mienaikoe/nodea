@@ -50,7 +50,7 @@ div id='nodes'
       -(0..3).each do |i|
         div class="nodeRow" 
           -(0..4).each do |j|
-            -key = @keys[i][j]
+            -key = @keys[(i*10)+j]
             spiv id="key_#{key.ord}" class="node" =key
         -if i==0
           ditch
@@ -60,7 +60,7 @@ div id='nodes'
       -(0..3).each do |i|
         div class="nodeRow" 
           -(5..9).each do |j|
-            -key = @keys[i][j]
+            -key = @keys[(i*10)+j]
             spiv id="key_#{key.ord}" class="node" =key
         -if i==0
           ditch
