@@ -35,6 +35,7 @@ Noda.prototype.addNote = function(note){
     if( note !== null ){
         note.source = this.allocateSource();
         this.notes.push(note);
+        project.timings.push(note);
     }
 };
 

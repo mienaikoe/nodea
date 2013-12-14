@@ -23,46 +23,7 @@ div id='studio' class='left right bottom top'
 
   
 javascript:
-    var project = #{raw @project.to_json}
-
-    var ideas, nodas;
-
-    $(function() {     
-        nodas = [];
-        
-        // DOM-JS Bindings
-        var actionPairs = [];
-        $("#circuits .node").each(function(i,v) {
-            var ascii = $(v).text().charCodeAt(0);
-            actionPairs[ascii] = {noda: $(v)};
-        }).click(function() {
-            // should control the actions of the key. not play note.
-        });
-
-        $("#circuits .trackSwitch").each(function(i,v){
-            var ascii = $(v).text().charCodeAt(0);
-            actionPairs[ascii].swytche = $(v);
-        }).click(function(){
-            // something..?
-        });
-
-
-        // Sample Fetching and Allocation
-        var ctx = new webkitAudioContext();
-        for( var i in actionPairs ){
-            var actionPair = actionPairs[i];
-            if( actionPair && actionPair.noda && actionPair.swytche ){
-                var nodeNotes = [];
-                for( _j in project.timings ){
-                    if( project.timings[_j].key.charCodeAt(0).toString() === i ){
-                        nodeNotes.push(project.timings[_j]);
-                    }
-                }
-                nodas[i] = new Noda(actionPair.noda, actionPair.swytche, ctx, nodeNotes, project.bindings[i]);
-            }
-        }        
-
-
-        // Event Handling
-        ideas = new Ideas();
+    var studio;
+    $(function() {
+        studio = new NodeaStudio(document.getElementById("ideas"), #{raw @project.to_json});
     });
