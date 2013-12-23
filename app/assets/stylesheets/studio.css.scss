@@ -195,15 +195,10 @@ $control_dimension: 20px;
                 width: $circuit_width - 2px;
                 background-color: $circuit_color;
                 border: 1px solid black;
-                .nodesContainer{
-                    padding: 5px;
-                    &#bottomleft_nodes{
-                        float:left;
-                    }
-                    &#bottomright_nodes{
-                        float:right;
-                    }
-
+                .nodeRow{
+                    float:left;
+                    width: 360px;
+                    margin: 5px 9px;
                     .node{
                         border: 1px solid black;
                         width: $node_width;

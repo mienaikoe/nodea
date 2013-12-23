@@ -8,7 +8,6 @@ var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
     for( var ni in notes ){
         notes[ni].noda = this;
     }
-    
 
     if (!bufferUrl) {
         return;
@@ -25,7 +24,7 @@ var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
                 thisNoda.buffer = buffer; 
                 thisNoda.resetSources();
             },
-            function(buffer) { console.log("Error decoding sample for "+bufferUrl); }
+            function() { console.log("Error decoding sample for "+bufferUrl); }
         );
     };
     request.send();
