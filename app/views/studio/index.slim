@@ -1,5 +1,5 @@
 - content_for :circuit_includes do
-    -for circuit in @project.circuits.uniq{|circuit| circuit.id}
+    -for circuit in @project.unique_circuits
         =javascript_include_tag circuit.location
         
 

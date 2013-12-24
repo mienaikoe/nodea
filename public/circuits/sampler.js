@@ -1,31 +1,33 @@
-var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
+var Noda = function(noda, swytche, ctx, persistedNoda) {
+	
     this.noda = noda;
     this.swytche = swytche;
     this.key = $(swytche).text();
     this.context = ctx;
     
-    this.notes = notes;
-    for( var ni in notes ){
-        notes[ni].noda = this;
+    this.notes = persistedNoda.notes;
+    for( var ni in this.notes ){
+        this.notes[ni].noda = this;
     }
-    
 
+	var bufferUrl = persistedNoda.settings.sourceFile;
     if (!bufferUrl) {
         return;
-    } 
-    var thisNoda = this;
+    }
+	
+    var self = this;
     var request = new XMLHttpRequest();
     request.open("GET", bufferUrl, true);
     request.responseType = "arraybuffer";
     request.onload = function() {
-        thisNoda.context.decodeAudioData(
+        self.context.decodeAudioData(
             request.response,
             function(buffer) { 
-                console.log('Setting Buffer for '+thisNoda.key);
-                thisNoda.buffer = buffer; 
-                thisNoda.resetSources();
+                console.log('Setting Buffer for '+self.key);
+                self.buffer = buffer; 
+                self.resetSources();
             },
-            function(buffer) { console.log("Error decoding sample for "+bufferUrl); }
+            function() { console.log("Error decoding sample for "+bufferUrl); }
         );
     };
     request.send();
@@ -35,7 +37,6 @@ Noda.prototype.addNote = function(note){
     if( note !== null ){
         note.source = this.allocateSource();
         this.notes.push(note);
-        project.timings.push(note);
     }
 };
 
@@ -70,18 +71,17 @@ Noda.prototype.startSources = function(sliversPerSecond, startingAt){
 };
 
 Noda.prototype.stopSources = function(){
-    for( var _i in this.notes ){
-        var note = this.notes[_i];
-        this.deallocateSource(note.source);
-        note.source = this.allocateSource();
-    }
+	var self = this;
+    this.notes.map(function(note){ 
+	    self.deallocateSource(note.source);
+        note.source = self.allocateSource();
+	});
     this.lightOff('active');
 };
 
 Noda.prototype.resetSources = function(){
-    for( var _i in this.notes ){
-        this.notes[_i].source = this.allocateSource();
-    }
+	var self = this;
+	this.notes.map(function(note){ note.source = self.allocateSource(); });
 };
 
 
@@ -96,15 +96,15 @@ Noda.prototype.on = function() {
         this.src = this.allocateSource();
         this.src.start(0);
         
-        if( ideas.recording ){
-            if( ideas.startTime !== null ){ //active recording
-                ideas.noteOn(this);
+        if( studio.recording ){
+            if( studio.startTime !== null ){ //active recording
+                studio.noteOn(this);
                 this.lightOn('recording');
             } else { // passive recording
                 if( this.passiveRecording ){
                     this.turnOffPassiveRecording();
                 } else {
-                    ideas.noteOn(this);
+                    studio.noteOn(this);
                     this.passiveRecording = true;
                     this.lightOn('recording');
                 }
@@ -118,7 +118,7 @@ Noda.prototype.on = function() {
 
 
 Noda.prototype.turnOffPassiveRecording = function(){
-        ideas.noteOff(this);
+        studio.noteOff(this);
         this.passiveRecording = false;
         this.lightOff('recording');
 };
@@ -130,9 +130,9 @@ Noda.prototype.off = function() {
         this.deallocateSource(this.src);
         this.src = null;
         
-        if( ideas.recording ){
-            if( ideas.startTime !== null ){ //active recording
-                ideas.noteOff(this);
+        if( studio.recording ){
+            if( studio.startTime !== null ){ //active recording
+                studio.noteOff(this);
                 this.lightOff('recording');
             }
         } else {
@@ -169,21 +169,3 @@ Noda.prototype.lightsOut = function(){
 
 // event helpers
 
-Noda.prototype.keyCodeToAsciiMap = {
-    // numbers  
-    48: 48, 49: 49, 50: 50, 51: 51, 52: 52, 53: 53, 54: 54, 55: 55, 56: 56, 
-    
-    // uppercase latin
-    65: 65, 66: 66, 67: 67, 68: 68, 69: 69, 70: 70, 71: 71, 72: 72, 73: 73, 
-    74: 74, 75: 75, 76: 76, 77: 77, 78: 78, 79: 79, 80: 80, 81: 81, 82: 82, 
-    83: 83, 84: 84, 85: 85, 86: 86, 87: 87, 88: 88, 89: 89, 90: 90, 
-    
-    // lowercase latin
-    97: 65, 98: 66, 99: 67, 100: 68, 101: 69, 102: 70, 103: 71, 104: 72, 
-    105: 73, 106: 74, 107: 75, 108: 76, 109: 77, 110: 78, 111: 79, 112: 80, 
-    113: 81, 114: 82, 115: 83, 116: 84, 117: 85, 118: 86, 119: 87, 120: 88, 
-    121: 89, 122: 90, 
-    
-    // punctuation
-    186: 59, 188: 44, 190: 46, 191: 47
-};

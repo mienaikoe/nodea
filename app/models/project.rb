@@ -9,5 +9,9 @@ class Project < ActiveRecord::Base
   has_and_belongs_to_many :circuits, join_table: :nodas
   has_many :notes, through: :nodas
   
+  
+  def unique_circuits
+    @unique_circuits ||= circuits.uniq{|circuit| circuit.id}
+  end
     
 end

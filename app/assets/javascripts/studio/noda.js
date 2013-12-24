@@ -1,28 +1,35 @@
-var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
+var Noda = function(noda, swytche, ctx, persistedNoda) {
+	
+	console.log(persistedNoda);
+	
     this.noda = noda;
     this.swytche = swytche;
     this.key = $(swytche).text();
     this.context = ctx;
     
-    this.notes = notes;
-    for( var ni in notes ){
-        notes[ni].noda = this;
+    this.notes = persistedNoda.notes;
+    for( var ni in this.notes ){
+        this.notes[ni].noda = this;
     }
 
+	console.log(persistedNoda.settings);
+
+	var bufferUrl = persistedNoda.settings.sourceFile;
     if (!bufferUrl) {
         return;
-    } 
-    var thisNoda = this;
+    }
+	
+    var self = this;
     var request = new XMLHttpRequest();
     request.open("GET", bufferUrl, true);
     request.responseType = "arraybuffer";
     request.onload = function() {
-        thisNoda.context.decodeAudioData(
+        self.context.decodeAudioData(
             request.response,
             function(buffer) { 
-                console.log('Setting Buffer for '+thisNoda.key);
-                thisNoda.buffer = buffer; 
-                thisNoda.resetSources();
+                console.log('Setting Buffer for '+self.key);
+                self.buffer = buffer; 
+                self.resetSources();
             },
             function() { console.log("Error decoding sample for "+bufferUrl); }
         );

@@ -20,12 +20,10 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 	this.ctx = new webkitAudioContext(); 
 	
 	
-	
-	
 	// === Circuits ===
 	this.circuitsContainer = $(circuitsContainer);
 	this.nodas = [];
-	var keySet = this.keySets[project.keySet];
+	var keySet = this.keySets[project.keyset];
 	var keyContainer = $(this.circuitsContainer).find("#nodes");
 	var swytcheContainer = $(this.circuitsContainer).find("#swytches");
 	var swytcheClass = 'trackSwitch first';
@@ -42,9 +40,18 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 			});
 			swytcheClass = 'trackSwitch';
 			
-			var nodeNotes = [];
-	        project.timings.map(function(timing){ if( timing.key === character ){nodeNotes.push(timing);} });
-	        self.nodas[keySetKey] = new Noda(noda, swytche, self.ctx, nodeNotes, project.bindings[keySetKey]);
+			// Do Track Instantiation Here!!!
+			
+	        for( i in project.nodas ){
+				if( project.nodas[i].ordinal === keySetKey ){
+					var persistedNoda = project.nodas[i];
+					var circuit = project.circuits[persistedNoda.circuit_id];
+					self.nodas[keySetKey] = new window[circuit.javascript_name](noda, swytche, self.ctx, persistedNoda);
+					
+					// Do note instantiation here!!!
+					break;
+				} 
+			}
 		});
 	});
 	
@@ -85,7 +92,7 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 	}
 	
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
-	for( var _i=0; _i < project.numBeats; _i++  ){
+	for( var _i=0; _i < project.beat_count; _i++  ){
 	    jQuery('<div/>',{class: 'beat'}).prependTo(this.barsContainer);
 	}
 
