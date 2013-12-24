@@ -68,18 +68,17 @@ Noda.prototype.startSources = function(sliversPerSecond, startingAt){
 };
 
 Noda.prototype.stopSources = function(){
-    for( var _i in this.notes ){
-        var note = this.notes[_i];
-        this.deallocateSource(note.source);
-        note.source = this.allocateSource();
-    }
+	var self = this;
+    this.notes.map(function(note){ 
+	    self.deallocateSource(note.source);
+        note.source = self.allocateSource();
+	});
     this.lightOff('active');
 };
 
 Noda.prototype.resetSources = function(){
-    for( var _i in this.notes ){
-        this.notes[_i].source = this.allocateSource();
-    }
+	var self = this;
+	this.notes.map(function(note){ note.source = self.allocateSource(); });
 };
 
 
@@ -94,15 +93,15 @@ Noda.prototype.on = function() {
         this.src = this.allocateSource();
         this.src.start(0);
         
-        if( ideas.recording ){
-            if( ideas.startTime !== null ){ //active recording
-                ideas.noteOn(this);
+        if( studio.recording ){
+            if( studio.startTime !== null ){ //active recording
+                studio.noteOn(this);
                 this.lightOn('recording');
             } else { // passive recording
                 if( this.passiveRecording ){
                     this.turnOffPassiveRecording();
                 } else {
-                    ideas.noteOn(this);
+                    studio.noteOn(this);
                     this.passiveRecording = true;
                     this.lightOn('recording');
                 }
@@ -116,7 +115,7 @@ Noda.prototype.on = function() {
 
 
 Noda.prototype.turnOffPassiveRecording = function(){
-        ideas.noteOff(this);
+        studio.noteOff(this);
         this.passiveRecording = false;
         this.lightOff('recording');
 };
@@ -128,9 +127,9 @@ Noda.prototype.off = function() {
         this.deallocateSource(this.src);
         this.src = null;
         
-        if( ideas.recording ){
-            if( ideas.startTime !== null ){ //active recording
-                ideas.noteOff(this);
+        if( studio.recording ){
+            if( studio.startTime !== null ){ //active recording
+                studio.noteOff(this);
                 this.lightOff('recording');
             }
         } else {

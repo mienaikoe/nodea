@@ -8,14 +8,6 @@
     bottom: $dist;
 }
 
-ditch{
-    display:block;
-    width: 10px;
-    height: 10px;
-    &.float{
-        float:left;
-    }
-}
 
 hide{
     display: none;
@@ -61,3 +53,25 @@ body, html{
     margin-left: auto;
     margin-right: auto;
 }
+
+
+#topbar{
+    width: 100%;
+    height: 40px;
+    background-color: #328;
+    padding: 20px;
+    
+    #logo{
+        font-family: Consolas, Monaco, monospace;
+        font-size: 36px;
+        color: white;
+        line-height: 40px;
+    }
+    
+}
+
+#content{
+    width:960px;
+    margin: 0px auto;
+}
+

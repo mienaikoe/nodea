@@ -7,6 +7,8 @@ class CreateProjects < ActiveRecord::Migration
       t.text :description
       t.integer :bpm
       t.integer :beat
+      t.integer :beat_count
+      t.string :keyset
       
       t.timestamps
     end
@@ -14,10 +16,6 @@ class CreateProjects < ActiveRecord::Migration
     
     create_join_table :users, :projects
         
-    create_join_table :circuits, :projects, table_name: :keys do |t|
-      t.integer :ordinal
-      t.text :settings
-    end
     
   end
   

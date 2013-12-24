@@ -1,0 +1,29 @@
+<h1>Listing All Projects</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Authors</th>
+      <th>Description</th>
+      <th>BPM</th>
+      <th>Beat</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @projects.all.each do |project| %>
+      <tr>
+        <td><%= project.name %></td>
+        <td><%= project.users.to_json %></td>
+        <td><%= project.description %></td>
+        <td><%= project.bpm %></td>
+        <td><%= project.beat %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Project', new_project_path %>

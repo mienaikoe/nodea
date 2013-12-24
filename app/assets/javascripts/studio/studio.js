@@ -166,8 +166,6 @@ NodeaStudio.prototype.noteOff = function( noda ){
 	var thisSliver = this.sliverFor(Date.now());
 	if( note.on === thisSliver ){
 	    note.container.remove();
-	    var idx = this.project.timings.indexOf(note);
-	    if(idx !== -1){ this.project.timings.splice(idx, 1); }
 	} else {
 	    note.off = thisSliver;
 	    note.container.css('height',(note.off-note.on)+'px');

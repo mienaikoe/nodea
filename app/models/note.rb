@@ -1,12 +1,7 @@
 class Note < ActiveRecord::Base
   
-  validates_existence_of :on, :off
+  validates_presence_of :on, :off, :noda_id
   
-  belongs_to :key
-  belongs_to :project, through: :keys
-  
-  def to_hash
-    {on: on, off: off}
-  end
+  belongs_to :noda
   
 end

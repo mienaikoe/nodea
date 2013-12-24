@@ -1,3 +1,8 @@
+- content_for :circuit_includes do
+    -for circuit in @project.circuits.uniq{|circuit| circuit.id}
+        =javascript_include_tag circuit.location
+        
+
 hide id='loadies'
     hide class='loadie' id='samples'
     hide class='loadie' id='ditties'
@@ -18,6 +23,7 @@ div id='studio' class='left right bottom top'
   
 javascript:
     var studio;
+    var project = #{raw(render partial: 'projects/project.json', locals: {project: @project})}
     $(function() {
-        studio = new NodeaStudio(document.getElementById("ideas"), document.getElementById("circuits"), #{raw @project.to_json});
+        studio = new NodeaStudio(document.getElementById("ideas"), document.getElementById("circuits"), project);
     });

@@ -1,19 +1,14 @@
 class Circuit < ActiveRecord::Base
     
-  validates_presence_of :name, :description, :user_id, :file_url
+  validates_presence_of :name, :javascript_name, :description, :user_id, :filename
 
   belongs_to :user
-  belongs_to :key
+  alias_attribute :author, :user
   
+  has_many :nodas
   
-  
-  def to_hash
-    {
-      name: name,
-      description: description,
-      code: File.open(file_url, 'r').read(),
-      author: {:alias => user.alias, :nickname => user.nickname}
-    }
+  def location
+    "/circuits/#{filename}"
   end
-  
+    
 end

@@ -15,22 +15,25 @@ ActiveRecord::Schema.define(version: 20131213045024) do
 
   create_table "circuits", force: true do |t|
     t.string   "name"
+    t.string   "javascript_name"
     t.text     "description"
     t.integer  "user_id"
-    t.string   "file_url"
+    t.string   "filename"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "keys", id: false, force: true do |t|
-    t.integer "circuit_id", null: false
-    t.integer "project_id", null: false
+  create_table "nodas", force: true do |t|
+    t.integer "circuit_id"
+    t.integer "project_id"
     t.integer "ordinal"
     t.text    "settings"
   end
 
+  add_index "nodas", ["project_id", "circuit_id"], name: "index_nodas_on_project_id_and_circuit_id"
+
   create_table "notes", id: false, force: true do |t|
-    t.integer "key_id"
+    t.integer "noda_id"
     t.integer "on"
     t.integer "off"
   end
@@ -40,6 +43,8 @@ ActiveRecord::Schema.define(version: 20131213045024) do
     t.text     "description"
     t.integer  "bpm"
     t.integer  "beat"
+    t.integer  "beat_count"
+    t.string   "keyset"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

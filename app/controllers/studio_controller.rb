@@ -14,7 +14,9 @@ class StudioController < ApplicationController
    
     # Determine which view to render based on platform
     
-    
+    @project = Project.find(1)
+
+=begin
     @keys ||= KEYS
     
     @bindings = []
@@ -40,10 +42,8 @@ class StudioController < ApplicationController
       bpm: 144
     }
 
+=end
     
-#    @project = Project.find_by_id(1)
-    
-    render 'desktop'
   end
   
   

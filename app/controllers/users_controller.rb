@@ -27,12 +27,7 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
-    puts '===================================================='
-    puts user_params.inspect
     @user = User.new(user_params)
-    puts '===================================================='
-    puts @user.inspect
-    
 
     respond_to do |format|
       if @user.save
