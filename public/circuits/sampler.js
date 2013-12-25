@@ -1,10 +1,20 @@
-var Noda = function(noda, swytche, ctx, persistedNoda) {
+var Sampler = function(ctx, persistedNoda) {
 	
-    this.noda = noda;
-    this.swytche = swytche;
-    this.key = $(swytche).text();
-    this.context = ctx;
-    
+    this.context = ctx;	
+	this.asciiCode = persistedNoda.ordinal;
+	this.key = String.fromCharCode(this.asciiCode);
+	
+	this.noda = jQuery('<spiv/>',{class: 'node', id: 'key_'+this.asciiCode, html: this.key}).click(function() {
+		// TODO: Create Setup Popup for This Noda
+	});
+
+	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch', html: this.key}).click(function(){
+		// TODO: not sure what to make the swytches do
+	});
+	
+	this.trackline = $('<spiv/>',{id: 'track_'+this.asciiCode, class:'nodeTrack'});
+	
+        
     this.notes = persistedNoda.notes;
     for( var ni in this.notes ){
         this.notes[ni].noda = this;
@@ -33,7 +43,7 @@ var Noda = function(noda, swytche, ctx, persistedNoda) {
     request.send();
 };
 
-Noda.prototype.addNote = function(note){
+Sampler.prototype.addNote = function(note){
     if( note !== null ){
         note.source = this.allocateSource();
         this.notes.push(note);
@@ -41,7 +51,7 @@ Noda.prototype.addNote = function(note){
 };
 
 
-Noda.prototype.allocateSource = function(){
+Sampler.prototype.allocateSource = function(){
     var src = this.context.createBufferSource();
     src.buffer = this.buffer;
     src.connect(this.context.destination);
@@ -49,7 +59,7 @@ Noda.prototype.allocateSource = function(){
     return src;
 };
 
-Noda.prototype.deallocateSource = function(src){
+Sampler.prototype.deallocateSource = function(src){
     src.stop(0);
     src.disconnect(0);
 };
@@ -60,17 +70,17 @@ Noda.prototype.deallocateSource = function(src){
 
 // playback
 
-Noda.prototype.startSources = function(sliversPerSecond, startingAt){
+Sampler.prototype.startSources = function(sliversPerSecond, startingAt){
     var startTime = this.context.currentTime;
     this.notes.map( function(note){
-        if( note.on >= startingAt ){
-            note.source.start(((note.on-startingAt)/sliversPerSecond)+startTime);
-            note.source.stop(((note.off-startingAt)/sliversPerSecond)+startTime);
+        if( note.start >= startingAt ){
+            note.source.start(((note.start-startingAt)/sliversPerSecond)+startTime);
+            note.source.stop(((note.finish-startingAt)/sliversPerSecond)+startTime);
         }
     });
 };
 
-Noda.prototype.stopSources = function(){
+Sampler.prototype.stopSources = function(){
 	var self = this;
     this.notes.map(function(note){ 
 	    self.deallocateSource(note.source);
@@ -79,7 +89,7 @@ Noda.prototype.stopSources = function(){
     this.lightOff('active');
 };
 
-Noda.prototype.resetSources = function(){
+Sampler.prototype.resetSources = function(){
 	var self = this;
 	this.notes.map(function(note){ note.source = self.allocateSource(); });
 };
@@ -90,7 +100,7 @@ Noda.prototype.resetSources = function(){
 
 // recording
 
-Noda.prototype.on = function() {
+Sampler.prototype.on = function() {
     // if recording, notify ideas of new note.
     if (this.buffer && !this.src) {
         this.src = this.allocateSource();
@@ -117,7 +127,7 @@ Noda.prototype.on = function() {
 };
 
 
-Noda.prototype.turnOffPassiveRecording = function(){
+Sampler.prototype.turnOffPassiveRecording = function(){
         studio.noteOff(this);
         this.passiveRecording = false;
         this.lightOff('recording');
@@ -125,7 +135,7 @@ Noda.prototype.turnOffPassiveRecording = function(){
 
 
 
-Noda.prototype.off = function() {
+Sampler.prototype.off = function() {
     if (this.src) {
         this.deallocateSource(this.src);
         this.src = null;
@@ -149,23 +159,17 @@ Noda.prototype.off = function() {
 
 // lighting
 
-Noda.prototype.lightOn = function(lightType){
+Sampler.prototype.lightOn = function(lightType){
     $(this.noda).addClass(lightType);
     $(this.swytche).addClass(lightType);
 };
-Noda.prototype.lightOff = function(lightType){
+Sampler.prototype.lightOff = function(lightType){
     $(this.noda).removeClass(lightType);
     $(this.swytche).removeClass(lightType);
 };
 
-Noda.prototype.lightsOut = function(){
+Sampler.prototype.lightsOut = function(){
     $(this.noda).removeClass('active').removeClass('recording');
     $(this.swytche).removeClass('active').removeClass('recording');
 };
-
-
-
-
-
-// event helpers
 

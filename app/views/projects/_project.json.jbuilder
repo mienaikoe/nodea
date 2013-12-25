@@ -19,6 +19,6 @@ json.nodas project.nodas do |noda|
     json.(noda, :ordinal, :circuit_id)
     json.settings JSON.parse(noda.settings)
     json.notes noda.notes do |note|
-        json.(note, :on, :off)
+        json.(note, :start, :finish)
     end
 end

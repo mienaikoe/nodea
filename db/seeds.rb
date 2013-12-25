@@ -10,7 +10,7 @@ ActiveRecord::Base.transaction do
   
   user = User.create(:alias=>'mienaikoe', :nickname=>'Jesse', :password=>'3325862', :password_confirmation=>'3325862')
 
-  project = Project.new(name: 'Test Project', description: 'Initial Project for Testing purposes', bpm: 144, beat: 1, keyset: 'desktop', beat_count: 20)
+  project = Project.new(name: 'Test Project', description: 'Initial Project for Testing purposes', bpm: 144, beat: 4, keyset: 'desktop', beat_count: 20)
   project.users << user
   project.save
 
@@ -25,11 +25,11 @@ ActiveRecord::Base.transaction do
     noda.circuit = circuit
     noda.save
     
-    note = Note.new(on: ord+1, off: ord+24)
+    note = Note.new(start: ord+1, finish: ord+24)
     note.noda = noda
     note.save
   
-    note = Note.new(on: ord+4, off: ord+8)
+    note = Note.new(start: ord+34, finish: ord+68)
     note.noda = noda
     note.save
   end

@@ -34,8 +34,8 @@ ActiveRecord::Schema.define(version: 20131213045024) do
 
   create_table "notes", id: false, force: true do |t|
     t.integer "noda_id"
-    t.integer "on"
-    t.integer "off"
+    t.integer "start"
+    t.integer "finish"
   end
 
   create_table "projects", force: true do |t|

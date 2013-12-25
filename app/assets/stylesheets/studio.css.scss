@@ -38,9 +38,6 @@ $control_dimension: 20px;
 @mixin track($border) {  
     width: $track_width;
     border-right: $border;
-    &.first{
-        border-left: $border;
-    }
 }
 
 @mixin node_color {
@@ -90,6 +87,7 @@ $control_dimension: 20px;
                 bottom: 0px;
                 width: $tracks_width;
                 height: 100%;
+                border-left: 1px dotted $node_text_color;
                 .nodeTrack{
                     @include track(1px dotted $node_text_color);
                     height: 100%;
@@ -131,6 +129,7 @@ $control_dimension: 20px;
             }
 
             #swytches{
+                border-left: 1px solid $node_text_color;
                 .trackSwitch{
                     height: $track_width;
                     line-height: $track_width;

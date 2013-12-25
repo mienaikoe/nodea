@@ -20,38 +20,51 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 	this.ctx = new webkitAudioContext(); 
 	
 	
-	// === Circuits ===
+	// === Containers ===
 	this.circuitsContainer = $(circuitsContainer);
+	this.ideasContainer = $(ideasContainer).bind('mousewheel', function(ev){ self.advance((ev.originalEvent.wheelDelta > 0) ? -1 : 1); });
+	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
+	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
+	for( var i=0; i < project.beat_count; i++  ){
+	    jQuery('<div/>',{class: 'beat'}).prependTo(this.barsContainer);
+	}
+	
+	// === Noda Iteration ===
 	this.nodas = [];
+	this.notes = [];
 	var keySet = this.keySets[project.keyset];
 	var keyContainer = $(this.circuitsContainer).find("#nodes");
 	var swytcheContainer = $(this.circuitsContainer).find("#swytches");
-	var swytcheClass = 'trackSwitch first';
 	keySet.map(function(keySetRow){
 		var keyRow = jQuery('<div/>',{class: 'nodeRow'}).appendTo(keyContainer);
 		keySetRow.map(function(keySetKey){
-			var character = String.fromCharCode(keySetKey);
-			var noda = jQuery('<spiv/>',{class: 'node', id: 'key_'+keySetKey, html: character}).appendTo(keyRow).click(function() {
-				// TODO: Create Setup Popup for This Noda
-			});
-			
-			var swytche = jQuery('<spiv/>',{class: swytcheClass, html: character}).appendTo(swytcheContainer).click(function(){
-				// TODO: not sure what to make the swytches do
-			});
-			swytcheClass = 'trackSwitch';
-			
-			// Do Track Instantiation Here!!!
-			
-	        for( i in project.nodas ){
+			var persistedNoda = null;
+			for( i in project.nodas ){
 				if( project.nodas[i].ordinal === keySetKey ){
-					var persistedNoda = project.nodas[i];
-					var circuit = project.circuits[persistedNoda.circuit_id];
-					self.nodas[keySetKey] = new window[circuit.javascript_name](noda, swytche, self.ctx, persistedNoda);
-					
-					// Do note instantiation here!!!
+					persistedNoda = project.nodas[i];
 					break;
 				} 
 			}
+			
+			var interactiveNoda = null;
+			if( persistedNoda ){
+				var circuit = project.circuits[persistedNoda.circuit_id];
+				interactiveNoda = new window[circuit.javascript_name](self.ctx, persistedNoda);
+			} else {
+				interactiveNoda = new BlankNoda(keySetKey);
+			}
+			self.nodas[keySetKey] = interactiveNoda;
+			interactiveNoda.noda.appendTo(keyRow);
+			interactiveNoda.swytche.appendTo(swytcheContainer);
+			interactiveNoda.trackline.appendTo(self.tracksContainer);
+			
+			// Create Note boxes
+			self.notes = self.notes.concat(interactiveNoda.notes);
+			interactiveNoda.notes.map(function(note){ self.createNoteContainer(note); });
+			
+			// Create Trackline
+
+	
 		});
 	});
 	
@@ -79,28 +92,6 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 	});
 	
 	
-	
-	
-	// === Ideas ===
-	this.ideasContainer = $(ideasContainer);
-	this.ideasContainer.bind('mousewheel', function(ev){ self.advance((ev.originalEvent.wheelDelta > 0) ? -1 : 1); });
-	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
-	var first = true;
-	for( i in this.asciiKeys ){
-	    $('<spiv/>',{id: 'track_'+this.asciiKeys[i].charCodeAt(0), class:(first ? 'nodeTrack first' : 'nodeTrack')}).appendTo(this.tracksContainer);
-	    first = false;
-	}
-	
-	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
-	for( var _i=0; _i < project.beat_count; _i++  ){
-	    jQuery('<div/>',{class: 'beat'}).prependTo(this.barsContainer);
-	}
-
-	for( _i in project.timings ){
-	    this.createNoteContainer(project.timings[_i]);
-	}
-
-
 
 	// Middle Controls
 	// TODO: Should these be initialized in js?
@@ -119,7 +110,7 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 	this.startFrameTimestamp = null;
 	this.recording = false;
 	this.recordingNotes = {};
-	var containerHeight = (project.numBeats*this.sliversPerBeat)+1;    
+	var containerHeight = (project.beat_count*this.sliversPerBeat)+1;    
 	this.maxBottom = $('#circuits').outerHeight();
 	this.minBottom = this.maxBottom - containerHeight;
 	this.ideasContainer.css('height', containerHeight+'px' ).css('bottom', this.maxBottom+'px');
@@ -134,7 +125,7 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 NodeaStudio.prototype.framesPerSecond = 20;
 
 NodeaStudio.prototype.resetSliverTiming = function(){
-	this.sliversPerBeat = (192 / this.project.beat); // 48 for a quarter note, 24 for an eight note, ...
+	this.sliversPerBeat = (192 / this.project.beat); // 48 slivers per beat for a quarter note, 24 for an eight note, ...
 	this.sliversPerSecond = (this.project.bpm * this.sliversPerBeat) / 60;
 };
 
@@ -171,13 +162,13 @@ NodeaStudio.prototype.noteOff = function( noda ){
 	}
 	
 	var thisSliver = this.sliverFor(Date.now());
-	if( note.on === thisSliver ){
+	if( note.start === thisSliver ){
 	    note.container.remove();
 	} else {
-	    note.off = thisSliver;
-	    note.container.css('height',(note.off-note.on)+'px');
+	    note.finish = thisSliver;
+	    note.container.css('height',(note.finish-note.start)+'px');
 	    note.noda.addNote(note);
-	    this.project.timings.push(note);
+	    this.notes.push(note);
 	}
 
 	delete this.recordingNotes[noda.key];
@@ -186,15 +177,15 @@ NodeaStudio.prototype.noteOff = function( noda ){
 NodeaStudio.prototype.createNoteContainer = function(note){
 	if( assert(note) ){
 	    var clazz = 'note';
-	    if( typeof note.off === 'undefined' ){
-	        note.off = note.on+1;
+	    if( typeof note.finish === 'undefined' ){
+	        note.finish = note.start+1;
 	        clazz = 'note recording';
 	    } 
-	    var slivers = note.off - note.on;
+	    var slivers = note.finish - note.start;
 	    note.container = jQuery('<div/>',{
 	        class: clazz,
-	        style: 'bottom: '+note.on+'px; height: '+slivers+'px;'
-	    }).prependTo(this.tracksContainer.children('#track_'+note.key.charCodeAt(0)));
+	        style: 'bottom: '+note.start+'px; height: '+slivers+'px;'
+	    }).prependTo(this.tracksContainer.children('#track_'+note.noda.asciiCode));
 	}
 };
 
@@ -233,7 +224,7 @@ NodeaStudio.prototype.pause = function(){
 	        var note = this.recordingNotes[key];
 	        note.noda.turnOffPassiveRecording();
 	        if( note.container ){
-	            note.container.css('height',note.off-note.on+'px');
+	            note.container.css('height',note.finish-note.start+'px');
 	        }
 	    }
 	}
@@ -295,10 +286,10 @@ NodeaStudio.prototype.frame = function( timestamp ){
 	
 	// handle lighting
 	var self = this;
-	this.project.timings.map( function(note){
-	    if( note.on <= sliver && note.on > self.lastFrameSliver ){
+	this.notes.map( function(note){
+	    if( note.start <= sliver && note.start > self.lastFrameSliver ){
 	        note.noda.lightOn('active');
-	    } else if( note.off <= sliver && note.off > self.lastFrameSliver ){
+	    } else if( note.finish <= sliver && note.finish > self.lastFrameSliver ){
 	        note.noda.lightOff('active');
 	    }
 	});
