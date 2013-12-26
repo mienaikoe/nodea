@@ -2,8 +2,9 @@ Nodea Checklist
 
 
 Javascript
-- Hotkey Record button
+- Hotkey Record & Save button
 - Render Controls in JS
+- Make Some Sense of Time Signature
 - Add metronome option
 - Add Global Volume and Global Filter
 - Add Circuit for Oscillator
@@ -11,7 +12,6 @@ Javascript
 
 
 General Enhancements
-- Allow rapid saving of a Project with ctrl-s and a save button on ui.
 - Build workflow for Upload and Lookup of samples.
 - Build workflow for Noda-Circuit Binding.
 - Build workflow for Sound Effects on a Noda.

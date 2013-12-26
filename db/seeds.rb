@@ -14,7 +14,7 @@ ActiveRecord::Base.transaction do
   project.users << user
   project.save
 
-  circuit = Circuit.new(name: 'Sampler', javascript_name: 'Noda', description: 'Play the audio from a source file on keydown. Stops on keyup.', filename: 'sampler.js')
+  circuit = Circuit.new(name: 'Sampler', javascript_name: 'Sampler', description: 'Play the audio from a source file on keydown. Stops on keyup.', filename: 'sampler.js')
   circuit.user = user
   circuit.save
 

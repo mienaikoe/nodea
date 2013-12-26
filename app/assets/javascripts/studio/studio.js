@@ -10,8 +10,12 @@ window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequest
 	                  
 
 
-var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
-	this.project = project; 
+function NodeaStudio(ideasContainer, circuitsContainer, project) {
+	this.project_id = project.id;
+	this.bpm = project.bpm;
+	this.beat = project.beat;
+	this.keyset = project.keyset;
+	this.beat_count = project.beat_count;
 	
 	// Convenience Variable for setting event handling.
 	var self = this;
@@ -23,56 +27,49 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 	// === Containers ===
 	this.circuitsContainer = $(circuitsContainer);
 	this.ideasContainer = $(ideasContainer).bind('mousewheel', function(ev){ self.advance((ev.originalEvent.wheelDelta > 0) ? -1 : 1); });
-	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
-	for( var i=0; i < project.beat_count; i++  ){
+	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
+	for( var i=0; i < this.beat_count; i++  ){
 	    jQuery('<div/>',{class: 'beat'}).prependTo(this.barsContainer);
 	}
 	
 	// === Noda Iteration ===
 	this.nodas = [];
 	this.notes = [];
-	var keySet = this.keySets[project.keyset];
+	var keyset = this.keySets[this.keyset];
 	var keyContainer = $(this.circuitsContainer).find("#nodes");
 	var swytcheContainer = $(this.circuitsContainer).find("#swytches");
-	keySet.map(function(keySetRow){
-		var keyRow = jQuery('<div/>',{class: 'nodeRow'}).appendTo(keyContainer);
-		keySetRow.map(function(keySetKey){
-			var persistedNoda = null;
-			for( i in project.nodas ){
-				if( project.nodas[i].ordinal === keySetKey ){
-					persistedNoda = project.nodas[i];
-					break;
-				} 
-			}
+	var nodeRowClass = "sinistra";
+	keyset.forEach(function(keySetRow){
+		var keyRow = jQuery('<div/>',{class: 'nodeRow '+nodeRowClass}).appendTo(keyContainer);
+		keySetRow.forEach(function(keySetKey){
+			var persistedNoda = project.nodas.filter(function(noda){ return noda.ordinal === keySetKey; })[0];
 			
-			var interactiveNoda = null;
+			var interactiveNoda;
 			if( persistedNoda ){
 				var circuit = project.circuits[persistedNoda.circuit_id];
-				interactiveNoda = new window[circuit.javascript_name](self.ctx, persistedNoda);
+				interactiveNoda = new window[circuit.javascript_name](this.ctx, persistedNoda);
 			} else {
 				interactiveNoda = new BlankNoda(keySetKey);
 			}
-			self.nodas[keySetKey] = interactiveNoda;
+						
+			this.nodas[keySetKey] = interactiveNoda;
 			interactiveNoda.noda.appendTo(keyRow);
 			interactiveNoda.swytche.appendTo(swytcheContainer);
-			interactiveNoda.trackline.appendTo(self.tracksContainer);
+			interactiveNoda.trackline.appendTo(this.tracksContainer);
 			
-			// Create Note boxes
-			self.notes = self.notes.concat(interactiveNoda.notes);
-			interactiveNoda.notes.map(function(note){ self.createNoteContainer(note); });
-			
-			// Create Trackline
-
+			this.notes = this.notes.concat(interactiveNoda.notes);
+		}, this);
+		nodeRowClass = nodeRowClass === 'sinistra' ? 'dextra' : 'sinistra';
+	}, this);
 	
-		});
-	});
+	jQuery('<div/>',{class: 'touchpad'}).appendTo(keyContainer);
+	
 	
 	// Event Handling
 	$("body").keydown(function(ev) {
 	    if( ev.keyCode in self.keyCodeToAsciiMap ){
-	        var noda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
-	        if( noda ){ noda.on(); } 
+	        self.nodas[self.keyCodeToAsciiMap[ev.keyCode]].on();
 	    } else if( ev.keyCode in self.eventControlMap ){
 	        self.eventControlMap[ev.keyCode](self);
 	    } else {
@@ -81,8 +78,7 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 	    ev.preventDefault();
 	}).keyup(function(ev) {
 	    if( ev.keyCode in self.keyCodeToAsciiMap ){
-	        var noda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
-	        if( noda ){ noda.off(); }
+	        self.nodas[self.keyCodeToAsciiMap[ev.keyCode]].off();
 	    } else if( ev.keyCode in self.eventControlMap ){
 	        // do nothing
 	    } else {
@@ -96,10 +92,13 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 	// Middle Controls
 	// TODO: Should these be initialized in js?
 	this.advanceBox = $("#advance_box");
-	this.advanceAmount = parseInt(this.advanceBox.val()) / project.beat;
-	this.advanceBox.change(function(){ self.advanceAmount = parseInt(this.value) / project.beat; });
-	$("#bpm_box").
-	    change(     function(){ project.bpm = parseInt(this.value); } ).
+	this.advanceAmount = parseInt(this.advanceBox.val()) / this.beat;
+	this.advanceBox.
+			change(	function(){ self.advanceAmount = parseInt(this.value) / this.beat; });
+	
+	this.bpmBox = $("#bpm_box");
+	this.bpmBox.
+	    change(     function(){ self.bpm = parseInt(this.value); } ).
 	    keydown(    function(ev){ ev.stopPropagation(); }).
 	    keyup(      function(ev){ ev.stopPropagation(); });
 
@@ -109,8 +108,8 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 	this.startTime = null;
 	this.startFrameTimestamp = null;
 	this.recording = false;
-	this.recordingNotes = {};
-	var containerHeight = (project.beat_count*this.sliversPerBeat)+1;    
+	this.recordingNotes = [];
+	var containerHeight = (this.beat_count*this.sliversPerBeat)+1;    
 	this.maxBottom = $('#circuits').outerHeight();
 	this.minBottom = this.maxBottom - containerHeight;
 	this.ideasContainer.css('height', containerHeight+'px' ).css('bottom', this.maxBottom+'px');
@@ -125,8 +124,8 @@ var NodeaStudio = function(ideasContainer, circuitsContainer, project) {
 NodeaStudio.prototype.framesPerSecond = 20;
 
 NodeaStudio.prototype.resetSliverTiming = function(){
-	this.sliversPerBeat = (192 / this.project.beat); // 48 slivers per beat for a quarter note, 24 for an eight note, ...
-	this.sliversPerSecond = (this.project.bpm * this.sliversPerBeat) / 60;
+	this.sliversPerBeat = (192 / this.beat); // 48 slivers per beat for a quarter note, 24 for an eight note, ...
+	this.sliversPerSecond = (this.bpm * this.sliversPerBeat) / 60;
 };
 
 
@@ -141,18 +140,19 @@ NodeaStudio.prototype.currentBottom = function(){
 NodeaStudio.prototype.toggleRecording = function(){
 	this.recording = !this.recording;
 	if( !this.recording ) {
-	    for( _i in this.recordingNotes ){
-	        this.recordingNotes[_i].noda.turnOffPassiveRecording();
-	    }
-	    this.recordingNotes = {};
+		this.recordingNotes.forEach(function(note){ 
+			this.noteOff(note.noda);
+			note.noda.turnOffPassiveRecording();
+		}, this);
+	    this.recordingNotes = [];
 	}
 	$('#controls #record').toggleClass("active");
 };
 
 NodeaStudio.prototype.noteOn = function( noda ){
-	var note = {key: noda.key, on: this.sliverFor(Date.now()), noda: noda};
+	var note = new Note({start: this.sliverFor(Date.now()), noda: noda});
 	this.recordingNotes[noda.key] = note;
-	this.createNoteContainer(note);
+	note.createContainer();
 };
 
 NodeaStudio.prototype.noteOff = function( noda ){
@@ -174,25 +174,6 @@ NodeaStudio.prototype.noteOff = function( noda ){
 	delete this.recordingNotes[noda.key];
 };
 
-NodeaStudio.prototype.createNoteContainer = function(note){
-	if( assert(note) ){
-	    var clazz = 'note';
-	    if( typeof note.finish === 'undefined' ){
-	        note.finish = note.start+1;
-	        clazz = 'note recording';
-	    } 
-	    var slivers = note.finish - note.start;
-	    note.container = jQuery('<div/>',{
-	        class: clazz,
-	        style: 'bottom: '+note.start+'px; height: '+slivers+'px;'
-	    }).prependTo(this.tracksContainer.children('#track_'+note.noda.asciiCode));
-	}
-};
-
-NodeaStudio.prototype.removeNoteContainer = function(note){
-	note.container.remove();
-};
-
 
 
 
@@ -202,13 +183,13 @@ NodeaStudio.prototype.removeNoteContainer = function(note){
 
 // Playback
 
-NodeaStudio.prototype.start = function(){
+NodeaStudio.prototype.play = function(){
 	if( this.startTime === null ){
 	    $('#controls #playpause').addClass("active");
 	    this.resetSliverTiming();
 	    this.lastFrameSliver = this.currentSliver();
-	    var self = this;
-	    this.nodas.map(function(noda){ noda.startSources( self.sliversPerSecond, self.lastFrameSliver ); });
+
+	    this.nodas.forEach(function(noda){ noda.play( this.sliversPerSecond, this.lastFrameSliver ); }, this);
 	    this.startTime = Date.now() - (this.lastFrameSliver / (this.sliversPerSecond/1000));    
 	    requestAnimationFrame(this.frame.bind(this));
 	}
@@ -219,19 +200,13 @@ NodeaStudio.prototype.pause = function(){
 	    $('#controls #playpause').removeClass("active");
 	    this.startTime = null;
 	    this.startFrameTimestamp = null;
-	    this.nodas.map(function(noda){ noda.stopSources(); });
-	    for( var key in this.recordingNotes ){
-	        var note = this.recordingNotes[key];
-	        note.noda.turnOffPassiveRecording();
-	        if( note.container ){
-	            note.container.css('height',note.finish-note.start+'px');
-	        }
-	    }
+	    this.nodas.forEach(function(noda){ noda.pause(); });
+		this.recordingNotes.forEach(function(note){ this.noteOff(note.noda); }, this);
 	}
 };
 
 NodeaStudio.prototype.playpause = function(){
-	this.startTime ? this.pause() : this.start(); 
+	this.startTime ? this.pause() : this.play(); 
 };
 
 
@@ -255,7 +230,7 @@ NodeaStudio.prototype.sliverForProgress = function(progress){
 NodeaStudio.prototype.addBars = function(howmany){
 	this.minBottom -= howmany*this.sliversPerBeat;
 	this.ideasContainer.css("height", this.maxBottom-this.minBottom);
-	this.project.numBeats += howmany;
+	this.beat_count += howmany;
 	while(howmany-- > 0){
 	    this.barsContainer.append('<div class="beat"></div>');
 	}
@@ -280,26 +255,23 @@ NodeaStudio.prototype.frame = function( timestamp ){
 	}
 	  
 	var sliver = this.sliverForProgress(timestamp-this.startFrameTimestamp);
-
 	
 	this.ideasContainer.css('bottom', this.maxBottom-sliver+'px');
 	
 	// handle lighting
-	var self = this;
-	this.notes.map( function(note){
-	    if( note.start <= sliver && note.start > self.lastFrameSliver ){
+	this.notes.forEach( function(note){
+	    if( note.start <= sliver && note.start > this.lastFrameSliver ){
 	        note.noda.lightOn('active');
-	    } else if( note.finish <= sliver && note.finish > self.lastFrameSliver ){
+	    } else if( note.finish <= sliver && note.finish > this.lastFrameSliver ){
 	        note.noda.lightOff('active');
 	    }
+	}, this);
+	this.recordingNotes.forEach( function(note){
+		if( note.container ){ 
+			note.container.css('height', sliver-note.start+'px'); 
+		}
 	});
-	for( _j in this.recordingNotes ){
-	    var note = this.recordingNotes[_j];
-	    if( note.container ){
-	        note.container.css('height', sliver-note.start+'px');
-	    }
-	}
-	
+
 	this.lastFrameSliver = sliver;
 	
 	requestAnimationFrame(this.frame.bind(this));
@@ -343,6 +315,45 @@ NodeaStudio.prototype.incrementAdvanceBox = function(forward){
 	    this.advanceBox.trigger("change");
 	}
 };
+
+
+
+
+
+// saving project
+NodeaStudio.prototype.save = function(){
+	var saveObject = {
+		project_id: this.project_id,
+		bpm: this.bpm,
+		beat: this.beat,
+		keyset: this.keyset,
+		beat_count: this.beat_count,
+		nodas: this.nodas.map(function(noda){return noda.marshal();}).filter(function(noda){ return noda.javascript_name !== 'BlankNoda'; })
+	};
+	
+	var self = this;
+	$.ajax({
+		type: "POST",
+		url: "/studio/save",
+		data: JSON.stringify(saveObject),
+		contentType: 'application/json; charset=utf-8',
+		dataType: 'json'
+	}).done(function(){
+		self.notify("Save Succeeded.", true);
+	}).fail(function(){
+		self.notify("Save Failed. Please Try Again.", false);
+	});
+};
+
+NodeaStudio.prototype.notify = function(words, good){
+	alert(words);
+};
+
+
+
+
+
+
 
 
 

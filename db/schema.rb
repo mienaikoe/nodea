@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 20131213045024) do
 
   add_index "nodas", ["project_id", "circuit_id"], name: "index_nodas_on_project_id_and_circuit_id"
 
-  create_table "notes", id: false, force: true do |t|
+  create_table "notes", force: true do |t|
     t.integer "noda_id"
     t.integer "start"
     t.integer "finish"

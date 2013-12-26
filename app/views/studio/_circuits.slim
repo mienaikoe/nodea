@@ -10,7 +10,7 @@ div id='controls'
         spiv class='button_box'
             div class='control button' id='reset' onclick='studio.tail();' &#x672b;
             div class='label' TAIL
-    ditch class='float'
+    div class='ditch'
     spiv class='controls_container' id='mode_controls'
         spiv class='button_box'
             div class='control button' id='playpause' onclick='studio.playpause();' &#x6f14;
@@ -18,11 +18,13 @@ div id='controls'
         spiv class='button_box'
             div class='control button' id='record' onclick='studio.toggleRecording();' &#x9304;
             div class='label' REC
-    ditch class='float'
-    spiv class='controls_container' id='beat_controls'
+    div class='ditch'
+    spiv class='controls_container' id='bpm_controls'
         spiv class='wide_box'
             input class='control field' type='number' name='bpm_box' id='bpm_box' value="#{@project[:bpm]}"  
             div class='label' BPM
+    div class='ditch'
+    spiv class='controls_container' id='time_controls'
         spiv class='wide_box'
             select class='control select' name='advance_box' id='advance_box'
                 option value='1536' 8
@@ -37,7 +39,11 @@ div id='controls'
                 option value='32'   &#x2159;
                 option value='24'   &#x215B;
             div class='label' ADVANCE
-        
+    div class='ditch'
+    spiv class='controls_container' id='save_controls'
+        spiv class='button_box'
+            div class='control button' id='save' onclick='studio.save();' &#x5b58;
+            div class='label' SAVE
         
 
 

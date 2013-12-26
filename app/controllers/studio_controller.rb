@@ -12,6 +12,16 @@ class StudioController < ApplicationController
 
   end
   
+  def save
+    if project = Project.find(params[:project_id])
+      project.persist(params)
+    end
+    
+    puts project.nodas.first.notes.inspect
+    
+    render nothing: true
+  end
+  
   
   
  

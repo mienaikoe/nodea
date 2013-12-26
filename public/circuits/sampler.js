@@ -1,33 +1,18 @@
-var Sampler = function(ctx, persistedNoda) {
+function Sampler(ctx, persistedNoda) {
 	
-    this.context = ctx;	
-	this.asciiCode = persistedNoda.ordinal;
-	this.key = String.fromCharCode(this.asciiCode);
+	// Vital to Noda Creation. Does some basic logic so that you can get right to the Noda-Specific Items.
+	this.initialize(ctx, persistedNoda);
 	
-	this.noda = jQuery('<spiv/>',{class: 'node', id: 'key_'+this.asciiCode, html: this.key}).click(function() {
-		// TODO: Create Setup Popup for This Noda
-	});
-
-	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch', html: this.key}).click(function(){
-		// TODO: not sure what to make the swytches do
-	});
+	this.noda.attr('style', 'background-color:#eb3;');
 	
-	this.trackline = $('<spiv/>',{id: 'track_'+this.asciiCode, class:'nodeTrack'});
-	
-        
-    this.notes = persistedNoda.notes;
-    for( var ni in this.notes ){
-        this.notes[ni].noda = this;
-    }
-
-	var bufferUrl = persistedNoda.settings.sourceFile;
-    if (!bufferUrl) {
+	this.bufferUrl = persistedNoda.settings.sourceFile;
+    if (!this.bufferUrl) {
         return;
     }
 	
     var self = this;
     var request = new XMLHttpRequest();
-    request.open("GET", bufferUrl, true);
+    request.open("GET", this.bufferUrl, true);
     request.responseType = "arraybuffer";
     request.onload = function() {
         self.context.decodeAudioData(
@@ -37,11 +22,18 @@ var Sampler = function(ctx, persistedNoda) {
                 self.buffer = buffer; 
                 self.resetSources();
             },
-            function() { console.log("Error decoding sample for "+bufferUrl); }
+            function() { console.log("Error decoding sample for "+this.bufferUrl); }
         );
     };
     request.send();
 };
+
+
+// Vital to Noda Creation. This Inherits the prototype of a Blank Noda
+Sampler.prototype = Object.create(BlankNoda.prototype, {
+	constructor: { value: Sampler, enumerable: false }
+});
+
 
 Sampler.prototype.addNote = function(note){
     if( note !== null ){
@@ -55,13 +47,14 @@ Sampler.prototype.allocateSource = function(){
     var src = this.context.createBufferSource();
     src.buffer = this.buffer;
     src.connect(this.context.destination);
-    src.onended = function(){console.log('allocation complete');};
     return src;
 };
 
 Sampler.prototype.deallocateSource = function(src){
-    src.stop(0);
-    src.disconnect(0);
+	if( src ){ 
+		src.stop(0); 
+		src.disconnect(0); 
+	}
 };
 
 
@@ -70,9 +63,9 @@ Sampler.prototype.deallocateSource = function(src){
 
 // playback
 
-Sampler.prototype.startSources = function(sliversPerSecond, startingAt){
+Sampler.prototype.play = function(sliversPerSecond, startingAt){
     var startTime = this.context.currentTime;
-    this.notes.map( function(note){
+    this.notes.forEach( function(note){
         if( note.start >= startingAt ){
             note.source.start(((note.start-startingAt)/sliversPerSecond)+startTime);
             note.source.stop(((note.finish-startingAt)/sliversPerSecond)+startTime);
@@ -80,18 +73,22 @@ Sampler.prototype.startSources = function(sliversPerSecond, startingAt){
     });
 };
 
-Sampler.prototype.stopSources = function(){
-	var self = this;
-    this.notes.map(function(note){ 
-	    self.deallocateSource(note.source);
-        note.source = self.allocateSource();
-	});
+Sampler.prototype.pause = function(){
+	this.turnOffPassiveRecording();
+	this.resetSources();
     this.lightOff('active');
 };
 
+
+
+
+
+
 Sampler.prototype.resetSources = function(){
-	var self = this;
-	this.notes.map(function(note){ note.source = self.allocateSource(); });
+	this.notes.forEach(function(note){ 
+		this.deallocateSource(note.source); 
+		note.source = this.allocateSource(); 
+	}, this);
 };
 
 
@@ -127,14 +124,6 @@ Sampler.prototype.on = function() {
 };
 
 
-Sampler.prototype.turnOffPassiveRecording = function(){
-        studio.noteOff(this);
-        this.passiveRecording = false;
-        this.lightOff('recording');
-};
-
-
-
 Sampler.prototype.off = function() {
     if (this.src) {
         this.deallocateSource(this.src);
@@ -160,16 +149,26 @@ Sampler.prototype.off = function() {
 // lighting
 
 Sampler.prototype.lightOn = function(lightType){
-    $(this.noda).addClass(lightType);
+    $(this.noda).addClass(lightType).attr('style','background-color:#fc4;');
     $(this.swytche).addClass(lightType);
 };
 Sampler.prototype.lightOff = function(lightType){
-    $(this.noda).removeClass(lightType);
+    $(this.noda).removeClass(lightType).attr('style','background-color:#eb3;');
     $(this.swytche).removeClass(lightType);
 };
 
-Sampler.prototype.lightsOut = function(){
-    $(this.noda).removeClass('active').removeClass('recording');
-    $(this.swytche).removeClass('active').removeClass('recording');
-};
 
+
+
+
+
+
+
+
+// saving
+
+Sampler.prototype.marshalSettings = function(){
+	return {
+		sourceFile: this.bufferUrl
+	};
+};

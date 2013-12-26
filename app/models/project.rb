@@ -13,5 +13,32 @@ class Project < ActiveRecord::Base
   def unique_circuits
     @unique_circuits ||= circuits.uniq{|circuit| circuit.id}
   end
+  
+  @@PERSISTENCE_KEYS = [:bpm, :beat, :keyset, :beat_count]
+  
+  def persist params
+    ActiveRecord::Base.transaction do
+      self.update_attributes(params.select{|key,val| @@PERSISTENCE_KEYS.include?(key) })
+      self.nodas.destroy_all
+      
+      params[:nodas].each do |noda|
+        circuit = Circuit.find_by_javascript_name(noda[:javascript_name])
+        
+        newnoda = Noda.new(ordinal: noda[:ordinal], settings: noda[:settings].to_json)
+        newnoda.circuit = circuit
+        newnoda.project = self
+        newnoda.save!
+        
+        noda[:notes].each do |note|
+          note = Note.new(start: note[:start], finish: note[:finish])
+          note.noda = newnoda
+          note.save!
+        end
+        
+        self.nodas << newnoda
+      end
+      self.save!
+    end
+  end
     
 end
