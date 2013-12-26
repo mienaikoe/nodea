@@ -73,6 +73,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	    } else if( ev.keyCode in self.eventControlMap ){
 	        self.eventControlMap[ev.keyCode](self);
 	    } else {
+			console.log(ev.keyCode);
 	        return;
 	    }
 	    ev.preventDefault();
@@ -318,8 +319,6 @@ NodeaStudio.prototype.incrementAdvanceBox = function(forward){
 
 
 
-
-
 // saving project
 NodeaStudio.prototype.save = function(){
 	var saveObject = {
@@ -337,11 +336,9 @@ NodeaStudio.prototype.save = function(){
 		url: "/studio/save",
 		data: JSON.stringify(saveObject),
 		contentType: 'application/json; charset=utf-8',
-		dataType: 'json'
-	}).done(function(){
-		self.notify("Save Succeeded.", true);
-	}).fail(function(){
-		self.notify("Save Failed. Please Try Again.", false);
+		dataType: 'json',
+		success: function(){self.notify("Save Succeeded.", true); },
+		failure: function(){self.notify("Save Failed. Please Try Again.", false);}
 	});
 };
 
@@ -350,6 +347,14 @@ NodeaStudio.prototype.notify = function(words, good){
 };
 
 
+NodeaStudio.prototype.deleteNote = function(note){
+	var idx = this.notes.indexOf(note);
+	if( idx !== -1 ){
+		note.removeContainer();
+		this.notes.splice(idx,1);
+		note.noda.deleteNote(note);
+	}
+};
 
 
 
@@ -424,5 +429,12 @@ NodeaStudio.prototype.eventControlMap = {
 	37: function(studio){ studio.incrementAdvanceBox(false); },
 	38: function(studio){ studio.advance(-1); },
 	39: function(studio){ studio.incrementAdvanceBox(true); },
-	40: function(studio){ studio.advance(1); }
+	40: function(studio){ studio.advance(1); },
+	
+	// delete key
+	46: function(studio){ studio.deleteNote(studio.selectedNote); },
+	
+	// backspace key
+	8: function(studio){ studio.deleteNote(studio.selectedNote); }
+	
 };

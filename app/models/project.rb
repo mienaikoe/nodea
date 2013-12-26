@@ -29,10 +29,12 @@ class Project < ActiveRecord::Base
         newnoda.project = self
         newnoda.save!
         
-        noda[:notes].each do |note|
-          note = Note.new(start: note[:start], finish: note[:finish])
-          note.noda = newnoda
-          note.save!
+        if noda[:notes]
+          noda[:notes].each do |note|
+            note = Note.new(start: note[:start], finish: note[:finish])
+            note.noda = newnoda
+            note.save!
+          end
         end
         
         self.nodas << newnoda

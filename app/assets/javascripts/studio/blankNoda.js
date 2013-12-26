@@ -37,6 +37,13 @@ BlankNoda.prototype.addNote = function(note){
     }
 };
 
+BlankNoda.prototype.deleteNote = function(note){
+	var idx = this.notes.indexOf(note);
+	if( idx !== -1 ){
+		this.notes.splice(idx, 1);
+	}
+};
+
 
 
 // playback

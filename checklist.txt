@@ -2,13 +2,13 @@ Nodea Checklist
 
 
 Javascript
-- Hotkey Record & Save button
-- Render Controls in JS
 - Make Some Sense of Time Signature
+- Add Barlines for Time Signature
 - Add metronome option
+- Hotkey Record & Save button
+- Render Controls in JSs
 - Add Global Volume and Global Filter
 - Add Circuit for Oscillator
-- Add behavior for deleting a note
 
 
 General Enhancements

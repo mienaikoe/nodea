@@ -11,10 +11,12 @@ Note.prototype.createContainer = function(){
 		clazz = 'recording';
 	} 
 	var slivers = this.finish - this.start;
+	var self = this;
 	this.container = jQuery('<div/>',{ class: 'note ' + clazz, style: 'bottom: '+this.start+'px; height: '+slivers+'px;'}).
 			mousedown(function(){ 
 				$(".note.selected").removeClass("selected"); 
-				$(this).addClass("selected"); 
+				$(this).addClass("selected");
+				studio.selectedNote = self;
 			});
 			
 	if( this.noda ){
