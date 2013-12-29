@@ -1,14 +1,23 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Alias:</strong>
-  <%= @user.alias %>
-</p>
+<div class='vector sinistra'>
+  <%= raw @user.svg_representation(400) %>
+</div>
 
-<p>
-  <strong>Nickname:</strong>
-  <%= @user.nickname %>
-</p>
+<div id='user_details' class='details sinistra'>
+  <div id='user_name'>
+    <%= @user.alias %>
+  </div>
 
-<%= link_to 'Edit', edit_user_path(@user) %> |
-<%= link_to 'Back', users_path %>
+  <p>
+    <strong>Nickname:</strong>
+    <%= @user.nickname %>
+  </p>
+  
+  <div class='clearfix'>
+    <%= link_to 'Edit', edit_user_path(@user) %> |
+    <%= link_to 'Back', users_path %>
+  </div>
+</div>
+
+

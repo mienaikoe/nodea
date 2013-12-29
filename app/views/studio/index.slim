@@ -3,26 +3,37 @@
         =javascript_include_tag circuit.location
         
 
-hide id='loadies'
-    hide class='loadie' id='samples'
-    hide class='loadie' id='ditties'
-
-
-div id='studio' class='left right bottom top'
+div id='studio'
   
-    div id='machine' class='center'
-        div id='topspacer'
+    div class='drawer sinistra'
+        div class='drawerbox'
+            div class='drawer_heading' 
+                spiv Project
+                =render partial: 'project_controls', locals: {}
+            div id='project_details'
+                =render partial: 'project_details', locals: {}
+
+    div id='machine'
+        div class='shield top'
         div id='ideas'
         div id='circuits' class='bottom charm'
             =render partial: 'circuits', locals: {}
+        div class='shield bottom'
 
-    div id='sample_drawer' class='drawer right top bottom charm'
-    div id='ditty_drawer' class='drawer left top bottom charm'
+    div class='drawer dextra'
+        div class='drawerbox'
+            div class='drawer_heading'
+                spiv Circuit
+            div id='circuit_details'
 
 
 
   
 javascript:
+    $('.control.button:not(.javascript)').
+        mousedown(function(){ $(this).addClass('active');    }).
+        mouseup(function(){   $(this).removeClass('active'); })
+
     var studio;
     var project = #{raw(render partial: 'projects/project.json', locals: {project: @project})}
     $(function() {

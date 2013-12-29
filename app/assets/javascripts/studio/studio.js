@@ -12,10 +12,13 @@ window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequest
 
 function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.project_id = project.id;
+	this.project_name = project.name;
+	this.project_description = project.description;
 	this.bpm = project.bpm;
 	this.beat = project.beat;
 	this.keyset = project.keyset;
 	this.beat_count = project.beat_count;
+	this.saved = true;
 	
 	// Convenience Variable for setting event handling.
 	var self = this;
@@ -97,9 +100,22 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.advanceBox.
 			change(	function(){ self.advanceAmount = parseInt(this.value) / this.beat; });
 	
-	this.bpmBox = $("#bpm_box");
+	this.bpmBox = $("#bpm");
 	this.bpmBox.
-	    change(     function(){ self.bpm = parseInt(this.value); } ).
+	    change(     function(){ self.setBPM(this.value); } ).
+	    keydown(    function(ev){ ev.stopPropagation(); }).
+	    keyup(      function(ev){ ev.stopPropagation(); });
+	this.countBox = $("#count");
+	this.countBox.
+		change(		function(){ self.setBars(this.value); }).
+	    keydown(    function(ev){ ev.stopPropagation(); }).
+	    keyup(      function(ev){ ev.stopPropagation(); });
+	$('#name').
+		change(		function(){ self.setName(this.value); }).
+	    keydown(    function(ev){ ev.stopPropagation(); }).
+	    keyup(      function(ev){ ev.stopPropagation(); });
+	$('#description').
+		change(		function(){ self.setDescription(this.value); }).
 	    keydown(    function(ev){ ev.stopPropagation(); }).
 	    keyup(      function(ev){ ev.stopPropagation(); });
 
@@ -147,13 +163,14 @@ NodeaStudio.prototype.toggleRecording = function(){
 		}, this);
 	    this.recordingNotes = [];
 	}
-	$('#controls #record').toggleClass("active");
+	$('#mode_controls #record').toggleClass("active");
 };
 
 NodeaStudio.prototype.noteOn = function( noda ){
 	var note = new Note({start: this.sliverFor(Date.now()), noda: noda});
 	this.recordingNotes[noda.key] = note;
 	note.createContainer();
+	this.invalidateSavedStatus();
 };
 
 NodeaStudio.prototype.noteOff = function( noda ){
@@ -186,7 +203,7 @@ NodeaStudio.prototype.noteOff = function( noda ){
 
 NodeaStudio.prototype.play = function(){
 	if( this.startTime === null ){
-	    $('#controls #playpause').addClass("active");
+	    $('#mode_controls #playpause').addClass("active");
 	    this.resetSliverTiming();
 	    this.lastFrameSliver = this.currentSliver();
 
@@ -198,7 +215,7 @@ NodeaStudio.prototype.play = function(){
 
 NodeaStudio.prototype.pause = function(){
 	if( this.startTime !== null){
-	    $('#controls #playpause').removeClass("active");
+	    $('#mode_controls #playpause').removeClass("active");
 	    this.startTime = null;
 	    this.startFrameTimestamp = null;
 	    this.nodas.forEach(function(noda){ noda.pause(); });
@@ -228,14 +245,54 @@ NodeaStudio.prototype.sliverForProgress = function(progress){
 	return Math.ceil( progress / 1000 * this.sliversPerSecond );
 };
 
-NodeaStudio.prototype.addBars = function(howmany){
-	this.minBottom -= howmany*this.sliversPerBeat;
-	this.ideasContainer.css("height", this.maxBottom-this.minBottom);
-	this.beat_count += howmany;
-	while(howmany-- > 0){
-	    this.barsContainer.append('<div class="beat"></div>');
+
+
+NodeaStudio.prototype.setBars = function(howmany){
+	try{
+		howmany = parseInt(howmany);
+		if( howmany === this.beat_count ){
+			return;
+		}
+		var difference = howmany - this.beat_count;
+		this.minBottom -= difference*this.sliversPerBeat;
+		this.ideasContainer.css("height", this.maxBottom-this.minBottom+'px');
+		if( howmany > this.beat_count ){
+			for( var i = difference; i > 0; i--){
+				this.barsContainer.append('<div class="beat"></div>');
+			}
+		} else{
+			this.barsContainer.find('.beat').splice(0, -difference).forEach(function(el){ el.remove(); });
+		}
+		this.beat_count = howmany;
+		this.countBox.val(howmany);
+		this.invalidateSavedStatus();
+	} catch( ex ) {
+		this.notify('Invalid Value for Count. Please Enter a Number', ex.message);
 	}
+	// remove notifications once notifications system is built
 };
+
+NodeaStudio.prototype.setBPM = function(value){
+	try{
+		this.bpm = parseInt(value);
+		this.invalidateSavedStatus();
+	} catch( ex ){
+		this.notify('Invalid Value for BPM. Please Enter a Number', ex.message);
+	}
+	// remove notifications once notifications system is built
+};
+
+NodeaStudio.prototype.setName = function(value){
+	this.project_name = value;
+	this.invalidateSavedStatus();
+};
+
+NodeaStudio.prototype.setDescription = function(value){
+	this.project_description = value;
+	this.invalidateSavedStatus();
+};
+
+
 
 
 NodeaStudio.prototype.frame = function( timestamp ){
@@ -245,7 +302,7 @@ NodeaStudio.prototype.frame = function( timestamp ){
 	
 	if( this.currentBottom() <= this.minBottom ){
 	    if( this.recording ){
-	        this.addBars(4);
+	        this.setBars(this.beat_count + 4);
 	    } else {
 	        return this.pause();
 	    }
@@ -320,29 +377,49 @@ NodeaStudio.prototype.incrementAdvanceBox = function(forward){
 
 
 // saving project
-NodeaStudio.prototype.save = function(){
-	var saveObject = {
-		project_id: this.project_id,
-		bpm: this.bpm,
-		beat: this.beat,
-		keyset: this.keyset,
-		beat_count: this.beat_count,
-		nodas: this.nodas.map(function(noda){return noda.marshal();}).filter(function(noda){ return noda.javascript_name !== 'BlankNoda'; })
-	};
-	
-	var self = this;
-	$.ajax({
-		type: "POST",
-		url: "/studio/save",
-		data: JSON.stringify(saveObject),
-		contentType: 'application/json; charset=utf-8',
-		dataType: 'json',
-		success: function(){self.notify("Save Succeeded.", true); },
-		failure: function(){self.notify("Save Failed. Please Try Again.", false);}
-	});
+
+NodeaStudio.prototype.invalidateSavedStatus = function(){
+	this.saved = false;
+	$('#save').addClass('recording');
 };
 
-NodeaStudio.prototype.notify = function(words, good){
+
+NodeaStudio.prototype.save = function(){
+	if( !this.saved ){
+		$('#save').removeClass('recording').addClass('active');
+		var saveObject = {
+			project_id: this.project_id,
+			name: this.project_name,
+			description: this.project_description,
+			bpm: this.bpm,
+			beat: this.beat,
+			keyset: this.keyset,
+			beat_count: this.beat_count,
+			nodas: this.nodas.map(function(noda){return noda.marshal();}).filter(function(noda){ return noda.javascript_name !== 'BlankNoda'; })
+		};
+
+		var self = this;
+		$.ajax({
+			type: "POST",
+			url: "/studio/save",
+			data: JSON.stringify(saveObject),
+			contentType: 'application/json; charset=utf-8',
+			success: function(){
+				$('#save').removeClass('active').addClass('kosher');
+				setTimeout(function(){ $('#save').removeClass('kosher'); }, 3000 );
+			},
+			error: function(jqxhr, msg, ex){
+				$('#save').removeClass('active').addClass('recording');
+				self.notify("Save Failed. Please Try Again.", msg);
+			}
+		});
+	}
+};
+
+NodeaStudio.prototype.notify = function(words, errorMessage){
+	if(errorMessage !== undefined){
+		console.error(errorMessage);
+	}
 	alert(words);
 };
 

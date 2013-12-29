@@ -1,0 +1,33 @@
+div id='main_fields'
+    input type='text' id='name' value="#{@project.name}"
+
+    textarea id='description' =@project.description
+
+
+div class='clearfix'
+
+
+div class='fieldLabel' Authors
+ul id='authors'
+    -@project.authors.each do |author|
+        li class='author' 
+            =raw author.svg_representation(50)
+            =link_to author.alias, user_path(author)
+
+
+div class='clearfix'
+
+
+div class='fieldLabel' Properties
+
+div class='controls'
+    spiv class='spacer' id='bpm_controls'
+        spiv class='wide_box'
+            input class='control field' type='number' id='bpm' value="#{@project.bpm}"  
+            div class='label' BPM
+    div class='ditch'
+    spiv class='spacer' id='beat_count_controls'
+        spiv class='wide_box'
+            input class='control field' type='number' id='count' value="#{@project.beat_count}"  
+            div class='label' BEAT COUNT
+    div class='ditch'

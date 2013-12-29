@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+rasem_dir = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(rasem_dir) unless $LOAD_PATH.include?(rasem_dir)
+require 'rasem'
+
+exit Rasem::Application.run!(*ARGV)
+

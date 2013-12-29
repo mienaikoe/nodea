@@ -1,0 +1,348 @@
+/* ...
+*= require_self
+*= require ../basics
+*/
+
+$drawer_width: 300px;
+
+$track_width: 18px;
+$circuit_padding: 10px;
+$tracks_width: ($track_width*40) + (41px); //tracks + borders
+$machine_width: $tracks_width;
+$circuit_width: $machine_width;
+
+$machine_color: #222;
+$case_color: #777;
+
+$node_height: 42px;
+$node_width: 50px;
+$node_margin: 5px;
+$node_text_color: #222;
+
+$node_color: #DDD;
+$node_active_color: #FFA;
+$node_recording_color: #FAA;
+$node_kosher_color: #AFA;
+$sullen_color: #FAF;
+
+$touchpad_dimension: 100px;
+
+$beat_height: 47px;
+
+$control_dimension: 20px;
+
+@mixin unselectable{
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+    */
+    -ms-user-select: none;
+    user-select: none;
+}
+
+@mixin track($border) {  
+    width: $track_width;
+    border-right: $border;
+}
+
+@mixin node_color {
+    background-color: $node_color;
+    color: $node_text_color;
+    box-shadow: inset 0 0 5px #999;
+    &.active{
+        background-color: $node_active_color;
+        box-shadow: 0px 0px 7px #8af;
+    }
+    &.recording{
+        background-color: $node_recording_color;
+        box-shadow: none;
+    }
+    &.kosher{
+        background-color: $node_kosher_color;
+        box-shadow: none;
+    }
+} 
+
+
+body{
+    background-color: black;
+}
+
+a{
+    text-decoration: none;
+    color: $node_active_color;
+    &:active{
+        color: $node_recording_color;
+    }   
+    &:visited{
+        color: $sullen_color;
+    }
+}
+
+
+#studio{
+    margin: 0px auto;
+    height: 100%;
+    width: (2*$drawer_width) + $machine_width;
+    font-family: monospace;
+
+    .drawer{
+        color: white;
+        width: $drawer_width;
+        height: 100%;
+        background-color: $machine_color;
+        position: relative;
+        .drawerbox{
+            background-color: $case_color;
+            position: absolute;
+            top: 10px;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            .drawer_heading{
+                background-color: #555;
+                margin: 0px;
+                line-height:48px;
+                padding: 0px 10px;
+                font-weight: 100;
+                font-size: 24px;
+                clear: both;
+                .heading_words{
+                    float: left;
+                }
+                .controls{
+                    float: right;
+                }
+            }
+            #project_details{
+                padding: 10px;
+                font-family: monospace;
+                .clearfix{
+                    height: 20px;
+                }
+                .fieldLabel{
+                    font-size: 18px;
+                }
+                #main_fields{
+                    input, textarea{
+                        font-family: monospace;
+                        background-color: #999;
+                        border: 0px;
+                        color: white;
+                        width: 250px;
+                        padding: 5px;
+                        &#name{
+                            font-size: 24px;
+                        }
+                    }
+                }
+                ul#authors{
+                    padding-left: 10px;
+                    li.author{
+                        list-style-type: none;
+                        svg, a{
+                            display: inline-block;
+                            vertical-align: middle;
+                            font-size: 16px;
+                        }
+                    }
+                }
+                .control.field{
+                    width: 100px;
+                }
+            }
+        }
+        
+    }
+    
+    
+     .controls{
+         vertical-align: middle;
+        .ditch{
+            display:inline-block;
+            width: 20px;
+            height: 10px;
+        }
+        .spacer{
+            height: $control_dimension+16px;
+            padding-top: 6px;
+            &.group{
+                padding-top: 5px;
+                border-top: 1px solid $case_color;
+            }
+        }
+        
+        
+        .button_box{
+            width: $control_dimension+12px;
+        }
+        .wide_box{
+            margin: 0px 2px;
+        }
+        .control{
+            line-height: $control_dimension;
+            margin: 0px auto;
+            border: 1px solid #000;
+            @include node_color;
+            font-size: 14px;
+            text-align: center;
+            &.button{
+                width: $control_dimension;
+                cursor: pointer;
+                padding: 3px 3px 2px 2px;
+            }
+            &.field{
+                padding: 2px; 
+                line-height: $control_dimension + 1px; /* inputs have some weirdness */
+            }
+            &.select{
+                padding: 2px;
+                height: $control_dimension + 7px;
+            }   
+            &#bpm_box{
+                //width: 42px;
+            }
+            &#advance_box{
+                //width: 44px;
+            }
+        }
+
+        .label{  
+            color: white;
+            font-size: 7px;
+            font-family: sans-serif;
+            line-height: 12px;
+            text-align: center;
+        }
+        
+    }
+
+    #machine{
+        width: $machine_width;
+        height: 100%;
+        float: left;
+        background-color: $machine_color;
+
+        .shield{
+            height: $circuit_padding;
+            background-color: $machine_color;
+            position: absolute;
+            z-index: 1;
+            width: $machine_width;
+        }
+        
+        #ideas{
+            position: absolute;
+            background-color: $machine_color;
+            margin-left: auto;
+            margin-right: auto;
+            width: $circuit_width;
+            #tracks{
+                position: absolute;
+                bottom: 0px;
+                width: $tracks_width;
+                height: 100%;
+                border-left: 1px dotted $node_text_color;
+                .nodeTrack{
+                    @include track(1px dotted $node_text_color);
+                    height: 100%;
+                    .note{
+                        background-color: $node_color;
+                        opacity: 0.7;
+                        position: absolute;
+                        width: $track_width;
+                        &.recording{
+                            background-color: $node_recording_color;
+                        }
+                        &.selected{
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+            #barlines{ 
+                position: absolute;
+                bottom: 0px;
+                width: $tracks_width;
+                .beat{
+                    width: 100%;
+                    border-bottom: 1px dotted #555;
+                    border-collapse: collapse;
+                    height: $beat_height;
+                    background-color: $case_color;
+                }
+            }
+        }
+
+        #circuits{
+            width: $circuit_width;
+            background-color: $machine_color;
+            position: absolute;
+            bottom: 10px;
+
+            div{
+                overflow: hidden;
+            }
+
+            #swytches{
+                border-left: 1px solid $node_text_color;
+                .trackSwitch{
+                    height: $track_width;
+                    line-height: $track_width;
+                    @include node_color;
+                    color: $node_text_color;
+                    text-align: center;
+                    @include track(1px solid $node_text_color);
+                }
+            }
+            
+            #edit_controls{
+                width: $circuit_width;
+                margin-top: 8px;
+            }
+
+            #nodes{
+                width: $circuit_width;
+                background-color: $case_color;
+                .nodeRow{
+                    float:left;
+                    width: 310px;
+                    margin: 5px;
+                    &.sinistra{
+                        float: left;
+                    }
+                    &.dextra{
+                        float: right;
+                    }
+                    
+                    .node{
+                        border-radius: 3px;
+                        border: 1px solid black;
+                        width: $node_width;
+                        height: $node_height;
+                        margin: $node_margin;
+                        @include node_color;
+                        text-align: center;
+                        line-height: $node_height;
+                        @include unselectable;
+                    }
+                }
+                .touchpad{
+                    width: $touchpad_dimension;
+                    height: $touchpad_dimension;
+                    @include node_color;
+                    border: 1px solid $machine_color;
+                    margin: 62px auto;
+                    border-radius: 5px;
+                }
+            }
+        }
+    }
+    
+
+}

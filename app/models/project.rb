@@ -14,7 +14,7 @@ class Project < ActiveRecord::Base
     @unique_circuits ||= circuits.uniq{|circuit| circuit.id}
   end
   
-  @@PERSISTENCE_KEYS = [:bpm, :beat, :keyset, :beat_count]
+  @@PERSISTENCE_KEYS = ['name', 'description', 'bpm', 'beat', 'keyset', 'beat_count']
   
   def persist params
     ActiveRecord::Base.transaction do

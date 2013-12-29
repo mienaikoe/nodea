@@ -58,3 +58,4 @@ end
 
 gem 'slim'
 gem 'paperclip'
+gem 'rasem', '0.7.0', :path => 'vendor/gems/rasem-0.7.0' #Until they get it onto the rubygems server
