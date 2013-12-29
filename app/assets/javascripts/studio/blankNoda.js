@@ -13,8 +13,9 @@ BlankNoda.prototype.initialize = function(ctx, persistedNoda){
 	this.asciiCode = persistedNoda.ordinal;
 	this.key = String.fromCharCode(this.asciiCode);
 	
+	var self = this;
 	this.noda = jQuery('<spiv/>',{class: 'node', id: 'key_'+this.asciiCode, html: this.key}).click(function() {
-		// TODO: Create Setup Popup for This Noda
+		self.generateDrawer();
 	});
 
 	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch', html: this.key}).click(function(){
@@ -30,6 +31,43 @@ BlankNoda.prototype.initialize = function(ctx, persistedNoda){
 		return studioNote;
 	}, this);
 };
+
+
+
+// Drawers and Circuit Bindings
+
+BlankNoda.prototype.generateDrawer = function(){
+	var details = this.generateDrawerBase();
+	details.text("You've Chosen a Blank Node. You may bind this node to a new circuit.");
+	
+	// ciruit binding select options
+	
+	this.generateDrawerEffects();
+};
+
+BlankNoda.prototype.generateDrawerBase = function(){
+	studio.nodas.forEach(function(noda){ noda.lightOff('active'); });
+	this.lightOn('active');
+	
+	var details = $("#circuit_details");
+	details.empty();
+	
+	// Key Code
+	$('<div/>', {class: ''});
+	
+	// Number of Notes & Usage Percent vs. other notes
+	
+	// Bound Circuit Details
+	
+	
+	return details;
+};
+
+BlankNoda.prototype.generateDrawerEffects = function(){
+	// If there is an Effects List, show it here.
+};
+
+
 
 BlankNoda.prototype.addNote = function(note){
     if( note !== null ){

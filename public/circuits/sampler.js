@@ -3,6 +3,7 @@ function Sampler(ctx, persistedNoda) {
 	// Vital to Noda Creation. Does some basic logic so that you can get right to the Noda-Specific Items.
 	this.initialize(ctx, persistedNoda);
 	
+	//append styles
 	this.noda.attr('style', 'background-color:#eb3;');
 	
 	this.bufferUrl = persistedNoda.settings.sourceFile;
@@ -10,7 +11,20 @@ function Sampler(ctx, persistedNoda) {
         return;
     }
 	
-    var self = this;
+    this.resetBufferLocation();
+};
+
+
+// Vital to Noda Creation. This Inherits the prototype of a Blank Noda
+Sampler.prototype = Object.create(BlankNoda.prototype, {
+	constructor: { value: Sampler, enumerable: false }
+});
+
+
+
+
+Sampler.prototype.resetBufferLocation = function(){
+	var self = this;
     var request = new XMLHttpRequest();
     request.open("GET", this.bufferUrl, true);
     request.responseType = "arraybuffer";
@@ -29,10 +43,24 @@ function Sampler(ctx, persistedNoda) {
 };
 
 
-// Vital to Noda Creation. This Inherits the prototype of a Blank Noda
-Sampler.prototype = Object.create(BlankNoda.prototype, {
-	constructor: { value: Sampler, enumerable: false }
-});
+Sampler.prototype.generateDrawer = function(){
+	var details = this.generateDrawerBase();
+	details.text("You've Chosen a Sampler. Here are the following details:");
+	
+	$("<div/>", {class: 'clearfix'}).appendTo(details);
+	
+	$("<div/>", {class: 'fieldLabel', html: 'Sample Source'}).appendTo(details);
+	
+	var self = this;
+	var mainFields = $("<div/>", {class: "mainFields"}).appendTo(details);
+	$("<textarea/>", {class: 'urlarea', html: this.bufferUrl}).appendTo(mainFields).
+		change(		function(ev){ self.bufferUrl = this.value; self.resetBufferLocation(); studio.invalidateSavedStatus(); }).
+	    keydown(    function(ev){ ev.stopPropagation(); }).
+	    keyup(      function(ev){ ev.stopPropagation(); });
+
+	this.generateDrawerEffects();
+};
+
 
 
 Sampler.prototype.addNote = function(note){

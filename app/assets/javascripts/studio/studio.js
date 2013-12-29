@@ -206,8 +206,10 @@ NodeaStudio.prototype.play = function(){
 	    $('#mode_controls #playpause').addClass("active");
 	    this.resetSliverTiming();
 	    this.lastFrameSliver = this.currentSliver();
-
-	    this.nodas.forEach(function(noda){ noda.play( this.sliversPerSecond, this.lastFrameSliver ); }, this);
+	    this.nodas.forEach(function(noda){
+			noda.lightOff('active');
+			noda.play( this.sliversPerSecond, this.lastFrameSliver );
+		}, this);
 	    this.startTime = Date.now() - (this.lastFrameSliver / (this.sliversPerSecond/1000));    
 	    requestAnimationFrame(this.frame.bind(this));
 	}
@@ -318,7 +320,7 @@ NodeaStudio.prototype.frame = function( timestamp ){
 	
 	// handle lighting
 	this.notes.forEach( function(note){
-	    if( note.start <= sliver && note.start > this.lastFrameSliver ){
+	    if( note.start <= sliver && note.start >= this.lastFrameSliver ){
 	        note.noda.lightOn('active');
 	    } else if( note.finish <= sliver && note.finish > this.lastFrameSliver ){
 	        note.noda.lightOff('active');
