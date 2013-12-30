@@ -6,7 +6,7 @@ end
 json.circuits do
     project.unique_circuits.each do |circuit|
         json.set! circuit.id do
-            json.(circuit, :name, :javascript_name, :description)
+            json.(circuit, :name, :javascript_name, :background_image, :description)
             json.location circuit.location
             json.author do 
                 json.alias circuit.author.alias

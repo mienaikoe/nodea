@@ -8,14 +8,16 @@
 
 ActiveRecord::Base.transaction do
   
-  user = User.create(:alias=>'mienaikoe', :nickname=>'Jesse', :password=>'3325862', :password_confirmation=>'3325862')
-
+  jesse = User.create(:alias=>'mienaikoe', :nickname=>'Jesse', :password=>'3325862', :password_confirmation=>'3325862', :email=>'mienaikoe@gmail.com')
+  paige = User.create(:alias=>'splendidstrontium', :nickname=>'Paige', :password=>'catonahotsnroof', :password_confirmation=>'catonahotsnroof', :email=>'paigenthompson@gmail.com')
+  
   project = Project.new(name: 'Test Project', description: 'Initial Project for Testing purposes', bpm: 144, beat: 4, keyset: 'desktop', beat_count: 20)
-  project.users << user
+  project.users << paige
+  project.users << jesse
   project.save
 
-  circuit = Circuit.new(name: 'Sampler', javascript_name: 'Sampler', description: 'Play the audio from a source file on keydown. Stops on keyup.', filename: 'sampler.js')
-  circuit.user = user
+  circuit = Circuit.new(name: 'Sampler', javascript_name: 'Sampler', filename: 'sampler.js', background_image: 'sampler.png', description: 'Play the audio from a source file on keydown. Stops on keyup.')
+  circuit.user = jesse
   circuit.save
 
   key_settings = {sourceFile: 'http://upload.wikimedia.org/wikipedia/commons/3/33/ConstantSpectrumMelody.ogg'}.to_json

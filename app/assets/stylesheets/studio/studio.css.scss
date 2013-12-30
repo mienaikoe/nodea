@@ -12,18 +12,18 @@ $machine_width: $tracks_width;
 $circuit_width: $machine_width;
 
 $machine_color: #222;
-$case_color: #777;
+$case_color: #555;
+$drawer_content_color: #777;
 
 $node_height: 42px;
 $node_width: 50px;
 $node_margin: 5px;
 $node_text_color: #222;
 
-$node_color: #DDD;
-$node_active_color: #FFA;
-$node_recording_color: #FAA;
-$node_kosher_color: #AFA;
-$sullen_color: #FAF;
+$note_color: #DDD;
+$active_color: #FFA;
+$warning_color: #FCC;
+$kosher_color: #CFC;
 
 $touchpad_dimension: 100px;
 
@@ -48,24 +48,23 @@ $control_dimension: 20px;
     border-right: $border;
 }
 
-@mixin node_color {
-    background-color: $node_color;
-    color: $node_text_color;
-    box-shadow: inset 0 0 5px #999;
-    &.active{
-        background-color: $node_active_color;
-        box-shadow: 0px 0px 7px #8af;
+@mixin circuitry{
+    background-color: #aaa;
+    box-shadow: 0px 0px 7px #333 inset;
+    color: black;
+    &.active{ 
+        background-color: #FFC !important; 
+        color: black; 
     }
-    &.recording{
-        background-color: $node_recording_color;
-        box-shadow: none;
+    &.recording{ 
+        background-color: #DFD !important; 
+        color: black; 
     }
-    &.kosher{
-        background-color: $node_kosher_color;
-        box-shadow: none;
+    &.selected{ 
+        //box-shadow: none;
+        background-color: #ddd;
     }
-} 
-
+}
 
 body{
     background-color: black;
@@ -73,12 +72,12 @@ body{
 
 a{
     text-decoration: none;
-    color: $node_active_color;
+    color: #AFF;
     &:active{
-        color: $node_recording_color;
+        color: #FFA;
     }   
     &:visited{
-        color: $sullen_color;
+        color: #FAF;
     }
 }
 
@@ -106,7 +105,7 @@ a{
             overflow-y: auto;
             overflow-x: hidden;
             .drawer_heading{
-                background-color: #555;
+                background-color: $drawer_content_color;
                 margin: 0px;
                 line-height:48px;
                 padding: 0px 10px;
@@ -136,7 +135,7 @@ a{
                 .mainFields{
                     input, textarea{
                         font-family: monospace;
-                        background-color: #999;
+                        background-color: $drawer_content_color;
                         border: 0px;
                         color: white;
                         width: 250px;
@@ -198,13 +197,27 @@ a{
             line-height: $control_dimension;
             margin: 0px auto;
             border: 1px solid #000;
-            @include node_color;
             font-size: 14px;
             text-align: center;
+            background-color: $note_color;
             &.button{
                 width: $control_dimension;
                 cursor: pointer;
                 padding: 3px 3px 2px 2px;
+                color: $node_text_color;
+                box-shadow: inset 0 0 5px #999;
+                &.kosher{
+                    background-color: $kosher_color;
+                    box-shadow: none;
+                }
+                &.active{
+                    background-color: $active_color;
+                    box-shadow: 0px 0px 7px #8af;
+                }
+                &.warning{
+                    background-color: $warning_color;
+                    box-shadow: none;
+                }
             }
             &.field{
                 padding: 2px; 
@@ -262,12 +275,12 @@ a{
                     @include track(1px dotted $node_text_color);
                     height: 100%;
                     .note{
-                        background-color: $node_color;
+                        background-color: $note_color;
                         opacity: 0.7;
                         position: absolute;
                         width: $track_width;
                         &.recording{
-                            background-color: $node_recording_color;
+                            background-color: $kosher_color;
                         }
                         &.selected{
                             opacity: 1;
@@ -281,8 +294,7 @@ a{
                 width: $tracks_width;
                 .beat{
                     width: 100%;
-                    border-bottom: 1px dotted #555;
-                    border-collapse: collapse;
+                    border-bottom: 1px dotted $node_text_color;
                     height: $beat_height;
                     background-color: $case_color;
                 }
@@ -301,13 +313,15 @@ a{
 
             #swytches{
                 border-left: 1px solid $node_text_color;
+                border-top: 1px solid $node_text_color;
+                border-bottom: 1px solid $node_text_color;
                 .trackSwitch{
                     height: $track_width;
                     line-height: $track_width;
-                    @include node_color;
                     color: $node_text_color;
                     text-align: center;
                     @include track(1px solid $node_text_color);
+                    @include circuitry;
                 }
             }
             
@@ -336,17 +350,16 @@ a{
                         width: $node_width;
                         height: $node_height;
                         margin: $node_margin;
-                        @include node_color;
                         text-align: center;
                         line-height: $node_height;
                         @include unselectable;
+                        @include circuitry;
                         cursor: pointer;
                     }
                 }
                 .touchpad{
                     width: $touchpad_dimension;
                     height: $touchpad_dimension;
-                    @include node_color;
                     border: 1px solid $machine_color;
                     margin: 62px auto;
                     border-radius: 5px;

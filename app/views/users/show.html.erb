@@ -14,6 +14,24 @@
     <%= @user.nickname %>
   </p>
   
+  <p>
+    <strong>Email:</strong>
+    <%= @user.email %>
+  </p>
+  
+  <p>
+    <strong>Projects:</strong>
+    <ul>
+      <% @user.projects.each do |project| %>
+        <li>
+          <%= link_to project.name, project_path(project) %>
+        </li>
+
+      <% end %>
+    </ul>
+  </p>
+  
+  
   <div class='clearfix'>
     <%= link_to 'Edit', edit_user_path(@user) %> |
     <%= link_to 'Back', users_path %>

@@ -1,6 +1,6 @@
 class Circuit < ActiveRecord::Base
     
-  validates_presence_of :name, :javascript_name, :description, :user_id, :filename
+  validates_presence_of :name, :javascript_name, :background_image, :description, :user_id, :filename
 
   belongs_to :user
   alias_attribute :author, :user

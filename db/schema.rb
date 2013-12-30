@@ -16,6 +16,7 @@ ActiveRecord::Schema.define(version: 20131213045024) do
   create_table "circuits", force: true do |t|
     t.string   "name"
     t.string   "javascript_name"
+    t.string   "background_image"
     t.text     "description"
     t.integer  "user_id"
     t.string   "filename"
@@ -58,6 +59,7 @@ ActiveRecord::Schema.define(version: 20131213045024) do
     t.string   "alias"
     t.string   "nickname"
     t.string   "passdigest"
+    t.string   "email"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

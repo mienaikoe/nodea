@@ -8,7 +8,7 @@ class User < ActiveRecord::Base
   validates_presence_of :password, :on => :create
   
   
-  validates_presence_of :alias, :nickname
+  validates_presence_of :alias, :nickname, :email
   validates_uniqueness_of :alias
 
   

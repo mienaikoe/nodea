@@ -1,10 +1,5 @@
 function Sampler(ctx, persistedNoda) {
-	
-	// Vital to Noda Creation. Does some basic logic so that you can get right to the Noda-Specific Items.
-	this.initialize(ctx, persistedNoda);
-	
-	//append styles
-	this.noda.attr('style', 'background-color:#eb3;');
+	BlankNoda.call(this, ctx, persistedNoda); // vital
 	
 	this.bufferUrl = persistedNoda.settings.sourceFile;
     if (!this.bufferUrl) {
@@ -15,10 +10,15 @@ function Sampler(ctx, persistedNoda) {
 };
 
 
-// Vital to Noda Creation. This Inherits the prototype of a Blank Noda
+// vital to Noda Creation. This Inherits the static values from BlankNoda
 Sampler.prototype = Object.create(BlankNoda.prototype, {
 	constructor: { value: Sampler, enumerable: false }
 });
+
+
+
+// vital
+Sampler.prototype.cssClass = 'sampler';
 
 
 
@@ -144,7 +144,6 @@ Sampler.prototype.on = function() {
                     this.lightOn('recording');
                 }
             }
-            
         } else {
             this.lightOn('active');
         }
@@ -167,25 +166,6 @@ Sampler.prototype.off = function() {
         }
     }
 };
-
-
-
-
-
-
-
-// lighting
-
-Sampler.prototype.lightOn = function(lightType){
-    $(this.noda).addClass(lightType).attr('style','background-color:#fc4;');
-    $(this.swytche).addClass(lightType);
-};
-Sampler.prototype.lightOff = function(lightType){
-    $(this.noda).removeClass(lightType).attr('style','background-color:#eb3;');
-    $(this.swytche).removeClass(lightType);
-};
-
-
 
 
 
