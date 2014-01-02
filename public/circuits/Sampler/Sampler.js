@@ -17,11 +17,6 @@ Sampler.prototype = Object.create(BlankNoda.prototype, {
 
 
 
-// vital
-Sampler.prototype.cssClass = 'sampler';
-
-
-
 
 Sampler.prototype.resetBufferLocation = function(){
 	var self = this;
@@ -43,31 +38,26 @@ Sampler.prototype.resetBufferLocation = function(){
 };
 
 
-Sampler.prototype.generateDrawer = function(){
-	var details = this.generateDrawerBase();
-	details.text("You've Chosen a Sampler. Here are the following details:");
+Sampler.prototype.generateDrawerSettings = function(detailsElement){
+	detailsElement.text("You've Chosen a Sampler. Here are the following details:");
 	
-	$("<div/>", {class: 'clearfix'}).appendTo(details);
+	$("<div/>", {class: 'clearfix'}).appendTo(detailsElement);
 	
-	$("<div/>", {class: 'fieldLabel', html: 'Sample Source'}).appendTo(details);
+	$("<div/>", {class: 'fieldLabel', html: 'Sample Source'}).appendTo(detailsElement);
 	
 	var self = this;
-	var mainFields = $("<div/>", {class: "mainFields"}).appendTo(details);
+	var mainFields = $("<div/>", {class: "mainFields"}).appendTo(detailsElement);
 	$("<textarea/>", {class: 'urlarea', html: this.bufferUrl}).appendTo(mainFields).
 		change(		function(ev){ self.bufferUrl = this.value; self.resetBufferLocation(); studio.invalidateSavedStatus(); }).
 	    keydown(    function(ev){ ev.stopPropagation(); }).
 	    keyup(      function(ev){ ev.stopPropagation(); });
-
-	this.generateDrawerEffects();
 };
 
 
 
 Sampler.prototype.addNote = function(note){
-    if( note !== null ){
-        note.source = this.allocateSource();
-        this.notes.push(note);
-    }
+	BlankNoda.prototype.addNote.call(this, note);
+	note.source = this.allocateSource();
 };
 
 
@@ -79,10 +69,7 @@ Sampler.prototype.allocateSource = function(){
 };
 
 Sampler.prototype.deallocateSource = function(src){
-	if( src ){ 
-		src.stop(0); 
-		src.disconnect(0); 
-	}
+	if(src){ src.stop(0); src.disconnect(0); }
 };
 
 
@@ -102,9 +89,8 @@ Sampler.prototype.play = function(sliversPerSecond, startingAt){
 };
 
 Sampler.prototype.pause = function(){
-	this.turnOffPassiveRecording();
+	BlankNoda.prototype.pause.call(this);
 	this.resetSources();
-    this.lightOff('active');
 };
 
 
@@ -126,44 +112,19 @@ Sampler.prototype.resetSources = function(){
 // recording
 
 Sampler.prototype.on = function() {
-    // if recording, notify ideas of new note.
+	BlankNoda.prototype.on.call(this);
     if (this.buffer && !this.src) {
         this.src = this.allocateSource();
         this.src.start(0);
-        
-        if( studio.recording ){
-            if( studio.startTime !== null ){ //active recording
-                studio.noteOn(this);
-                this.lightOn('recording');
-            } else { // passive recording
-                if( this.passiveRecording ){
-                    this.turnOffPassiveRecording();
-                } else {
-                    studio.noteOn(this);
-                    this.passiveRecording = true;
-                    this.lightOn('recording');
-                }
-            }
-        } else {
-            this.lightOn('active');
-        }
     }
 };
 
 
 Sampler.prototype.off = function() {
+	BlankNoda.prototype.off.call(this);
     if (this.src) {
         this.deallocateSource(this.src);
         this.src = null;
-        
-        if( studio.recording ){
-            if( studio.startTime !== null ){ //active recording
-                studio.noteOff(this);
-                this.lightOff('recording');
-            }
-        } else {
-            this.lightOff('active');
-        }
     }
 };
 

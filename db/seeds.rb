@@ -8,21 +8,25 @@
 
 ActiveRecord::Base.transaction do
   
-  jesse = User.create(:alias=>'mienaikoe', :nickname=>'Jesse', :password=>'3325862', :password_confirmation=>'3325862', :email=>'mienaikoe@gmail.com')
-  paige = User.create(:alias=>'splendidstrontium', :nickname=>'Paige', :password=>'catonahotsnroof', :password_confirmation=>'catonahotsnroof', :email=>'paigenthompson@gmail.com')
+  jesse = User.create(handle: 'mienaikoe', nickname: 'Jesse', password: '3325862', password_confirmation: '3325862', email: 'mienaikoe@gmail.com')
+  paige = User.create(handle: 'splendidstrontium', nickname: 'Paige', password: 'catonahotsnroof', password_confirmation: 'catonahotsnroof', email: 'paigenthompson@gmail.com')
   
   project = Project.new(name: 'Test Project', description: 'Initial Project for Testing purposes', bpm: 144, beat: 4, keyset: 'desktop', beat_count: 20)
   project.users << paige
   project.users << jesse
   project.save
 
-  circuit = Circuit.new(name: 'Sampler', javascript_name: 'Sampler', filename: 'sampler.js', background_image: 'sampler.png', description: 'Play the audio from a source file on keydown. Stops on keyup.')
+  circuit = Circuit.new(name: 'Sampler', handle: 'Sampler', description: 'Play the audio from a source file on keydown. Stops on keyup.')
   circuit.user = jesse
   circuit.save
 
-  key_settings = {sourceFile: 'http://upload.wikimedia.org/wikipedia/commons/3/33/ConstantSpectrumMelody.ogg'}.to_json
+  key_settings = [
+    {sourceFile: 'http://upload.wikimedia.org/wikipedia/commons/6/66/Mango.ogg'}.to_json,
+    {sourceFile: 'http://upload.wikimedia.org/wikipedia/commons/3/33/Mangos.ogg'}.to_json,
+    {sourceFile: 'http://upload.wikimedia.org/wikipedia/commons/c/cb/Sugar2.ogg'}.to_json
+  ]
   (49..51).each do |ord|
-    noda = Noda.new(ordinal: ord, settings: key_settings)
+    noda = Noda.new(ordinal: ord, settings: key_settings[ord-49])
     noda.project = project
     noda.circuit = circuit
     noda.save

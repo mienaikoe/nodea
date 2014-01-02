@@ -8,8 +8,8 @@ class User < ActiveRecord::Base
   validates_presence_of :password, :on => :create
   
   
-  validates_presence_of :alias, :nickname, :email
-  validates_uniqueness_of :alias
+  validates_presence_of :handle, :nickname, :email
+  validates_uniqueness_of :handle
 
   
   has_many :circuits
@@ -20,7 +20,7 @@ class User < ActiveRecord::Base
   end
   
   def svg_representation dimension=50
-    hexrep = Digest::SHA256.hexdigest(self.alias)
+    hexrep = Digest::SHA256.hexdigest(self.handle)
 
     choke = 0
     columns = 32

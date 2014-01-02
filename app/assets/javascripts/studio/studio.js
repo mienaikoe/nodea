@@ -49,8 +49,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	var circuitStyles = document.createElement("style");
 	for( var circuitId in project.circuits){
 		var circuit = project.circuits[circuitId];
-		var cssClass = window[circuit.javascript_name].prototype.cssClass;
-		circuitStyles.appendChild(document.createTextNode(".node."+cssClass+"{ background-image: url('/icons/"+circuit.background_image+"'); }"));
+		circuitStyles.appendChild(document.createTextNode(".node."+circuit.handle+"{ background-image: url('"+circuit.image+"'); }"));
 	}
 	document.head.appendChild(circuitStyles);
 	
@@ -63,7 +62,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 			var circuitConstructor;
 			if( persistedNoda ){
 				var circuit = project.circuits[persistedNoda.circuit_id];
-				circuitConstructor = window[circuit.javascript_name];
+				circuitConstructor = window[circuit.handle];
 			} else {
 				persistedNoda = { id: null, ordinal: keySetKey,	notes: [] };
 				circuitConstructor = BlankNoda;
@@ -86,7 +85,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	// Event Handling
 	$("body").keydown(function(ev) {
 	    if( ev.keyCode in self.keyCodeToAsciiMap ){
-	        self.nodas[self.keyCodeToAsciiMap[ev.keyCode]].on();
+	        self.noteOn( self.nodas[self.keyCodeToAsciiMap[ev.keyCode]] );
 	    } else if( ev.keyCode in self.eventControlMap ){
 	        self.eventControlMap[ev.keyCode](self);
 	    } else {
@@ -96,7 +95,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	    ev.preventDefault();
 	}).keyup(function(ev) {
 	    if( ev.keyCode in self.keyCodeToAsciiMap ){
-	        self.nodas[self.keyCodeToAsciiMap[ev.keyCode]].off();
+	        self.noteOff( self.nodas[self.keyCodeToAsciiMap[ev.keyCode]] );
 	    } else if( ev.keyCode in self.eventControlMap ){
 	        // do nothing
 	    } else {
@@ -180,19 +179,58 @@ NodeaStudio.prototype.toggleRecording = function(){
 	$('#mode_controls #record').toggleClass("active");
 };
 
+
+
+
+
+
 NodeaStudio.prototype.noteOn = function( noda ){
+	if( noda.keydown ){
+		return;
+	}
+	noda.on();
+	if( this.recording ){
+		if( this.startTime !== null ){ //active recording
+			this.recordingOn( noda );
+		} else if( noda.passiveRecording ){
+			noda.turnOffPassiveRecording();
+		} else {
+			noda.turnOnPassiveRecording();
+			this.recordingOn( noda );
+		}
+	} else {
+		noda.lightOn('active');
+	}
+	this.keydown = true;
+};
+
+NodeaStudio.prototype.recordingOn = function( noda ){
 	var note = new Note({start: this.sliverFor(Date.now()), noda: noda});
 	this.recordingNotes[noda.key] = note;
 	note.createContainer();
 	this.invalidateSavedStatus();
+	noda.lightOn('recording');
 };
 
+
+
 NodeaStudio.prototype.noteOff = function( noda ){
+	noda.off();
+	if( this.recording ){
+		if( this.startTime !== null ){ //active recording
+			this.recordingOff(noda);
+			noda.lightOff('recording');
+		}
+	} else {
+		noda.lightOff('active');
+	}
+};
+
+NodeaStudio.prototype.recordingOff = function( noda ){
 	var note = this.recordingNotes[noda.key];
 	if( typeof note === 'undefined' ){ 
 	    return;
 	}
-	
 	var thisSliver = this.sliverFor(Date.now());
 	if( note.start === thisSliver ){
 	    note.container.remove();
@@ -233,10 +271,10 @@ NodeaStudio.prototype.play = function(){
 NodeaStudio.prototype.pause = function(){
 	if( this.startTime !== null){
 	    $('#mode_controls #playpause').removeClass("active");
-	    this.startTime = null;
-	    this.startFrameTimestamp = null;
 	    this.nodas.forEach(function(noda){ noda.pause(); });
 		this.recordingNotes.forEach(function(note){ this.noteOff(note.noda); }, this);
+		this.startTime = null;
+	    this.startFrameTimestamp = null;
 	}
 };
 
@@ -412,7 +450,7 @@ NodeaStudio.prototype.save = function(){
 			beat: this.beat,
 			keyset: this.keyset,
 			beat_count: this.beat_count,
-			nodas: this.nodas.map(function(noda){return noda.marshal();}).filter(function(noda){ return noda.javascript_name !== 'BlankNoda'; })
+			nodas: this.nodas.map(function(noda){return noda.marshal();}).filter(function(noda){ return noda.handle !== 'BlankNoda'; })
 		};
 
 		var self = this;

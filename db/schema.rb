@@ -15,14 +15,14 @@ ActiveRecord::Schema.define(version: 20131213045024) do
 
   create_table "circuits", force: true do |t|
     t.string   "name"
-    t.string   "javascript_name"
-    t.string   "background_image"
+    t.string   "handle"
     t.text     "description"
     t.integer  "user_id"
-    t.string   "filename"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "circuits", ["handle"], name: "index_circuits_on_handle", unique: true
 
   create_table "nodas", force: true do |t|
     t.integer "circuit_id"
@@ -56,7 +56,7 @@ ActiveRecord::Schema.define(version: 20131213045024) do
   end
 
   create_table "users", force: true do |t|
-    t.string   "alias"
+    t.string   "handle"
     t.string   "nickname"
     t.string   "passdigest"
     t.string   "email"
@@ -64,6 +64,6 @@ ActiveRecord::Schema.define(version: 20131213045024) do
     t.datetime "updated_at"
   end
 
-  add_index "users", ["alias"], name: "index_users_on_alias", unique: true
+  add_index "users", ["handle"], name: "index_users_on_handle", unique: true
 
 end

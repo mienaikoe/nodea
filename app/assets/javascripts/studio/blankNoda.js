@@ -21,12 +21,12 @@ function BlankNoda(ctx, persistedNoda) {
 	this.key = String.fromCharCode(this.asciiCode);
 	
 	var self = this;
-	this.noda = jQuery('<spiv/>',{class: 'node ' + this.cssClass, id: 'key_'+this.asciiCode, html: this.key}).click(function(ev) {
+	this.noda = jQuery('<spiv/>',{class: 'node ' + this.constructor.name, id: 'key_'+this.asciiCode, html: this.key}).click(function(ev) {
 		self.generateDrawer();
 		ev.stopPropagation();
 	});
 
-	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch ' + this.cssClass, html: this.key}).click(function(){
+	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch ' + this.constructor.name, html: this.key}).click(function(){
 		// TODO: not sure what to make the swytches do
 	});
 	
@@ -42,43 +42,33 @@ function BlankNoda(ctx, persistedNoda) {
 
 
 
-BlankNoda.prototype.cssClass = 'base';
-
-
-
 
 
 // Drawers and Circuit Bindings
 
 BlankNoda.prototype.generateDrawer = function(){
-	var details = this.generateDrawerBase();
-	details.text("You've Chosen a Blank Node. You may bind this node to a new circuit.");
-	
-	// ciruit binding select options
-	
-	this.generateDrawerEffects();
-};
-
-BlankNoda.prototype.generateDrawerBase = function(){
 	studio.nodas.forEach(function(noda){ noda.lightOff('selected'); });
 	this.lightOn('selected');
 	
-	var details = $("#circuit_details");
-	details.empty();
+	var detailsElement = $("#circuit_details");
+	detailsElement.empty();
 	
-	// Key Code
-	$('<div/>', {class: ''});
-	
-	// Number of Notes & Usage Percent vs. other notes
-	
-	// Bound Circuit Details
+	// TODO: Add Key Code
+	// TODO: Other useful data
 	
 	
-	return details;
+	// Overriden
+	this.generateDrawerSettings(detailsElement);
+	
+
+	
+	// TODO: Effects
 };
 
-BlankNoda.prototype.generateDrawerEffects = function(){
-	// If there is an Effects List, show it here.
+BlankNoda.prototype.generateDrawerSettings = function(detailsElement){	
+	detailsElement.text("You've Chosen a Blank Node. You may bind this node to a new circuit.");
+	
+	// TODO: ciruit binding select options
 };
 
 
@@ -109,29 +99,29 @@ BlankNoda.prototype.pause = function(){
 };
 
 
-BlankNoda.prototype.head = function(){
-};
-
-BlankNoda.prototype.tail = function(){
-};
-
-
-
-
 
 // recording
 
 BlankNoda.prototype.on = function() {
+	this.keydown = true;
+};
+
+BlankNoda.prototype.off = function() {
+	this.keydown = false;
+};
+
+
+
+BlankNoda.prototype.turnOnPassiveRecording = function(){
+	this.passiveRecording = true;
 };
 
 BlankNoda.prototype.turnOffPassiveRecording = function(){
-	studio.noteOff(this);
 	this.passiveRecording = false;
 	this.lightOff('recording');
 };
 
-BlankNoda.prototype.off = function() {
-};
+
 
 
 
@@ -165,7 +155,7 @@ BlankNoda.prototype.lightsOut = function(){
 
 BlankNoda.prototype.marshal = function(){
 	return {
-		javascript_name: this.constructor.name,
+		handle: this.constructor.name,
 		ordinal: this.asciiCode,
 		notes: this.notes.map( function(note){return {start: note.start, finish: note.finish};} ),
 		settings: this.marshalSettings()
