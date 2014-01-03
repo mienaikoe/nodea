@@ -1,5 +1,5 @@
 /*
- * Base Circuit
+ * Circuit
  * 
  * 
  * This class defines a Basic Circuit, which is a manager of sound creation used by Nodea Studio.
@@ -7,12 +7,11 @@
  * will sound on playback. Every Circuit Should Inherit from this unless it has a very good 
  * reason not to. 
  * 
- * TODO: Make an API for Circuits
  * 
  */
 
 
-function BlankNoda(ctx, persistedNoda) {
+function Circuit(ctx, persistedNoda) {
 
 	this.context = ctx;	
 	
@@ -20,16 +19,8 @@ function BlankNoda(ctx, persistedNoda) {
 	this.asciiCode = persistedNoda.ordinal;
 	this.key = String.fromCharCode(this.asciiCode);
 	
-	var self = this;
-	this.noda = jQuery('<spiv/>',{class: 'node ' + this.constructor.name, id: 'key_'+this.asciiCode, html: this.key}).click(function(ev) {
-		self.generateDrawer();
-		ev.stopPropagation();
-	});
-
-	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch ' + this.constructor.name, html: this.key}).click(function(){
-		// TODO: not sure what to make the swytches do
-	});
-	
+	this.noda = jQuery('<spiv/>',{class: 'node ' + this.constructor.name, id: 'key_'+this.asciiCode, html: this.key});
+	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch ' + this.constructor.name, html: this.key});
 	this.trackline = $('<spiv/>',{id: 'track_'+this.asciiCode, class:'nodeTrack'});
 	
 	this.notes = persistedNoda.notes.map( function(persistedNote){ 
@@ -46,7 +37,7 @@ function BlankNoda(ctx, persistedNoda) {
 
 // Drawers and Circuit Bindings
 
-BlankNoda.prototype.generateDrawer = function(){
+Circuit.prototype.generateDrawer = function(){
 	studio.nodas.forEach(function(noda){ noda.lightOff('selected'); });
 	this.lightOn('selected');
 	
@@ -65,7 +56,7 @@ BlankNoda.prototype.generateDrawer = function(){
 	// TODO: Effects
 };
 
-BlankNoda.prototype.generateDrawerSettings = function(detailsElement){	
+Circuit.prototype.generateDrawerSettings = function(detailsElement){	
 	detailsElement.text("You've Chosen a Blank Node. You may bind this node to a new circuit.");
 	
 	// TODO: ciruit binding select options
@@ -73,13 +64,13 @@ BlankNoda.prototype.generateDrawerSettings = function(detailsElement){
 
 
 
-BlankNoda.prototype.addNote = function(note){
+Circuit.prototype.addNote = function(note){
     if( note !== null ){
         this.notes.push(note);
     }
 };
 
-BlankNoda.prototype.deleteNote = function(note){
+Circuit.prototype.deleteNote = function(note){
 	var idx = this.notes.indexOf(note);
 	if( idx !== -1 ){
 		this.notes.splice(idx, 1);
@@ -90,10 +81,10 @@ BlankNoda.prototype.deleteNote = function(note){
 
 // playback
 
-BlankNoda.prototype.play = function(sliversPerSecond, startingAt){
+Circuit.prototype.play = function(sliversPerSecond, startingAt){
 };
 
-BlankNoda.prototype.pause = function(){
+Circuit.prototype.pause = function(){
 	this.turnOffPassiveRecording();
     this.lightOff('active');
 };
@@ -102,21 +93,21 @@ BlankNoda.prototype.pause = function(){
 
 // recording
 
-BlankNoda.prototype.on = function() {
-	this.keydown = true;
+Circuit.prototype.on = function() {
+	navigator.vibrate(10);
 };
 
-BlankNoda.prototype.off = function() {
-	this.keydown = false;
+Circuit.prototype.off = function() {
+	navigator.vibrate(10);
 };
 
 
 
-BlankNoda.prototype.turnOnPassiveRecording = function(){
+Circuit.prototype.turnOnPassiveRecording = function(){
 	this.passiveRecording = true;
 };
 
-BlankNoda.prototype.turnOffPassiveRecording = function(){
+Circuit.prototype.turnOffPassiveRecording = function(){
 	this.passiveRecording = false;
 	this.lightOff('recording');
 };
@@ -128,18 +119,18 @@ BlankNoda.prototype.turnOffPassiveRecording = function(){
 
 // lighting
 
-BlankNoda.prototype.lightOn = function(lightType){
+Circuit.prototype.lightOn = function(lightType){
     $(this.noda).addClass(lightType);
     $(this.swytche).addClass(lightType);
 	return this;
 };
-BlankNoda.prototype.lightOff = function(lightType){
+Circuit.prototype.lightOff = function(lightType){
     $(this.noda).removeClass(lightType);
     $(this.swytche).removeClass(lightType);
 	return this;
 };
 
-BlankNoda.prototype.lightsOut = function(){
+Circuit.prototype.lightsOut = function(){
     $(this.noda).removeClass('active').removeClass('recording').removeClass('selected');
     $(this.swytche).removeClass('active').removeClass('recording').removeClass('selected');
 	return this;
@@ -153,7 +144,7 @@ BlankNoda.prototype.lightsOut = function(){
 
 // saving
 
-BlankNoda.prototype.marshal = function(){
+Circuit.prototype.marshal = function(){
 	return {
 		handle: this.constructor.name,
 		ordinal: this.asciiCode,
@@ -162,6 +153,6 @@ BlankNoda.prototype.marshal = function(){
 	};
 };
 
-BlankNoda.prototype.marshalSettings = function(){
+Circuit.prototype.marshalSettings = function(){
 	return {};
 };

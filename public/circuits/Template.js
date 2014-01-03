@@ -3,7 +3,7 @@ function Template(ctx, persistedNoda) {
 	 * that every circuit needs, including each 
 	 * visual component and the event ties for each one.
 	 **/
-	BlankNoda.call(this, ctx, persistedNoda);
+	Circuit.call(this, ctx, persistedNoda);
 
 	/* Build out any further initialization you need 
 	 * to do here. Any necessary settings that you add 
@@ -13,8 +13,8 @@ function Template(ctx, persistedNoda) {
 };
 
 
-// This Inherits the prototype of BlankNoda
-Template.prototype = Object.create(BlankNoda.prototype, {
+// This Inherits the prototype of Circuit
+Template.prototype = Object.create(Circuit.prototype, {
 	constructor: { 
 		value: Template, // Change This to your Circuit Handle
 		enumerable: false 
@@ -47,10 +47,10 @@ Template.prototype.generateDrawerSettings = function(detailsElement){
  * won't need these, then feel free to delete them.
  */
 Template.prototype.addNote = function(note){
-	BlankNoda.prototype.addNote.call(this, note);
+	Circuit.prototype.addNote.call(this, note);
 };
 Template.prototype.deleteNote = function(note){
-	BlankNoda.prototype.deleteNote.call(this, note);
+	Circuit.prototype.deleteNote.call(this, note);
 };
 
 
@@ -77,7 +77,7 @@ Template.prototype.play = function(sliversPerSecond, startingAt){
 };
 
 Template.prototype.pause = function(){
-	BlankNoda.prototype.pause.call(this);
+	Circuit.prototype.pause.call(this);
 	// Turn Off note scheduling here
 };
 
@@ -99,13 +99,13 @@ Template.prototype.pause = function(){
  */
 
 Template.prototype.on = function() {
-	BlankNoda.prototype.on.call(this);
+	Circuit.prototype.on.call(this);
 	// schedule note to play
 };
 
 
 Template.prototype.off = function() {
-	BlankNoda.prototype.off.call(this);
+	Circuit.prototype.off.call(this);
 	// stop note from playing
 };
 

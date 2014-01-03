@@ -1,5 +1,5 @@
 function Sampler(ctx, persistedNoda) {
-	BlankNoda.call(this, ctx, persistedNoda); // vital
+	Circuit.call(this, ctx, persistedNoda); // vital
 	
 	this.bufferUrl = persistedNoda.settings.sourceFile;
     if (!this.bufferUrl) {
@@ -10,8 +10,8 @@ function Sampler(ctx, persistedNoda) {
 };
 
 
-// vital to Noda Creation. This Inherits the static values from BlankNoda
-Sampler.prototype = Object.create(BlankNoda.prototype, {
+// vital to Noda Creation. This Inherits the static values from Circuit
+Sampler.prototype = Object.create(Circuit.prototype, {
 	constructor: { value: Sampler, enumerable: false }
 });
 
@@ -56,7 +56,7 @@ Sampler.prototype.generateDrawerSettings = function(detailsElement){
 
 
 Sampler.prototype.addNote = function(note){
-	BlankNoda.prototype.addNote.call(this, note);
+	Circuit.prototype.addNote.call(this, note);
 	note.source = this.allocateSource();
 };
 
@@ -89,7 +89,7 @@ Sampler.prototype.play = function(sliversPerSecond, startingAt){
 };
 
 Sampler.prototype.pause = function(){
-	BlankNoda.prototype.pause.call(this);
+	Circuit.prototype.pause.call(this);
 	this.resetSources();
 };
 
@@ -112,7 +112,7 @@ Sampler.prototype.resetSources = function(){
 // recording
 
 Sampler.prototype.on = function() {
-	BlankNoda.prototype.on.call(this);
+	Circuit.prototype.on.call(this);
     if (this.buffer && !this.src) {
         this.src = this.allocateSource();
         this.src.start(0);
@@ -121,7 +121,7 @@ Sampler.prototype.on = function() {
 
 
 Sampler.prototype.off = function() {
-	BlankNoda.prototype.off.call(this);
+	Circuit.prototype.off.call(this);
     if (this.src) {
         this.deallocateSource(this.src);
         this.src = null;

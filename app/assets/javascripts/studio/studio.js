@@ -4,10 +4,24 @@ var assert = function(obj){
 	return (typeof(obj) !== 'undefined' && obj !== null);
 };
 
+window.requestAnimationFrame = 
+		window.requestAnimationFrame || 
+		window.webkitRequestAnimationFrame || 
+		window.mozRequestAnimationFrame ||
+		window.msRequestAnimationFrame;
 
-window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-	                          window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-	                  
+if( !window.requestAnimationFrame ){
+	alert("It looks like your browser doesn't support this application. Please try a more modern Browser.");
+}
+	            
+navigator.vibrate = 
+		navigator.vibrate || 
+		navigator.webkitVibrate || 
+		navigator.mozVibrate || 
+		navigator.msVibrate ||
+		function(duration){};
+
+
 
 
 function NodeaStudio(ideasContainer, circuitsContainer, project) {
@@ -28,7 +42,11 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	
 	
 	// === Containers ===
-	this.circuitsContainer = $(circuitsContainer).click(function(ev){ self.nodas.forEach(function(noda){ noda.lightOff('selected'); }); });
+	this.circuitsContainer = $(circuitsContainer).click(function(ev){ 
+		self.nodas.forEach(function(noda){ 
+			noda.lightOff('selected'); 
+		}); 
+	});
 	this.ideasContainer = $(ideasContainer).bind('mousewheel', function(ev){ self.advance((ev.originalEvent.wheelDelta > 0) ? -1 : 1); });
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
 	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
@@ -65,13 +83,29 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 				circuitConstructor = window[circuit.handle];
 			} else {
 				persistedNoda = { id: null, ordinal: keySetKey,	notes: [] };
-				circuitConstructor = BlankNoda;
+				circuitConstructor = Circuit;
 			}
 			
 			var interactiveNoda = new circuitConstructor(this.ctx, persistedNoda);
 			this.nodas[keySetKey] = interactiveNoda;
-			interactiveNoda.noda.appendTo(keyRow);
-			interactiveNoda.swytche.appendTo(swytcheContainer);
+			interactiveNoda.noda.appendTo(keyRow).
+					mousedown(function(ev){ 
+						self.noteOn(interactiveNoda);
+						interactiveNoda.mousedown = true; 
+						ev.stopPropagation(); }).
+					mouseup(function(ev){ 
+						self.noteOff(interactiveNoda); 
+						interactiveNoda.mousedown = false;}).
+					click(function(ev){ ev.stopPropagation(); });
+					
+			interactiveNoda.swytche.appendTo(swytcheContainer).
+					click(function(ev){
+						self.nodas.forEach(function(noda){noda.lightOff('selected');});
+						interactiveNoda.lightOn('selected');
+						interactiveNoda.generateDrawer();
+						ev.stopPropagation();
+			});
+			
 			interactiveNoda.trackline.appendTo(this.tracksContainer);
 			
 			this.notes = this.notes.concat(interactiveNoda.notes);
@@ -85,7 +119,9 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	// Event Handling
 	$("body").keydown(function(ev) {
 	    if( ev.keyCode in self.keyCodeToAsciiMap ){
-	        self.noteOn( self.nodas[self.keyCodeToAsciiMap[ev.keyCode]] );
+			var interactiveNoda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
+	        self.noteOn( interactiveNoda );
+			interactiveNoda.keydown = true;
 	    } else if( ev.keyCode in self.eventControlMap ){
 	        self.eventControlMap[ev.keyCode](self);
 	    } else {
@@ -95,13 +131,17 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	    ev.preventDefault();
 	}).keyup(function(ev) {
 	    if( ev.keyCode in self.keyCodeToAsciiMap ){
-	        self.noteOff( self.nodas[self.keyCodeToAsciiMap[ev.keyCode]] );
+			var interactiveNoda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
+	        self.noteOff( interactiveNoda );
+			interactiveNoda.keydown = false;
 	    } else if( ev.keyCode in self.eventControlMap ){
 	        // do nothing
 	    } else {
 	        return;
 	    }
 	    ev.preventDefault();
+	}).mouseup(function(ev){
+		self.nodas.forEach(function(noda){ if(noda.mousedown){ self.noteOff(noda); } });
 	});
 	
 	
@@ -185,7 +225,7 @@ NodeaStudio.prototype.toggleRecording = function(){
 
 
 NodeaStudio.prototype.noteOn = function( noda ){
-	if( noda.keydown ){
+	if( noda.keydown || noda.mousedown ){
 		return;
 	}
 	noda.on();
@@ -201,7 +241,6 @@ NodeaStudio.prototype.noteOn = function( noda ){
 	} else {
 		noda.lightOn('active');
 	}
-	this.keydown = true;
 };
 
 NodeaStudio.prototype.recordingOn = function( noda ){
@@ -450,7 +489,7 @@ NodeaStudio.prototype.save = function(){
 			beat: this.beat,
 			keyset: this.keyset,
 			beat_count: this.beat_count,
-			nodas: this.nodas.map(function(noda){return noda.marshal();}).filter(function(noda){ return noda.handle !== 'BlankNoda'; })
+			nodas: this.nodas.map(function(noda){return noda.marshal();}).filter(function(noda){ return noda.handle !== 'Circuit'; })
 		};
 
 		var self = this;
