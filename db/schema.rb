@@ -42,9 +42,9 @@ ActiveRecord::Schema.define(version: 20131213045024) do
   create_table "projects", force: true do |t|
     t.string   "name"
     t.text     "description"
-    t.integer  "bpm"
-    t.integer  "beat"
-    t.integer  "beat_count"
+    t.integer  "beats_per_minute"
+    t.integer  "beats_per_bar"
+    t.integer  "bar_count"
     t.string   "keyset"
     t.datetime "created_at"
     t.datetime "updated_at"

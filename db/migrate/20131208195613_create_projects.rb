@@ -5,9 +5,9 @@ class CreateProjects < ActiveRecord::Migration
     create_table :projects do |t|
       t.string :name
       t.text :description
-      t.integer :bpm
-      t.integer :beat
-      t.integer :beat_count
+      t.integer :beats_per_minute
+      t.integer :beats_per_bar
+      t.integer :bar_count
       t.string :keyset
       
       t.timestamps

@@ -1,6 +1,6 @@
 class Project < ActiveRecord::Base
   
-  validates_presence_of :name, :description, :bpm, :beat, :keyset, :beat_count
+  validates_presence_of :name, :description, :beats_per_minute, :beats_per_bar, :keyset, :bar_count
 
   has_and_belongs_to_many :users
   alias_attribute :authors, :users

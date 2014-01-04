@@ -1,4 +1,4 @@
-json.(project, :id, :name, :description, :bpm, :beat, :keyset, :beat_count)
+json.(project, :id, :name, :description, :beats_per_minute, :beats_per_bar, :keyset, :bar_count)
 json.authors project.authors do |author|
     json.handle author.handle
     json.nickname author.nickname

@@ -27,8 +27,6 @@ $kosher_color: #CFC;
 
 $touchpad_dimension: 100px;
 
-$beat_height: 47px;
-
 $control_dimension: 20px;
 
 @mixin unselectable{
@@ -107,7 +105,7 @@ a{
                 line-height:48px;
                 padding: 0px 10px;
                 font-weight: 100;
-                font-size: 24px;
+                font-size: 20px;
                 clear: both;
                 .heading_words{
                     float: left;
@@ -117,7 +115,7 @@ a{
                 }
             }
             .fieldLabel{
-                font-size: 18px;
+                font-size: 16px;
             }
             .urlarea{
                 width: 100%;
@@ -126,31 +124,35 @@ a{
             .clearfix{
                 height: 20px;
             }
-            .important_details{
+            .drawer_content{
                 padding: 10px;
                 font-family: monospace;
-                .mainFields{
-                    input, textarea{
-                        font-family: monospace;
-                        background-color: $drawer_content_color;
-                        border: 0px;
-                        color: white;
-                        width: 250px;
-                        padding: 5px;
-                        &#name{
-                            font-size: 24px;
-                        }
+                .fillOut{
+                    font-family: monospace;
+                    background-color: $drawer_content_color;
+                    border: 0px;
+                    color: white;
+                    width: 250px;
+                    padding: 5px;
+                    &#name{
+                        font-size: 14px;
+                    }
+                    &#description{
+                        font-size: 14px;
                     }
                 }
                 &#project_details{
                     ul#authors{
+                        margin: 4px;
                         padding-left: 10px;
                         li.author{
                             list-style-type: none;
                             svg, a{
                                 display: inline-block;
                                 vertical-align: middle;
-                                font-size: 16px;
+                            }
+                            a{
+                                font-size: 14px;
                             }
                             svg{
                                 margin-right: 8px;
@@ -258,7 +260,7 @@ a{
         
         #ideas{
             position: absolute;
-            background-color: $machine_color;
+            background-color: $case_color;
             margin-left: auto;
             margin-right: auto;
             width: $circuit_width;
@@ -289,11 +291,13 @@ a{
                 position: absolute;
                 bottom: 0px;
                 width: $tracks_width;
-                .beat{
+                .bar{
                     width: 100%;
-                    border-bottom: 1px dotted $node_text_color;
-                    height: $beat_height;
-                    background-color: $case_color;
+                    border-bottom: 1px solid $node_text_color;
+                    .beat{
+                        width: 100%;
+                        border-bottom: 1px dotted $node_text_color;
+                    }
                 }
             }
         }

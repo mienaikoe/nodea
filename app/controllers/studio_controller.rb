@@ -21,7 +21,7 @@ class StudioController < ApplicationController
   
   
   
-  @@PERSISTENCE_KEYS = ['name', 'description', 'bpm', 'beat', 'keyset', 'beat_count']
+  @@PERSISTENCE_KEYS = ['name', 'description', 'beats_per_minute', 'beat', 'keyset', 'beat_count']
   
   def persist_project project, params
     ActiveRecord::Base.transaction do
