@@ -25,6 +25,14 @@ navigator.vibrate =
 
 
 function NodeaStudio(ideasContainer, circuitsContainer, project) {
+	// Convenience Variable for setting event handling.
+	var self = this;
+	
+	// TODO: Don't know if i should add some global filters or effects to this and have those be configurable as well.
+	this.ctx = new webkitAudioContext(); 
+	
+	
+	
 	this.project_id = project.id;
 	this.project_name = project.name;
 	this.project_description = project.description;	
@@ -34,13 +42,6 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.beats_per_minute = project.beats_per_minute;
 	this.beats_per_bar = project.beats_per_bar;
 	this.resetPixelTiming();
-	
-	// Convenience Variable for setting event handling.
-	var self = this;
-	
-	// TODO: Don't know if i should add some global filters or effects to this and have those be configurable as well.
-	this.ctx = new webkitAudioContext(); 
-	
 	
 	// === Main UI Containers ===
 	this.circuitsContainer = $(circuitsContainer).click(function(ev){ 
@@ -185,7 +186,8 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	    keyup(      function(ev){ ev.stopPropagation(); });
 
 
-
+	this.metronome = new Metronome(this.ctx, $("#metronome"), this.bpmBox);
+	
 	this.maxBottom = $(circuitsContainer).outerHeight() + 10;
 	this.minBottom = 0;
 	this.bar_count = 0;
@@ -306,7 +308,7 @@ NodeaStudio.prototype.recordingOff = function( noda ){
 
 NodeaStudio.prototype.play = function(){
 	if( this.startTime === null ){
-	    $('#mode_controls #playpause').addClass("active");
+	    $('#playpause').addClass("active");
 	    this.resetPixelTiming();
 	    this.nodas.forEach(function(noda){
 			noda.lightOff('active').lightOff('selected');
@@ -320,7 +322,7 @@ NodeaStudio.prototype.play = function(){
 
 NodeaStudio.prototype.pause = function(){
 	if( this.startTime !== null){
-	    $('#mode_controls #playpause').removeClass("active");
+	    $('#playpause').removeClass("active");
 	    this.nodas.forEach(function(noda){ noda.pause(); });
 		this.recordingNotes.forEach(function(note){ this.noteOff(note.noda); }, this);
 		this.startTime = null;

@@ -19,7 +19,7 @@ div id='edit_controls' class='controls'
             div class='control button javascript' id='record' onclick='studio.toggleRecording();' &#x9304;
             div class='label' REC
     div class='ditch'
-    spiv class='group spacer' id='time_controls'
+    spiv class='group spacer' id='advance_controls'
         spiv class='wide_box'
             select class='control select' name='advance_box' id='advance_box'
                 option value='4_bar' 4 Bars
@@ -37,6 +37,11 @@ div id='edit_controls' class='controls'
                 option value='2_pixel'   1/12 Beat
                 option value='1_pixel'   1/24 Beat
             div class='label' ADVANCE
+    div class='ditch'
+    spiv class='group spacer' id='beat_controls'
+        spiv class='button_box'
+            div class='control button javascript' id='metronome' onclick='studio.metronome.toggle();' &#x62dc;
+            div class='label' METRO
         
 
 
