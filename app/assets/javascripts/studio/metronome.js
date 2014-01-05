@@ -1,12 +1,10 @@
 var Metronome = function(ctx, button, bpm){
-	var self = this;
-	
 	this.ctx = ctx;
 	this.button = button;
 	this.armed = false;
 	this.oscillators = [];
 	
-	this.updateBPM(bpm);
+	this.setBPM(bpm);
 };
 
 
@@ -59,7 +57,7 @@ Metronome.prototype.reset = function(){
 };
 
 
-Metronome.prototype.updateBPM = function(bpm){
+Metronome.prototype.setBPM = function(bpm){
 	var newStartTime = this.ctx.startTime ? (this.ctx.startTime + ((this.oscillators.length-1)*this.seconds_between_beats)) : null;
 	this.reset(newStartTime);
 	this.seconds_between_beats = 60/bpm;

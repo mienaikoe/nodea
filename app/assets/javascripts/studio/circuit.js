@@ -13,7 +13,7 @@
 
 function Circuit(ctx, persistedNoda) {
 
-	this.context = ctx;	
+	this.ctx = ctx;	
 	
 	this.id = persistedNoda.id;
 	this.asciiCode = persistedNoda.ordinal;

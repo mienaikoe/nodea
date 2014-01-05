@@ -68,7 +68,7 @@ Template.prototype.deleteNote = function(note){
  *			on this parameter.
  */
 Template.prototype.play = function(sliversPerSecond, startingAt){
-    var startTime = this.context.currentTime;
+    var startTime = this.ctx.startTime;
     this.notes.forEach( function(note){
         if( note.start >= startingAt ){
             // Schedule when Note Plays and Stops here.

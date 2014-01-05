@@ -24,7 +24,7 @@ Sampler.prototype.resetBufferLocation = function(){
     request.open("GET", this.bufferUrl, true);
     request.responseType = "arraybuffer";
     request.onload = function() {
-        self.context.decodeAudioData(
+        self.ctx.decodeAudioData(
             request.response,
             function(buffer) { 
                 console.log('Setting Buffer for '+self.key);
@@ -62,9 +62,9 @@ Sampler.prototype.addNote = function(note){
 
 
 Sampler.prototype.allocateSource = function(){
-    var src = this.context.createBufferSource();
+    var src = this.ctx.createBufferSource();
     src.buffer = this.buffer;
-    src.connect(this.context.destination);
+    src.connect(this.ctx.destination);
     return src;
 };
 
@@ -79,7 +79,7 @@ Sampler.prototype.deallocateSource = function(src){
 // playback
 
 Sampler.prototype.play = function(pixelsPerSecond, startingAt){
-    var startTime = this.context.startTime;
+    var startTime = this.ctx.startTime;
     this.notes.forEach( function(note){
         if( note.start >= startingAt ){
             note.source.start(((note.start-startingAt)/pixelsPerSecond)+startTime);

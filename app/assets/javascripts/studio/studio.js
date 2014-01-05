@@ -425,13 +425,12 @@ NodeaStudio.prototype.setBarCount = function(howmany, duringStartup){
 NodeaStudio.prototype.setBPM = function(value){
 	try{
 		this.beats_per_minute = parseInt(value);
-		this.metronome.updateBPM(this.beats_per_minute);
+		this.metronome.setBPM(this.beats_per_minute);
 		this.resetPixelTiming();
 		this.invalidateSavedStatus();
 	} catch( ex ){
 		this.notify('Invalid Value for BPM. Please Enter a Number', ex.message);
 	}
-	// remove notifications once notifications system is built
 };
 
 NodeaStudio.prototype.setName = function(value){

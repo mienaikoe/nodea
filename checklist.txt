@@ -1,23 +1,28 @@
-Nodea Checklist
+Work Checklist
 
 
 Javascript
-- Make Some Sense of Time Signature
-- Add Barlines for Time Signature
-- Add metronome option
+- Make the Metronome Sound more pretty, and have different sounds for bar vs. beat
 - Hotkey Record & Save button
 - Render Controls in JSs
 - Add Global Volume and Global Filter
 - Add Circuit for Oscillator
 
+Ruby
+- Create a Login Page and Actions
+- Beautify the People, Projects, And Circuits Pages.
+- Think of other potentially useful pages.
 
-General Enhancements
+Design
 - Build workflow for Upload and Lookup of samples.
-- Build workflow for Noda-Circuit Binding.
-- Build workflow for Sound Effects on a Noda.
+- Rebuild workflow for Effects on a Noda.
+- Redesign Studio UI to be more intuitive.
+- Create a Logo.
+- Create a Typeface for Studio
+- Make a few demo songs with Nodea.
+- Design a demo page.
 
-
-Research
+Business
 - Investigate Competitors. 
 	-What instruments do they offer?
 	-What's their sample library like?
@@ -26,6 +31,9 @@ Research
 	-How do they make money?
 	-How long have they been in business?
 
+- Figure out whether we want to monetize, and how
+
+Legal
 - Look for unlicensed or open-source short sound files. Also look for High-Quality paid-license short sound files.
 	-See if they'll host.
 	-Figure out legal terms of sound files.
