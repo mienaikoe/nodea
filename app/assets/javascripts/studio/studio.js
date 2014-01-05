@@ -49,7 +49,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 		}); 
 	});
 
-	this.ideasContainer = $(ideasContainer).bind('mousewheel', function(ev){ self.advance((ev.originalEvent.wheelDelta > 0) ? -1 : 1); });
+	this.ideasContainer = $(ideasContainer).bind('mousewheel', function(ev){ self.advance((ev.originalEvent.wheelDelta > 0) ? self.advanceAmount : -self.advanceAmount); });
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
 	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
 	
@@ -146,18 +146,33 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	// Middle Controls
 	// TODO: Should these be initialized in js?
 	this.advanceBox = $("#advance_box");
-	this.advanceAmount = parseInt(this.advanceBox.val()) / this.beats_per_bar;
+	this.advanceAmount = this.pixels_per_beat;
 	this.advanceBox.
-			change(	function(){ self.advanceAmount = parseInt(this.value) / this.beats_per_bar; });
+			change(	function(){ 
+				var parts = this.value.split("_");
+				var counter = parseInt(parts[0]);
+				switch(parts[1]){
+					case "bar": self.advanceAmount = counter * self.pixels_per_bar; break;
+					case "beat":
+						self.advanceAmount = counter * self.pixels_per_beat; break;
+					case "pixel":
+						self.advanceAmount = counter; break;
+				}
+			});
 	
 	this.bpmBox = $("#bpm");
 	this.bpmBox.
 	    change(     function(){ self.setBPM(this.value); } ).
 	    keydown(    function(ev){ ev.stopPropagation(); }).
 	    keyup(      function(ev){ ev.stopPropagation(); });
-	this.countBox = $("#count");
-	this.countBox.
-		change(		function(){ self.setBars(this.value); }).
+	this.barSizeBox = $("#bar_size");
+	this.barSizeBox.
+		change(		function(){ self.setBarSize(this.value); }).
+	    keydown(    function(ev){ ev.stopPropagation(); }).
+	    keyup(      function(ev){ ev.stopPropagation(); });
+	this.barCountBox = $("#bar_count");
+	this.barCountBox.
+		change(		function(){ self.setBarCount(this.value); }).
 	    keydown(    function(ev){ ev.stopPropagation(); }).
 	    keyup(      function(ev){ ev.stopPropagation(); });
 	$('#name').
@@ -171,10 +186,10 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 
 
 
-	this.maxBottom = $(circuitsContainer).outerHeight();
+	this.maxBottom = $(circuitsContainer).outerHeight() + 10;
 	this.minBottom = 0;
 	this.bar_count = 0;
-	this.setBars(project.bar_count, true);
+	this.setBarCount(project.bar_count, true);
 	this.setLocation(0);
 
 
@@ -192,7 +207,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 
 // Timing
 
-NodeaStudio.prototype.pixels_per_beat = 12; // subject to change
+NodeaStudio.prototype.pixels_per_beat = 24; // subject to change
 
 NodeaStudio.prototype.resetPixelTiming = function(){
 	this.pixels_per_bar = this.pixels_per_beat * this.beats_per_bar;
@@ -270,7 +285,7 @@ NodeaStudio.prototype.recordingOff = function( noda ){
 	if( note.start === this.location ){
 	    note.container.remove();
 	} else {
-	    note.finish = thisPixel;
+	    note.finish = this.location;
 	    note.container.css('height',(note.finish-note.start)+'px');
 	    note.noda.addNote(note);
 	    this.notes.push(note);
@@ -339,7 +354,35 @@ NodeaStudio.prototype.setLocation = function(location){
 	$(this.ideasContainer).css('bottom', (-location+this.maxBottom) + 'px');
 };
 
-NodeaStudio.prototype.setBars = function(howmany, duringStartup){
+NodeaStudio.prototype.setBarSize = function(howmany){
+	try{
+		howmany = parseInt(howmany);
+		if( howmany === this.beats_per_bar ){
+			return;
+		}
+		
+		var self = this;
+		var difference = howmany - this.beats_per_bar;
+		this.barsContainer.find(".bar").each(function(){
+			var bar = $(this).css('height', (self.pixels_per_beat*howmany)-1);
+			if( difference > 0 ){
+				for( var j = difference; j>0 ; j-- ){
+					$('<div/>', {class: 'beat', style: 'height: '+(self.pixels_per_beat-1)+'px;'}).appendTo(bar);
+				}
+			} else {
+				bar.find('.beat').splice(0, -difference).forEach(function(el){ el.remove(); });
+			}
+		});
+		
+		this.beats_per_bar = howmany;
+		this.resetPixelTiming();
+		this.invalidateSavedStatus();
+	} catch (ex) {
+		this.notify("Invalid Value for Bar Size. Please Enter a Number.", ex.getMessage());
+	}
+};
+
+NodeaStudio.prototype.setBarCount = function(howmany, duringStartup){
 	try{
 		howmany = parseInt(howmany);
 		if( howmany === this.bar_count ){
@@ -361,7 +404,7 @@ NodeaStudio.prototype.setBars = function(howmany, duringStartup){
 			this.barsContainer.find('.bar').splice(0, -difference).forEach(function(el){ el.remove(); });
 		}
 		this.bar_count = howmany;
-		this.countBox.val(howmany);
+		this.barCountBox.val(howmany);
 		if(!duringStartup){
 			this.invalidateSavedStatus();
 		}
@@ -401,7 +444,7 @@ NodeaStudio.prototype.frame = function( timestamp ){
 	
 	if( this.location >= this.maxLocation ){
 	    if( this.recording ){
-	        this.setBars(this.bar_count + 4);
+	        this.setBarCount(this.bar_count + 4);
 	    } else {
 	        return this.pause();
 	    }
@@ -451,7 +494,7 @@ NodeaStudio.prototype.tail = function(){
 
 NodeaStudio.prototype.advance = function(howmuch){
 	this.pause();
-	var newLocation = this.location+(this.advanceAmount*howmuch);
+	var newLocation = this.location+howmuch;
 	if( newLocation > this.maxLocation ){
 	    newLocation = this.maxLocation;
 	} else if( newLocation < 0){
@@ -462,9 +505,9 @@ NodeaStudio.prototype.advance = function(howmuch){
 	}
 };
 
-NodeaStudio.prototype.incrementAdvanceBox = function(forward){
+NodeaStudio.prototype.incrementAdvanceBox = function(larger){
 	var oldSelection = this.advanceBox.find("option:selected");
-	var newSelection = (forward) ? oldSelection.prev("option") : oldSelection.next("option");
+	var newSelection = (larger) ? oldSelection.prev("option") : oldSelection.next("option");
 	if( newSelection.val() !== undefined ){
 	    oldSelection.removeAttr("selected");
 	    newSelection.attr("selected","selected");
@@ -528,6 +571,7 @@ NodeaStudio.prototype.deleteNote = function(note){
 		note.removeContainer();
 		this.notes.splice(idx,1);
 		note.noda.deleteNote(note);
+		this.invalidateSavedStatus();
 	}
 };
 
@@ -602,9 +646,9 @@ NodeaStudio.prototype.eventControlMap = {
 	// arrow keys
 	// TODO: Find another use for these
 	37: function(studio){ studio.incrementAdvanceBox(false); },
-	38: function(studio){ studio.advance(-1); },
+	38: function(studio){ studio.advance(studio.advanceAmount); },
 	39: function(studio){ studio.incrementAdvanceBox(true); },
-	40: function(studio){ studio.advance(1); },
+	40: function(studio){ studio.advance(-studio.advanceAmount); },
 	
 	// delete key
 	46: function(studio){ studio.deleteNote(studio.selectedNote); },
