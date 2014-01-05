@@ -186,7 +186,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	    keyup(      function(ev){ ev.stopPropagation(); });
 
 
-	this.metronome = new Metronome(this.ctx, $("#metronome"), this.bpmBox);
+	this.metronome = new Metronome(this.ctx, $("#metronome"), this.beats_per_minute);
 	
 	this.maxBottom = $(circuitsContainer).outerHeight() + 10;
 	this.minBottom = 0;
@@ -308,8 +308,11 @@ NodeaStudio.prototype.recordingOff = function( noda ){
 
 NodeaStudio.prototype.play = function(){
 	if( this.startTime === null ){
+		this.ctx.startTime = this.ctx.currentTime;
+		
 	    $('#playpause').addClass("active");
 	    this.resetPixelTiming();
+		this.metronome.start();
 	    this.nodas.forEach(function(noda){
 			noda.lightOff('active').lightOff('selected');
 			noda.play( this.pixels_per_second, this.location );
@@ -322,7 +325,10 @@ NodeaStudio.prototype.play = function(){
 
 NodeaStudio.prototype.pause = function(){
 	if( this.startTime !== null){
+		this.ctx.startTime = null;
+		
 	    $('#playpause').removeClass("active");
+		this.metronome.stop();
 	    this.nodas.forEach(function(noda){ noda.pause(); });
 		this.recordingNotes.forEach(function(note){ this.noteOff(note.noda); }, this);
 		this.startTime = null;
@@ -419,6 +425,8 @@ NodeaStudio.prototype.setBarCount = function(howmany, duringStartup){
 NodeaStudio.prototype.setBPM = function(value){
 	try{
 		this.beats_per_minute = parseInt(value);
+		this.metronome.updateBPM(this.beats_per_minute);
+		this.resetPixelTiming();
 		this.invalidateSavedStatus();
 	} catch( ex ){
 		this.notify('Invalid Value for BPM. Please Enter a Number', ex.message);
@@ -486,11 +494,11 @@ NodeaStudio.prototype.frame = function( timestamp ){
 
 NodeaStudio.prototype.head = function(){
 	this.pause();
-	this.ideasContainer.css('bottom',this.maxBottom+'px');
+	this.setLocation(0);
 };
 NodeaStudio.prototype.tail = function(){
 	this.pause();
-	this.ideasContainer.css('bottom', this.minBottom+'px');
+	this.setLocation(this.maxLocation);
 };
 
 

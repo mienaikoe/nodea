@@ -78,12 +78,12 @@ Sampler.prototype.deallocateSource = function(src){
 
 // playback
 
-Sampler.prototype.play = function(sliversPerSecond, startingAt){
-    var startTime = this.context.currentTime;
+Sampler.prototype.play = function(pixelsPerSecond, startingAt){
+    var startTime = this.context.startTime;
     this.notes.forEach( function(note){
         if( note.start >= startingAt ){
-            note.source.start(((note.start-startingAt)/sliversPerSecond)+startTime);
-            note.source.stop(((note.finish-startingAt)/sliversPerSecond)+startTime);
+            note.source.start(((note.start-startingAt)/pixelsPerSecond)+startTime);
+            note.source.stop(((note.finish-startingAt)/pixelsPerSecond)+startTime);
         }
     });
 };
