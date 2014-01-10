@@ -7,11 +7,14 @@ Javascript
 - Render Controls in JSs
 - Add Global Volume and Global Filter
 - Add Circuit for Oscillator
+- Change Save to be browser-side with Local Storage.
+
 
 Ruby
 - Create a Login Page and Actions
 - Beautify the People, Projects, And Circuits Pages.
 - Think of other potentially useful pages.
+
 
 Design
 - Build workflow for Upload and Lookup of samples.
@@ -21,6 +24,7 @@ Design
 - Create a Typeface for Studio
 - Make a few demo songs with Nodea.
 - Design a demo page.
+
 
 Business
 - Investigate Competitors. 
@@ -32,6 +36,7 @@ Business
 	-How long have they been in business?
 
 - Figure out whether we want to monetize, and how
+
 
 Legal
 - Look for unlicensed or open-source short sound files. Also look for High-Quality paid-license short sound files.

@@ -1,0 +1,37 @@
+Nodea Idea Brainstorm/Panout
+
+
+A Browser-Based offlinable app that uses local store to store your songs.
+
+Nodea server will provide:
+- the website code for initial run
+- audio mixdown
+- sample uploading, downloading, analytics, and searching
+- circuit uploading, downloading, analytics, and searching
+- user identification and project publishing for collaborative songs
+
+Required server-side technologies:
+- Serving, Main Code
+	- Apache
+- Mixdown: 
+	- a fast, concurrent, net-connected, and json-friendly service.
+	- JS, Java, ruby, Go, C++?
+	- Must be able to accurately replicate everything the Web Audio API can create.
+- Samples: 
+	-A Blobstore or filesystem
+	-A service for import audio analysis, searching, and hosting.
+- Circuits:
+	-A Blobstore or filesystem
+	-A service for upload, staging/demo/testing, searching, and hosting.
+- Projects:
+	-A Blobstore or filesystem
+	-A service for pushing changes to remote, notifying co-authors of this, searching, and hosting.
+- Collaboration:
+	-A rails or node app for 
+		-user identification, 
+		-project/sample/circuit uploading, 
+		-project sharing/contribution
+		-comments/social
+		
+		
+Commit(local), Push, Pull (web)
