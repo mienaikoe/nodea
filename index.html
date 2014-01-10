@@ -3,670 +3,100 @@
 <html>
 <head>
   <title>Nodea Studio</title>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<style type='text/css'>
-
-ditch {
-  display: block;
-  width: 10px;
-  height: 10px; }
-  ditch.float {
-    float: left; }
-
-hide {
-  display: none; }
-
-spiv {
-  display: inline-block; }
-
-body, html {
-  margin: 0px;
-  padding: 0px;
-  border: none;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-family: sans; }
-
-.left {
-  position: fixed;
-  left: 0px; }
-
-.right {
-  position: fixed;
-  right: 0px; }
-
-.bottom {
-  position: fixed;
-  bottom: 0px; }
-
-.top {
-  position: fixed;
-  top: 0px; }
-
-.charm {
-  z-index: 5; }
-
-.strange {
-  z-index: -5; }
-
-.center {
-  margin-left: auto;
-  margin-right: auto; }
-
-#studio {
-  background-color: #555; }
-  #studio .drawer {
-    width: 160px;
-    height: 100%;
-    background-color: #89A;
-    position: fixed; }
-  #studio #machine {
-    width: 801px;
-    overflow: hidden;
-    height: 100%;
-    background-color: #333333; }
-    #studio #machine #ideas {
-      position: fixed;
-      background-color: #333333;
-      padding: 10px 20px 0px;
-      overflow: hidden;
-      margin-left: auto;
-      margin-right: auto;
-      width: 761px;
-      text-align: center; }
-      #studio #machine #ideas #tracks {
-        position: absolute;
-        bottom: 0px;
-        width: 761px;
-        height: 100%; }
-        #studio #machine #ideas #tracks .nodeTrack {
-          width: 18px;
-          border-right: 1px dotted #222222;
-          height: 100%;
-          background-color: #777777; }
-          #studio #machine #ideas #tracks .nodeTrack.first {
-            border-left: 1px dotted #222222; }
-          #studio #machine #ideas #tracks .nodeTrack .note {
-            background-color: rgba(200, 200, 230, 0.6);
-            position: absolute;
-            width: 18px; }
-            #studio #machine #ideas #tracks .nodeTrack .note.recording {
-              background-color: rgba(230, 200, 200, 0.6); }
-      #studio #machine #ideas #barlines {
-        position: absolute;
-        bottom: 0px;
-        width: 761px; }
-        #studio #machine #ideas #barlines .beat {
-          width: 100%;
-          border-bottom: 1px dotted #555;
-          border-collapse: collapse;
-          height: 47px; }
-    #studio #machine #circuit {
-      width: 761px;
-      background-color: #333333;
-      padding: 0px 20px 11px;
-      overflow: hidden;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: center; }
-      #studio #machine #circuit div {
-        overflow: hidden; }
-      #studio #machine #circuit #swytches .trackSwitch {
-        height: 18px;
-        line-height: 18px;
-        background-color: #cccccc;
-        color: #222222;
-        -webkit-box-shadow: inset 0 0 5px #999;
-        color: #222222;
-        text-align: center;
-        width: 18px;
-        border-right: 1px solid #222222; }
-        #studio #machine #circuit #swytches .trackSwitch.active {
-          background-color: #ccccff;
-          -webkit-box-shadow: none; }
-        #studio #machine #circuit #swytches .trackSwitch.recording {
-          background-color: #ffcccc;
-          -webkit-box-shadow: none; }
-        #studio #machine #circuit #swytches .trackSwitch.first {
-          border-left: 1px solid #222222; }
-      #studio #machine #circuit #controls {
-        width: 761px;
-        margin: 6px 0px 5px; }
-        #studio #machine #circuit #controls .controls_container {
-          float: left;
-          height: 36px; }
-          #studio #machine #circuit #controls .controls_container .button_box {
-            width: 32px; }
-          #studio #machine #circuit #controls .controls_container .control {
-            line-height: 20px;
-            margin: 0px auto;
-            border: 1px solid #000;
-            background-color: #cccccc;
-            color: #222222;
-            -webkit-box-shadow: inset 0 0 5px #999;
-            font-size: 14px;
-            text-align: center; }
-            #studio #machine #circuit #controls .controls_container .control.active {
-              background-color: #ccccff;
-              -webkit-box-shadow: none; }
-            #studio #machine #circuit #controls .controls_container .control.recording {
-              background-color: #ffcccc;
-              -webkit-box-shadow: none; }
-            #studio #machine #circuit #controls .controls_container .control.button {
-              width: 20px;
-              cursor: pointer;
-              padding: 3px 3px 2px 2px; }
-            #studio #machine #circuit #controls .controls_container .control.field {
-              padding: 2px;
-              line-height: 21px;
-              /* inputs have some weirdness */ }
-            #studio #machine #circuit #controls .controls_container .control.select {
-              padding: 2px;
-              height: 27px; }
-            #studio #machine #circuit #controls .controls_container .control#bpm_box {
-              width: 42px; }
-            #studio #machine #circuit #controls .controls_container .control#advance_box {
-              width: 44px; }
-          #studio #machine #circuit #controls .controls_container .label {
-            color: white;
-            font-size: 7px;
-            font-family: sans-serif;
-            line-height: 12px;
-            text-align: center; }
-      #studio #machine #circuit #nodes {
-        width: 759px;
-        background-color: #005577;
-        border: 1px solid black; }
-        #studio #machine #circuit #nodes .nodesContainer {
-          padding: 5px; }
-          #studio #machine #circuit #nodes .nodesContainer#bottomleft_nodes {
-            float: left; }
-          #studio #machine #circuit #nodes .nodesContainer#bottomright_nodes {
-            float: right; }
-          #studio #machine #circuit #nodes .nodesContainer .node {
-            border: 1px solid black;
-            width: 60px;
-            height: 48px;
-            margin: 5px;
-            background-color: #cccccc;
-            color: #222222;
-            -webkit-box-shadow: inset 0 0 5px #999;
-            text-align: center;
-            line-height: 48px;
-            -moz-user-select: -moz-none;
-            -khtml-user-select: none;
-            -webkit-user-select: none;
-            /*
-             Introduced in IE 10.
-             See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
-            */
-            -ms-user-select: none;
-            user-select: none; }
-            #studio #machine #circuit #nodes .nodesContainer .node.active {
-              background-color: #ccccff;
-              -webkit-box-shadow: none; }
-            #studio #machine #circuit #nodes .nodesContainer .node.recording {
-              background-color: #ffcccc;
-              -webkit-box-shadow: none; }
-
-</style>
-<script type='text/javascript'>
-
-var Ideas = function() {
-    
-    this.container = $("#ideas");
-    
-    this.setSliverTiming();
-    
-    this.startTime = null;
-    this.recording = false;
-    this.recordingNotes = {};
-    
-    this.tracksContainer = this.container.children("#tracks");
-
-    for( _i in project.timings ){
-        this.createNoteContainer(project.timings[_i]);
-    }
-            
-    var barsContainer = this.container.children("#barlines");        
-    for( var _i=0; _i < project.numBeats; _i++  ){
-        jQuery('<div/>',{class: 'beat'}).prependTo(barsContainer);
-    }
-    
-    var containerHeight = (project.numBeats*this.sliversPerBeat)+1;    
-    this.maxBottom = $('#circuit').outerHeight();
-    this.minBottom = this.maxBottom - containerHeight;
-    this.container.css('height', containerHeight+'px' ).css('bottom', this.maxBottom+'px');
-};
-
-Ideas.prototype.framesPerSecond = 20;
-
-
-
-// Calculation
-Ideas.prototype.setSliverTiming = function(){
-    this.sliversPerBeat = (192 / project.beat); // 48 for a quarter note, 24 for an eight note, ...
-    this.sliversPerSecond = (project.bpm * this.sliversPerBeat) / 60;
-};
-
-
-
-
-
-// Recording
-Ideas.prototype.toggleRecording = function(){
-    this.recording = !this.recording;
-    if( this.recording === false ) {
-        for( _i in this.recordingNotes ){
-            this.recordingNotes[_i].noda.turnOffPassiveRecording();
-        }
-        this.recordingNotes = {};
-    }
-    $('#controls #record').toggleClass("active");
-};
-
-Ideas.prototype.noteOn = function( noda ){
-    var note = {key: noda.key, on: this.sliverFor(Date.now()), noda: noda};
-    this.recordingNotes[noda.key] = note;
-    this.createNoteContainer(note);
-};
-
-Ideas.prototype.noteOff = function( noda ){
-    var note = this.recordingNotes[noda.key];
-    if( typeof note === 'undefined' ){ 
-        return;
-    }
-    
-    var thisSliver = this.sliverFor(Date.now());
-    if( note.on === thisSliver ){
-        note.container.remove();
-    } else {
-        note.off = thisSliver;
-        note.container.css('height',(note.off-note.on)+'px');
-        note.noda.addNote(note);
-    }
-
-    delete this.recordingNotes[noda.key];
-};
-
-Ideas.prototype.createNoteContainer = function(note){
-    if( assert(note) ){
-        var clazz = 'note';
-        if( typeof note.off === 'undefined' ){
-            note.off = note.on+1;
-            clazz = 'note recording';
-        } 
-        var slivers = note.off - note.on;
-        note.container = jQuery('<div/>',{
-            class: clazz,
-            style: 'bottom: '+note.on+'px; height: '+slivers+'px;'
-        }).prependTo(this.tracksContainer.children('#track_'+note.key.charCodeAt(0)));
-    }
-};
-
-Ideas.prototype.removeNoteContainer = function(note){
-    note.container.remove();
-};
-
-
-
-
-
-
-
-
-// Playback
-
-Ideas.prototype.constructPlayIntervalFxn = function( ){
-    var ides = this;
-    return function(){ ides.frame(); };
-};
-
-Ideas.prototype.start = function(){
-    // schedule all notes to play
-    this.setSliverTiming();
-    this.lastFrameSliver = this.currentSliver();
-    for( var _i in nodas ){
-        nodas[_i].startSources( this.sliversPerSecond, this.lastFrameSliver );
-    }
-    this.startTime = Date.now() - (this.lastFrameSliver / (this.sliversPerSecond/1000));
-    this.playInterval = window.setInterval(this.constructPlayIntervalFxn(), 1000/this.framesPerSecond);
-};
-
-Ideas.prototype.pause = function(){
-    this.startTime = null;
-    clearInterval(this.playInterval);
-    nodas.map(function(noda){ noda.stopSources(); });
-    for( var key in this.recordingNotes ){
-        var note = this.recordingNotes[key];
-        note.noda.turnOffPassiveRecording();
-        if( note.container ){
-            note.container.css('height',note.off-note.on+'px');
-        }
-    }
-};
-
-Ideas.prototype.playpause = function(){
-    $('#controls #playpause').toggleClass("active");
-    if( this.startTime === null ){ 
-        this.start(); 
-    } else { 
-        this.pause(); 
-    }
-};
-
-
-
-Ideas.prototype.currentSliver = function(){
-    return Math.ceil( this.maxBottom - parseFloat(this.container.css('bottom')) );
-};
-
-Ideas.prototype.sliverFor = function(epoch){
-    if( this.startTime === null ){
-        return this.currentSliver();
-    } else {
-        return Math.ceil( (epoch - this.startTime) * this.sliversPerSecond / 1000 );
-    }
-};
-
-Ideas.prototype.frame = function(){
-    if( this.startTime === null ){
-        return this.pause();
-    }
-    
-    var currBott = parseFloat(this.container.css('bottom'));
-    if( currBott <= this.minBottom ){
-        return this.pause();
-    } 
-      
-    var sliver = this.sliverFor(Date.now());
-    this.container.css('bottom', this.maxBottom-sliver+'px');
-    
-    // handle lighting
-    for( _i in project.timings ){
-        var note = project.timings[_i];
-        if( note.on <= sliver && note.on > this.lastFrameSliver ){
-            note.noda.lightOn('active');
-        } else if( note.off <= sliver && note.off > this.lastFrameSliver ){
-            note.noda.lightOff('active');
-        }
-    }
-    for( _j in this.recordingNotes ){
-        var note = this.recordingNotes[_j];
-        if( note.container ){
-            note.container.css('height', sliver-note.start+'px');
-        }
-    }
-    
-    this.lastFrameSliver = sliver;
-};
-
-Ideas.prototype.reset = function(){
-    this.pause();
-    this.container.css('bottom',this.maxBottom+'px');
-};
-
-// not sure you'd ever need this...
-Ideas.prototype.end = function(){
-    this.pause();
-    this.container.css('bottom', this.minBottom+'px');
-};var Noda = function(noda, swytche, ctx, notes, bufferUrl) {
-    this.noda = noda;
-    this.swytche = swytche;
-    this.key = $(swytche).text();
-    this.context = ctx;
-    
-    this.notes = notes;
-    for( var ni in notes ){
-        notes[ni].noda = this;
-    }
-    
-
-    if (!bufferUrl) {
-        return;
-    } 
-    var thisNoda = this;
-    var request = new XMLHttpRequest();
-    request.open("GET", bufferUrl, true);
-    request.responseType = "arraybuffer";
-    request.onload = function() {
-        thisNoda.context.decodeAudioData(
-            request.response,
-            function(buffer) { 
-                thisNoda.buffer = buffer; 
-                thisNoda.resetSources();
-            },
-            function(buffer) { console.log("Error decoding sample for "+bufferUrl); }
-        );
-    };
-    request.send();
-};
-
-Noda.prototype.addNote = function(note){
-    if( note !== null ){
-        note.source = this.allocateSource();
-        this.notes.push(note);
-        project.timings.push(note);
-    }
-};
-
-
-Noda.prototype.allocateSource = function(){
-    var src = this.context.createBufferSource();
-    src.buffer = this.buffer;
-    src.connect(this.context.destination);
-    src.onended = function(){console.log('ended');};
-    return src;
-};
-
-Noda.prototype.deallocateSource = function(src){
-    src.stop(0);
-    src.disconnect(0);
-};
-
-
-
-
-
-// playback
-
-Noda.prototype.startSources = function(sliversPerSecond, startingAt){
-    var startTime = this.context.currentTime;
-    this.notes.map( function(note){
-        if( note.on >= startingAt ){
-            note.source.start((note.on/sliversPerSecond)+startTime);
-            note.source.stop((note.off/sliversPerSecond)+startTime);
-        }
-    });
-};
-
-Noda.prototype.stopSources = function(){
-    for( var _i in this.notes ){
-        var note = this.notes[_i];
-        this.deallocateSource(note.source);
-        note.source = this.allocateSource();
-    }
-    this.lightOff('active');
-};
-
-Noda.prototype.resetSources = function(){
-    for( var _i in this.notes ){
-        this.notes[_i].source = this.allocateSource();
-    }
-};
-
-
-
-
-
-// recording
-
-Noda.prototype.on = function() {
-    // if recording, notify ideas of new note.
-    if (this.buffer && !this.src) {
-        this.src = this.allocateSource();
-        this.src.start(0);
-        
-        if( ideas.recording ){
-            if( ideas.startTime !== null ){ //active recording
-                ideas.noteOn(this);
-                this.lightOn('recording');
-            } else { // passive recording
-                if( this.passiveRecording ){
-                    this.turnOffPassiveRecording();
-                } else {
-                    ideas.noteOn(this);
-                    this.passiveRecording = true;
-                    this.lightOn('recording');
-                }
-            }
-            
-        } else {
-            this.lightOn('active');
-        }
-    }
-};
-
-
-Noda.prototype.turnOffPassiveRecording = function(){
-        ideas.noteOff(this);
-        this.passiveRecording = false;
-        this.lightOff('recording');
-};
-
-
-
-Noda.prototype.off = function() {
-    if (this.src) {
-        this.deallocateSource(this.src);
-        this.src = null;
-        
-        if( ideas.recording ){
-            if( ideas.startTime !== null ){ //active recording
-                ideas.noteOff(this);
-                this.lightOff('recording');
-            }
-        } else {
-            this.lightOff('active');
-        }
-    }
-};
-
-
-
-
-
-
-
-// lighting
-
-Noda.prototype.lightOn = function(lightType){
-    $(this.noda).addClass(lightType);
-    $(this.swytche).addClass(lightType);
-};
-Noda.prototype.lightOff = function(lightType){
-    $(this.noda).removeClass(lightType);
-    $(this.swytche).removeClass(lightType);
-};
-
-Noda.prototype.lightsOut = function(){
-    $(this.noda).removeClass('active').removeClass('recording');
-    $(this.swytche).removeClass('active').removeClass('recording');
-};var Project = function(bindings, timings, beat, bpm){
-    this.bindings = bindings;
-    this.timings = timings;
-    this.beat = beat;
-    this.bpm = bpm;  
-};//= require_tree .
-
-var assert = function(obj){
-    return (typeof(obj) !== 'undefined' && obj !== null);
-};
-
-</script>
+  <link href="/assets/application.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/basics.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/user.css?body=1" media="all" rel="stylesheet" />
+  <link href="/assets/studio/studio.css?body=1" media="all" rel="stylesheet" />
+<link href="/assets/basics.css?body=1" media="all" rel="stylesheet" />
+  <script src="/assets/jquery.js?body=1"></script>
+<script src="/assets/jquery_ujs.js?body=1"></script>
+<script src="/assets/studio/circuit.js?body=1"></script>
+<script src="/assets/studio/metronome.js?body=1"></script>
+<script src="/assets/studio/note.js?body=1"></script>
+<script src="/assets/studio/studio.js?body=1"></script>
+<script src="/assets/users.js?body=1"></script>
+<script src="/assets/application.js?body=1"></script>
+  <script src="/circuits/Sampler/Sampler.js"></script>
+  <meta content="authenticity_token" name="csrf-param" />
+<meta content="cHpMpGjjERALj1e1qGSsG6m8e9f1Wccrl4G6mhvEdIg=" name="csrf-token" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 </head>
 <body>
 
   <hide>Header Yay!</hide>
   
-  <hide id="loadies"><hide class="loadie" id="samples"></hide><hide class="loadie" id="ditties"></hide></hide><div class="left right bottom top" id="studio"><div class="center" id="machine"><div id="ideas"><div id="tracks"><spiv class="nodeTrack first" id="track_49"></spiv><spiv class="nodeTrack" id="track_50"></spiv><spiv class="nodeTrack" id="track_51"></spiv><spiv class="nodeTrack" id="track_52"></spiv><spiv class="nodeTrack" id="track_53"></spiv><spiv class="nodeTrack" id="track_54"></spiv><spiv class="nodeTrack" id="track_55"></spiv><spiv class="nodeTrack" id="track_56"></spiv><spiv class="nodeTrack" id="track_57"></spiv><spiv class="nodeTrack" id="track_48"></spiv><spiv class="nodeTrack" id="track_113"></spiv><spiv class="nodeTrack" id="track_119"></spiv><spiv class="nodeTrack" id="track_101"></spiv><spiv class="nodeTrack" id="track_114"></spiv><spiv class="nodeTrack" id="track_116"></spiv><spiv class="nodeTrack" id="track_121"></spiv><spiv class="nodeTrack" id="track_117"></spiv><spiv class="nodeTrack" id="track_105"></spiv><spiv class="nodeTrack" id="track_111"></spiv><spiv class="nodeTrack" id="track_112"></spiv><spiv class="nodeTrack" id="track_97"></spiv><spiv class="nodeTrack" id="track_115"></spiv><spiv class="nodeTrack" id="track_100"></spiv><spiv class="nodeTrack" id="track_102"></spiv><spiv class="nodeTrack" id="track_103"></spiv><spiv class="nodeTrack" id="track_104"></spiv><spiv class="nodeTrack" id="track_106"></spiv><spiv class="nodeTrack" id="track_107"></spiv><spiv class="nodeTrack" id="track_108"></spiv><spiv class="nodeTrack" id="track_59"></spiv><spiv class="nodeTrack" id="track_122"></spiv><spiv class="nodeTrack" id="track_120"></spiv><spiv class="nodeTrack" id="track_99"></spiv><spiv class="nodeTrack" id="track_118"></spiv><spiv class="nodeTrack" id="track_98"></spiv><spiv class="nodeTrack" id="track_110"></spiv><spiv class="nodeTrack" id="track_109"></spiv><spiv class="nodeTrack" id="track_44"></spiv><spiv class="nodeTrack" id="track_46"></spiv><spiv class="nodeTrack" id="track_47"></spiv></div><div id="barlines"></div></div><div class="bottom charm" id="circuit"><div id="swytches"><spiv class="trackSwitch first">1</spiv><spiv class="trackSwitch">2</spiv><spiv class="trackSwitch">3</spiv><spiv class="trackSwitch">4</spiv><spiv class="trackSwitch">5</spiv><spiv class="trackSwitch">6</spiv><spiv class="trackSwitch">7</spiv><spiv class="trackSwitch">8</spiv><spiv class="trackSwitch">9</spiv><spiv class="trackSwitch">0</spiv><spiv class="trackSwitch">q</spiv><spiv class="trackSwitch">w</spiv><spiv class="trackSwitch">e</spiv><spiv class="trackSwitch">r</spiv><spiv class="trackSwitch">t</spiv><spiv class="trackSwitch">y</spiv><spiv class="trackSwitch">u</spiv><spiv class="trackSwitch">i</spiv><spiv class="trackSwitch">o</spiv><spiv class="trackSwitch">p</spiv><spiv class="trackSwitch">a</spiv><spiv class="trackSwitch">s</spiv><spiv class="trackSwitch">d</spiv><spiv class="trackSwitch">f</spiv><spiv class="trackSwitch">g</spiv><spiv class="trackSwitch">h</spiv><spiv class="trackSwitch">j</spiv><spiv class="trackSwitch">k</spiv><spiv class="trackSwitch">l</spiv><spiv class="trackSwitch">;</spiv><spiv class="trackSwitch">z</spiv><spiv class="trackSwitch">x</spiv><spiv class="trackSwitch">c</spiv><spiv class="trackSwitch">v</spiv><spiv class="trackSwitch">b</spiv><spiv class="trackSwitch">n</spiv><spiv class="trackSwitch">m</spiv><spiv class="trackSwitch">,</spiv><spiv class="trackSwitch">.</spiv><spiv class="trackSwitch">/</spiv></div><div id="controls"><spiv class="controls_container" id="playback_controls"><spiv class="button_box"><div class="control button" id="reset" onclick="ideas.reset();">&#x982d;</div><div class="label">RESET</div></spiv><spiv class="button_box"><div class="control button" id="playpause" onclick="ideas.playpause();">&#x6f14;</div><div class="label">PLAY</div></spiv></spiv><ditch class="float"></ditch><spiv class="controls_container" id="mode_controls"><spiv class="button_box"><div class="control button" id="record" onclick="ideas.toggleRecording();">&#x9304;</div><div class="label">REC</div></spiv></spiv><ditch class="float"></ditch><spiv class="controls_container" id="beat_controls"><spiv class="wide_box"><input class="control field" id="bpm_box" name="bpm_box" type="number" value="144" /><div class="label">BPM</div></spiv><spiv class="wide_box"><select class="control select" id="advance_box" name="advance_box"><option value="1536">8</option><option value="1152">6</option><option value="768"> 4</option><option value="576"> 3</option><option value="384"> 2</option><option selected="selected" value="192">1</option><option value="96">  &#xBD;</option><option value="64">  &#x2153;</option><option value="48">  &#xBC;</option><option value="32">  &#x2159;</option><option value="24">  &#x215B;</option></select><div class="label">ADVANCEMENT</div></spiv></spiv></div><div id="nodes"><spiv class="nodesContainer" id="bottomleft_nodes"><div class="nodeRow"><spiv class="node" id="key_49">1</spiv><spiv class="node" id="key_50">2</spiv><spiv class="node" id="key_51">3</spiv><spiv class="node" id="key_52">4</spiv><spiv class="node" id="key_53">5</spiv></div><ditch></ditch><div class="nodeRow"><spiv class="node" id="key_113">q</spiv><spiv class="node" id="key_119">w</spiv><spiv class="node" id="key_101">e</spiv><spiv class="node" id="key_114">r</spiv><spiv class="node" id="key_116">t</spiv></div><div class="nodeRow"><spiv class="node" id="key_97">a</spiv><spiv class="node" id="key_115">s</spiv><spiv class="node" id="key_100">d</spiv><spiv class="node" id="key_102">f</spiv><spiv class="node" id="key_103">g</spiv></div><div class="nodeRow"><spiv class="node" id="key_122">z</spiv><spiv class="node" id="key_120">x</spiv><spiv class="node" id="key_99">c</spiv><spiv class="node" id="key_118">v</spiv><spiv class="node" id="key_98">b</spiv></div></spiv><spiv class="nodesContainer" id="bottomright_nodes"><div class="nodeRow"><spiv class="node" id="key_54">6</spiv><spiv class="node" id="key_55">7</spiv><spiv class="node" id="key_56">8</spiv><spiv class="node" id="key_57">9</spiv><spiv class="node" id="key_48">0</spiv></div><ditch></ditch><div class="nodeRow"><spiv class="node" id="key_121">y</spiv><spiv class="node" id="key_117">u</spiv><spiv class="node" id="key_105">i</spiv><spiv class="node" id="key_111">o</spiv><spiv class="node" id="key_112">p</spiv></div><div class="nodeRow"><spiv class="node" id="key_104">h</spiv><spiv class="node" id="key_106">j</spiv><spiv class="node" id="key_107">k</spiv><spiv class="node" id="key_108">l</spiv><spiv class="node" id="key_59">;</spiv></div><div class="nodeRow"><spiv class="node" id="key_110">n</spiv><spiv class="node" id="key_109">m</spiv><spiv class="node" id="key_44">,</spiv><spiv class="node" id="key_46">.</spiv><spiv class="node" id="key_47">/</spiv></div></spiv></div></div></div><div class="drawer right top bottom charm" id="sample_drawer"></div><div class="drawer left top bottom charm" id="ditty_drawer"></div></div><script type="text/javascript">var project = {"bindings":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"https://upload.wikimedia.org/wikipedia/en/0/02/Contrabass_Clarinet_-_Fragment_from_%27Late_Spring%27.ogg","http://upload.wikimedia.org/wikipedia/en/c/c3/Bradford_Girls_Choir.ogg","http://upload.wikimedia.org/wikipedia/en/7/79/Takemitsu_02_Water_Music.ogg",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],"timings":[{"key":"1","on":0,"off":24},{"key":"2","on":32,"off":48},{"key":"1","on":48,"off":95},{"key":"3","on":72,"off":95},{"key":"1","on":96,"off":143},{"key":"3","on":96,"off":108},{"key":"1","on":288,"off":480},{"key":"2","on":144,"off":480}],"beat":4,"numBeats":24,"bpm":144}
+  <div id="studio"><div class="drawer sinistra"><div class="drawerbox"><div class="drawer_heading"><spiv>Project</spiv><spiv class="controls" id="project_controls"><spiv class="spacer" id="save_controls"><spiv class="button_box"><div class="control button javascript" id="save" onclick="studio.save();">&#x5b58;</div><div class="label">SAVE</div></spiv></spiv></spiv></div><div class="drawer_content" id="project_details"><div class="fieldLabel">Title</div><input class="fillOut" id="name" type="text" value="Test Project" /><div class="clearfix"></div><div class="fieldLabel">Description</div><textarea class="fillOut" id="description">Initial Project for Testing purposes</textarea><div class="clearfix"></div><div class="fieldLabel">Properties</div><div class="controls"><spiv class="spacer" id="bpm_controls"><spiv class="wide_box"><input class="control field" id="bpm" type="number" value="130" /><div class="label">BPM</div></spiv></spiv><div class="ditch"></div><spiv class="spacer" id="bar_size_controls"><spiv class="wide_box"><input class="control field" id="bar_size" type="number" value="3" /><div class="label">BAR SIZE</div></spiv></spiv><div class="ditch"></div><spiv class="spacer" id="bar_count_controls"><spiv class="wide_box"><input class="control field" id="bar_count" type="number" value="20" /><div class="label">BAR COUNT</div></spiv></spiv><div class="ditch"></div></div></div></div></div><div id="machine"><div class="shield top"></div><div id="ideas"></div><div class="bottom charm" id="circuits"><div id="swytches"></div><div class="controls" id="edit_controls"><spiv class="group spacer" id="playback_controls"><spiv class="button_box"><div class="control button" id="head" onclick="studio.head();">&#x982d;</div><div class="label">HEAD</div></spiv><spiv class="button_box"><div class="control button" id="tail" onclick="studio.tail();">&#x672b;</div><div class="label">TAIL</div></spiv></spiv><div class="ditch"></div><spiv class="group spacer" id="mode_controls"><spiv class="button_box"><div class="control button javascript" id="playpause" onclick="studio.playpause();">&#x6f14;</div><div class="label">PLAY</div></spiv><spiv class="button_box"><div class="control button javascript" id="record" onclick="studio.toggleRecording();">&#x9304;</div><div class="label">REC</div></spiv></spiv><div class="ditch"></div><spiv class="group spacer" id="advance_controls"><spiv class="wide_box"><select class="control select" id="advance_box" name="advance_box"><option value="4_bar">4 Bars</option><option value="3_bar">3 Bars</option><option value="2_bar"> 2 Bars</option><option value="1_bar"> 1 Bar</option><option value="3_beat">3 Beats </option><option value="2_beat">2 Beats</option><option selected="selected" value="1_beat">1 Beat</option><option value="12_pixel"> 1/2 Beat</option><option value="8_pixel">  1/3 Beat</option><option value="6_pixel">  1/4 Beat</option><option value="4_pixel">  1/6 Beat</option><option value="3_pixel">  1/8 Beat</option><option value="2_pixel">  1/12 Beat</option><option value="1_pixel">  1/24 Beat</option></select><div class="label">ADVANCE</div></spiv></spiv><div class="ditch"></div><spiv class="group spacer" id="beat_controls"><spiv class="button_box"><div class="control button javascript" id="metronome" onclick="studio.metronome.toggleArmament();">&#x62dc;</div><div class="label">METRO</div></spiv></spiv></div><div id="nodes"></div></div><div class="shield bottom"></div></div><div class="drawer dextra"><div class="drawerbox"><div class="drawer_heading"><spiv>Circuit</spiv></div><div class="drawer_content" id="circuit_details"></div></div></div></div><script type="text/javascript">$('.control.button:not(.javascript)').
+    mousedown(function(){ $(this).addClass('active');    }).
+    mouseup(function(){   $(this).removeClass('active'); })
 
-var ideas, nodas;
-
-$(function() {     
-    nodas = [];
-
-    // DOM-JS Bindings
-    var actionPairs = [];
-    $("#circuit .node").each(function(i,v) {
-        var ascii = $(v).text().toUpperCase().charCodeAt(0);
-        actionPairs[ascii] = {noda: $(v)};
-    }).click(function() {
-        // should control the actions of the key. not play note.
-    });
-
-    $("#circuit .trackSwitch").each(function(i,v){
-        var ascii = $(v).text().toUpperCase().charCodeAt(0);
-        actionPairs[ascii].swytche = $(v);
-    }).click(function(){
-        // something..?
-    });
+var studio;
 
 
-    // Sample Fetching and Allocation
-    var ctx = new webkitAudioContext();
-    for( var i in actionPairs ){
-        var actionPair = actionPairs[i];
-        if( actionPair && actionPair.noda && actionPair.swytche ){
-            var nodeNotes = [];
-            for( _j in project.timings ){
-                if( project.timings[_j].key.toUpperCase().charCodeAt(0).toString() === i ){
-                    nodeNotes.push(project.timings[_j]);
-                }
-            }
-            nodas[i] = new Noda(actionPair.noda, actionPair.swytche, ctx, nodeNotes, project.bindings[i]);
-        }
-    }        
+var project = localStorage.defaultProject;
 
-
-    // Event Handling
-    $("body").keydown(function(ev) {
-        var ascii = ev.which
-        if(ascii === 32){
-            ideas.playpause();
-        } else if (ascii === 59) {
-            ascii = 186;
-        } else if (ascii < 48) {
-            ascii = ascii + 144;
-        } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
-            return;
-        } 
-        nodas[ascii].on();
-        ev.preventDefault();
-    }).keyup(function(ev) {
-        var ascii = ev.which
-        if(ascii === 13){
-            ideas.start();
-        } else if (ascii === 59) {
-            ascii = 186;
-        } else if (ascii < 48) {
-            ascii = ascii + 144;
-        } else if( ev.which > 200) { //perhaps this should be handled by dummy nodas
-            return;
-        } 
-        nodas[ev.which].off();
-    });
-
-    $("#bpm_box").
-        change(     function(){ project.bpm = parseInt(this.value) } ).
-        keydown(    function(ev){ ev.stopPropagation(); }).
-        keyup(      function(ev){ ev.stopPropagation(); });
-
-    ideas = new Ideas(project);
+if( project === null || project === undefined ){
+	project = {
+		"project_id": 1,
+		"name": "Test Project",
+		"description": "Initial Project for Testing purposes",
+		"beats_per_minute": 130,
+		"beats_per_bar": 3,
+		"keyset": "desktop",
+		"bar_count": 20,
+		"nodas": [{
+			"ordinal": 49,
+			"handle": "Sampler",
+			"settings": {
+				"sourceFile": "http://upload.wikimedia.org/wikipedia/commons/6/66/Mango.ogg"
+			},
+			"notes": [{
+				"start": 50,
+				"finish": 73
+			},
+			{
+				"start": 83,
+				"finish": 117
+			}]
+		},
+		{
+			"ordinal": 50,
+			"handle": "Sampler",
+			"settings": {
+				"sourceFile": "http://upload.wikimedia.org/wikipedia/commons/3/33/Mangos.ogg"
+			},
+			"notes": [{
+				"start": 51,
+				"finish": 74
+			},
+			{
+				"start": 84,
+				"finish": 118
+			}]
+		},
+		{
+			"ordinal": 51,
+			"handle": "Sampler",
+			"settings": {
+				"sourceFile": "http://upload.wikimedia.org/wikipedia/commons/c/cb/Sugar2.ogg"
+			},
+			"notes": [{
+				"start": 52,
+				"finish": 75
+			},
+			{
+				"start": 85,
+				"finish": 119
+			},
+			{
+				"start": 0,
+				"finish": 40
+			}]
+		}]
+	};
+}
+$(function() {
+    studio = new NodeaStudio(document.getElementById("ideas"), document.getElementById("circuits"), project);
 });</script>
   
 </body>
 </html>
-
