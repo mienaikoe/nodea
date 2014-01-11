@@ -1,0 +1,255 @@
+/* ...
+*= require_self
+*= require ../basics
+*/
+body {
+  background-color: black; }
+
+a {
+  text-decoration: none;
+  color: #AFF; }
+  a:active {
+    color: #FFA; }
+  a:visited {
+    color: #FAF; }
+
+#studio {
+  margin: 0px auto;
+  height: 100%;
+  width: 1361px;
+  font-family: monospace;
+  box-shadow: 0px 0px 8px #555555; }
+  #studio .drawer {
+    color: white;
+    width: 300px;
+    height: 100%;
+    background-color: #222222;
+    position: relative; }
+    #studio .drawer .drawerbox {
+      background-color: #555555;
+      position: absolute;
+      top: 10px;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      overflow-y: auto;
+      overflow-x: hidden; }
+      #studio .drawer .drawerbox .drawer_heading {
+        background-color: #777777;
+        margin: 0px;
+        line-height: 48px;
+        padding: 0px 10px;
+        font-weight: 100;
+        font-size: 20px;
+        clear: both; }
+        #studio .drawer .drawerbox .drawer_heading .heading_words {
+          float: left; }
+        #studio .drawer .drawerbox .drawer_heading .controls {
+          float: right; }
+      #studio .drawer .drawerbox .fieldLabel {
+        font-size: 16px; }
+      #studio .drawer .drawerbox .urlarea {
+        width: 100%;
+        height: 100px; }
+      #studio .drawer .drawerbox .clearfix {
+        height: 20px; }
+      #studio .drawer .drawerbox .drawer_content {
+        padding: 10px;
+        font-family: monospace; }
+        #studio .drawer .drawerbox .drawer_content .fillOut {
+          font-family: monospace;
+          background-color: #777777;
+          border: 0px;
+          color: white;
+          width: 250px;
+          padding: 5px; }
+          #studio .drawer .drawerbox .drawer_content .fillOut#name {
+            font-size: 14px; }
+          #studio .drawer .drawerbox .drawer_content .fillOut#description {
+            font-size: 14px; }
+        #studio .drawer .drawerbox .drawer_content#project_details ul#authors {
+          margin: 4px;
+          padding-left: 10px; }
+          #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author {
+            list-style-type: none; }
+            #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author svg, #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author a {
+              display: inline-block;
+              vertical-align: middle; }
+            #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author a {
+              font-size: 14px; }
+            #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author svg {
+              margin-right: 8px; }
+        #studio .drawer .drawerbox .drawer_content#project_details .control.field {
+          width: 100px; }
+  #studio .controls {
+    vertical-align: middle; }
+    #studio .controls .ditch {
+      display: inline-block;
+      width: 20px;
+      height: 10px; }
+    #studio .controls .spacer {
+      height: 36px;
+      padding-top: 6px; }
+      #studio .controls .spacer.group {
+        padding-top: 5px;
+        border-top: 1px solid #555555; }
+    #studio .controls .button_box {
+      width: 32px; }
+    #studio .controls .wide_box {
+      margin: 0px 2px; }
+    #studio .controls .control {
+      line-height: 20px;
+      margin: 0px auto;
+      border: 1px solid #000;
+      font-size: 14px;
+      text-align: center;
+      background-color: #dddddd; }
+      #studio .controls .control.button {
+        width: 20px;
+        cursor: pointer;
+        padding: 3px 3px 2px 2px;
+        color: #222222;
+        box-shadow: inset 0 0 5px #999; }
+        #studio .controls .control.button.kosher {
+          background-color: #ccffcc;
+          box-shadow: none; }
+        #studio .controls .control.button.active {
+          background-color: #ffffaa;
+          box-shadow: 0px 0px 7px #8af; }
+        #studio .controls .control.button.warning {
+          background-color: #ffcccc;
+          box-shadow: none; }
+      #studio .controls .control.field {
+        padding: 2px;
+        line-height: 21px;
+        /* inputs have some weirdness */ }
+      #studio .controls .control.select {
+        padding: 2px;
+        height: 27px; }
+    #studio .controls .label {
+      color: white;
+      font-size: 7px;
+      font-family: sans-serif;
+      line-height: 12px;
+      text-align: center; }
+  #studio #machine {
+    width: 761px;
+    height: 100%;
+    float: left;
+    background-color: #222222; }
+    #studio #machine .shield {
+      height: 10px;
+      background-color: #222222;
+      position: absolute;
+      z-index: 1;
+      width: 761px; }
+    #studio #machine #ideas {
+      position: absolute;
+      background-color: #555555;
+      margin-left: auto;
+      margin-right: auto;
+      width: 761px; }
+      #studio #machine #ideas #tracks {
+        position: absolute;
+        bottom: 0px;
+        width: 761px;
+        height: 100%;
+        border-left: 1px dotted #222222; }
+        #studio #machine #ideas #tracks .nodeTrack {
+          width: 18px;
+          border-right: 1px dotted #222222;
+          height: 100%; }
+          #studio #machine #ideas #tracks .nodeTrack .note {
+            background-color: #dddddd;
+            opacity: 0.7;
+            position: absolute;
+            width: 18px; }
+            #studio #machine #ideas #tracks .nodeTrack .note.recording {
+              background-color: #ccffcc; }
+            #studio #machine #ideas #tracks .nodeTrack .note.selected {
+              opacity: 1; }
+      #studio #machine #ideas #barlines {
+        position: absolute;
+        bottom: 0px;
+        width: 761px; }
+        #studio #machine #ideas #barlines .bar {
+          width: 100%;
+          border-bottom: 1px solid #222222; }
+          #studio #machine #ideas #barlines .bar .beat {
+            width: 100%;
+            border-bottom: 1px dotted #222222; }
+    #studio #machine #circuits {
+      width: 761px;
+      background-color: #222222;
+      position: absolute;
+      bottom: 10px; }
+      #studio #machine #circuits div {
+        overflow: hidden; }
+      #studio #machine #circuits #swytches {
+        border-left: 1px solid #222222;
+        border-top: 1px solid #222222;
+        border-bottom: 1px solid #222222; }
+        #studio #machine #circuits #swytches .trackSwitch {
+          cursor: pointer;
+          height: 18px;
+          line-height: 18px;
+          color: #222222;
+          text-align: center;
+          width: 18px;
+          border-right: 1px solid #222222;
+          background-color: #aaa;
+          box-shadow: 0px 0px 7px #333 inset;
+          color: black; }
+          #studio #machine #circuits #swytches .trackSwitch.active {
+            background-color: #FFC !important; }
+          #studio #machine #circuits #swytches .trackSwitch.recording {
+            background-color: #DFD !important; }
+          #studio #machine #circuits #swytches .trackSwitch.selected {
+            background-color: #DDD; }
+      #studio #machine #circuits #edit_controls {
+        width: 761px;
+        margin-top: 8px; }
+      #studio #machine #circuits #nodes {
+        width: 761px;
+        background-color: #555555; }
+        #studio #machine #circuits #nodes .nodeRow {
+          float: left;
+          width: 310px;
+          margin: 5px; }
+          #studio #machine #circuits #nodes .nodeRow.sinistra {
+            float: left; }
+          #studio #machine #circuits #nodes .nodeRow.dextra {
+            float: right; }
+          #studio #machine #circuits #nodes .nodeRow .node {
+            border-radius: 3px;
+            border: 1px solid black;
+            width: 50px;
+            height: 42px;
+            margin: 5px;
+            text-align: center;
+            line-height: 42px;
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            /*
+             Introduced in IE 10.
+             See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+            */
+            -ms-user-select: none;
+            user-select: none;
+            background-color: #aaa;
+            box-shadow: 0px 0px 7px #333 inset;
+            color: black;
+            cursor: pointer; }
+            #studio #machine #circuits #nodes .nodeRow .node.active {
+              background-color: #FFC !important; }
+            #studio #machine #circuits #nodes .nodeRow .node.recording {
+              background-color: #DFD !important; }
+            #studio #machine #circuits #nodes .nodeRow .node.selected {
+              background-color: #DDD; }
+        #studio #machine #circuits #nodes .touchpad {
+          width: 100px;
+          height: 100px;
+          border: 1px solid #222222;
+          margin: 62px auto;
+          border-radius: 5px; }

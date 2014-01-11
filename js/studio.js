@@ -33,10 +33,10 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	
 	
 	
-	this.project_id = project.id;
+	this.project_id = project.project_id;
 	this.project_name = project.name;
 	this.project_description = project.description;	
-	this.keyset = project.keyset;
+	this.keysetName = project.keyset;
 	this.saved = true;
 		
 	this.beats_per_minute = project.beats_per_minute;
@@ -50,7 +50,10 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 		}); 
 	});
 
-	this.ideasContainer = $(ideasContainer).bind('mousewheel', function(ev){ self.advance((ev.originalEvent.wheelDelta > 0) ? self.advanceAmount : -self.advanceAmount); });
+	this.ideasContainer = $(ideasContainer).
+		bind('mousewheel', function(ev){ 
+			self.advance((ev.originalEvent.wheelDelta > 0) ? self.advanceAmount : -self.advanceAmount); 
+		});
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
 	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
 	
@@ -58,60 +61,39 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	// === Instantiate Nodas ===
 	this.nodas = [];
 	this.notes = [];
-	var keyset = this.keySets[this.keyset];
-	var keyContainer = $(this.circuitsContainer).find("#nodes");
-	var swytcheContainer = $(this.circuitsContainer).find("#swytches");
+	this.keyset = this.keySets[this.keysetName];
+	this.keyContainer = $(this.circuitsContainer).find("#nodes");
+	this.swytcheContainer = $(this.circuitsContainer).find("#swytches");
 	
-	var circuitStyles = document.createElement("style");
-	for( var circuitId in project.circuits){
-		var circuit = project.circuits[circuitId];
-		circuitStyles.appendChild(document.createTextNode(".node."+circuit.handle+"{ background-image: url('"+circuit.image+"'); }"));
-	}
-	document.head.appendChild(circuitStyles);
 	
+	
+	this.loadedCircuits = ["Circuit"];	
 	var nodeRowClass = "sinistra";
-	keyset.forEach(function(keySetRow){
-		var keyRow = jQuery('<div/>',{class: 'nodeRow '+nodeRowClass}).appendTo(keyContainer);
+	this.keyset.forEach(function(keySetRow){
+		var keyRow = jQuery('<div/>',{class: 'nodeRow '+nodeRowClass}).appendTo(this.keyContainer);
 		keySetRow.forEach(function(keySetKey){
-			var persistedNoda = project.nodas.filter(function(noda){ return noda.ordinal === keySetKey; })[0];
+			// Bad Hack: Fills out Containers so incoming containers can have proper placement.
+			keyRow.append("<div/>");
+			this.swytcheContainer.append("<div/>");
+			this.tracksContainer.append("<div/>");
+			// End Bad Hack
 			
-			var circuitConstructor;
-			if( persistedNoda ){
-				var circuit = project.circuits[persistedNoda.circuit_id];
-				circuitConstructor = window[circuit.handle];
+			var persistedNoda = project.nodas.filter(function(noda){ return noda.ordinal === keySetKey; })[0];
+			if( !persistedNoda ){
+				persistedNoda = { id: null, ordinal: keySetKey, handle: "Circuit", notes: [] };
+			}
+			var nodaInitializer = function(){this.initializeNoda(persistedNoda, keyRow);};
+			if( this.loadedCircuits.indexOf(persistedNoda.handle) == -1 ){
+				this.loadCircuit(persistedNoda, nodaInitializer);
 			} else {
-				persistedNoda = { id: null, ordinal: keySetKey,	notes: [] };
-				circuitConstructor = Circuit;
+				nodaInitializer.call(this);
 			}
 			
-			var interactiveNoda = new circuitConstructor(this.ctx, persistedNoda);
-			this.nodas[keySetKey] = interactiveNoda;
-			interactiveNoda.noda.appendTo(keyRow).
-					mousedown(function(ev){ 
-						self.noteOn(interactiveNoda);
-						interactiveNoda.mousedown = true; 
-						ev.stopPropagation(); }).
-					mouseup(function(ev){ 
-						self.noteOff(interactiveNoda); 
-						interactiveNoda.mousedown = false;}).
-					click(function(ev){ ev.stopPropagation(); });
-					
-			interactiveNoda.swytche.appendTo(swytcheContainer).
-					click(function(ev){
-						self.nodas.forEach(function(noda){noda.lightOff('selected');});
-						interactiveNoda.lightOn('selected');
-						interactiveNoda.generateDrawer();
-						ev.stopPropagation();
-			});
-			
-			interactiveNoda.trackline.appendTo(this.tracksContainer);
-			
-			this.notes = this.notes.concat(interactiveNoda.notes);
 		}, this);
 		nodeRowClass = nodeRowClass === 'sinistra' ? 'dextra' : 'sinistra';
 	}, this);
 	
-	jQuery('<div/>',{class: 'touchpad'}).appendTo(keyContainer);
+	jQuery('<div/>',{class: 'touchpad'}).appendTo(this.keyContainer);
 	
 	
 	// === Event Handling ===
@@ -204,6 +186,72 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 };
 
 
+
+
+
+// External Startup Functions
+
+
+NodeaStudio.prototype.initializeNoda = function(persistedNoda, keyRow){
+	var circuitConstructor = window[persistedNoda.handle];
+	var interactiveNoda = new circuitConstructor(this.ctx, persistedNoda);
+	this.nodas[persistedNoda.ordinal] = interactiveNoda;
+	
+	var keyPosition = 0;
+	var swytchePosition = 0;
+	for( idx in this.keyset ){
+		var keysetRow = this.keyset[idx];
+		var keyPosition = keysetRow.indexOf(persistedNoda.ordinal);
+		if( keyPosition != -1 ){
+			swytchePosition += keyPosition;
+			break;
+		} else {
+			swytchePosition += keysetRow.length;
+		}
+	}	
+	keyRow.children().eq(keyPosition).replaceWith(interactiveNoda.noda);
+	this.swytcheContainer.children().eq(swytchePosition).replaceWith(interactiveNoda.swytche);
+	this.tracksContainer.children().eq(swytchePosition).replaceWith(interactiveNoda.trackline);
+	
+	interactiveNoda.noda.
+			mousedown(function(ev){ 
+				self.noteOn(interactiveNoda);
+				interactiveNoda.mousedown = true; 
+				ev.stopPropagation(); }).
+			mouseup(function(ev){ 
+				self.noteOff(interactiveNoda); 
+				interactiveNoda.mousedown = false;}).
+			click(function(ev){ ev.stopPropagation(); });
+			
+	interactiveNoda.swytche.
+			click(function(ev){
+				self.nodas.forEach(function(noda){noda.lightOff('selected');});
+				interactiveNoda.lightOn('selected');
+				interactiveNoda.generateDrawer();
+				ev.stopPropagation();
+	});
+	
+	this.notes = this.notes.concat(interactiveNoda.notes);
+}
+
+NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
+	var handle = persistedNoda.handle;
+	var circuitJavascript = document.createElement('script');
+	circuitJavascript.setAttribute("type","text/javascript");
+	circuitJavascript.setAttribute("src","/circuits/"+handle+"/"+handle+".js");
+	var self = this;
+	circuitJavascript.onload = function(){ 
+		self.loadedCircuits.push(handle); 
+		callback.call(self); 
+	}
+	document.head.appendChild(circuitJavascript);
+	
+	var circuitStylesheet = document.createElement('link');
+	circuitStylesheet.setAttribute("rel", "stylesheet");
+	circuitStylesheet.setAttribute("type","text/css");
+	circuitStylesheet.setAttribute("href","/circuits/"+handle+"/"+handle+".css");
+	document.head.appendChild(circuitStylesheet);
+}
 
 
 
@@ -534,36 +582,56 @@ NodeaStudio.prototype.invalidateSavedStatus = function(){
 };
 
 
+NodeaStudio.prototype.marshal = function(){
+	return {
+		project_id: this.project_id,
+		name: this.project_name,
+		description: this.project_description,
+		beats_per_minute: this.beats_per_minute,
+		beats_per_bar: this.beats_per_bar,
+		keyset: this.keysetName,
+		bar_count: this.bar_count,
+		nodas: this.nodas.
+			map(function(noda){ return noda.marshal(); }).
+			filter(function(noda){ return noda.handle !== 'Circuit'; })
+	};
+}
+
+
 NodeaStudio.prototype.save = function(){
 	if( !this.saved ){
-		$('#save').removeClass('warning').addClass('active');
-		var saveObject = {
-			project_id: this.project_id,
-			name: this.project_name,
-			description: this.project_description,
-			beats_per_minute: this.beats_per_minute,
-			beats_per_bar: this.beats_per_bar,
-			keyset: this.keyset,
-			bar_count: this.bar_count,
-			nodas: this.nodas.map(function(noda){return noda.marshal();}).filter(function(noda){ return noda.handle !== 'Circuit'; })
-		};
-
-		var self = this;
-		$.ajax({
-			type: "POST",
-			url: "/studio/save",
-			data: JSON.stringify(saveObject),
-			contentType: 'application/json; charset=utf-8',
-			success: function(){
-				$('#save').removeClass('active').addClass('kosher');
-				setTimeout(function(){ $('#save').removeClass('kosher'); }, 3000 );
-			},
-			error: function(jqxhr, msg, ex){
-				$('#save').removeClass('active').addClass('warning');
-				self.notify("Save Failed. Please Try Again.", msg);
-			}
-		});
+		try{
+			$('#save').removeClass('warning').addClass('active');
+			localStorage.defaultProject = JSON.stringify(this.marshal());
+			$('#save').removeClass('active').addClass('kosher');
+			setTimeout(function(){ $('#save').removeClass('kosher'); }, 3000 );
+		} catch (ex) {
+			$('#save').removeClass('active').addClass('warning');
+			self.notify("Save Failed. Please let me know about this.", msg);
+		}
 	}
+}
+
+
+NodeaStudio.prototype.publish = function(){
+	if( !this.saved ){
+		this.notify("Please Save your Work Before Publishing");
+	}
+	
+	var self = this;
+	$.ajax({
+		type: "POST",
+		url: "/studio/publish",
+		data: JSON.stringify(this.marshal()),
+		contentType: 'application/json; charset=utf-8',
+		success: function(){
+			self.notify("Publish Successful");
+		},
+		error: function(jqxhr, msg, ex){
+			$('#save').removeClass('active').addClass('warning');
+			self.notify("Save Failed. Please Try Again.", msg);
+		}
+	});
 };
 
 NodeaStudio.prototype.notify = function(words, errorMessage){
