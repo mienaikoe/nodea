@@ -31,9 +31,9 @@
 var studio;
 
 
-var project = JSON.parse(window.localStorage.defaultProject);
-
-if( project === null || project === undefined ){
+var projectStr = window.localStorage.defaultProject;
+var project = null;
+if( projectStr === null || projectStr === undefined ){
 	project = {
 		"project_id": 1,
 		"name": "Test Project",
@@ -92,6 +92,8 @@ if( project === null || project === undefined ){
 			}]
 		}]
 	};
+} else {
+	project = JSON.parse(projectStr);
 }
 $(function() {
     studio = new NodeaStudio(document.getElementById("ideas"), document.getElementById("circuits"), project);
