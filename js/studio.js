@@ -238,7 +238,7 @@ NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
 	var handle = persistedNoda.handle;
 	var circuitJavascript = document.createElement('script');
 	circuitJavascript.setAttribute("type","text/javascript");
-	circuitJavascript.setAttribute("src","/circuits/"+handle+"/"+handle+".js");
+	circuitJavascript.setAttribute("src","/nodea/circuits/"+handle+"/"+handle+".js");
 	var self = this;
 	circuitJavascript.onload = function(){ 
 		self.loadedCircuits.push(handle); 
@@ -249,7 +249,7 @@ NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
 	var circuitStylesheet = document.createElement('link');
 	circuitStylesheet.setAttribute("rel", "stylesheet");
 	circuitStylesheet.setAttribute("type","text/css");
-	circuitStylesheet.setAttribute("href","/circuits/"+handle+"/"+handle+".css");
+	circuitStylesheet.setAttribute("href","/nodea/circuits/"+handle+"/"+handle+".css");
 	document.head.appendChild(circuitStylesheet);
 }
 
