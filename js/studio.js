@@ -9,6 +9,10 @@ window.requestAnimationFrame =
 		window.webkitRequestAnimationFrame || 
 		window.mozRequestAnimationFrame ||
 		window.msRequestAnimationFrame;
+		
+window.AudioContext = 
+		window.AudioContext || 
+		window.webkitAudioContext;
 
 if( !window.requestAnimationFrame ){
 	alert("It looks like your browser doesn't support this application. Please try a more modern Browser.");
