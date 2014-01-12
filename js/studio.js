@@ -14,10 +14,10 @@ window.AudioContext =
 		window.AudioContext || 
 		window.webkitAudioContext;
 
-if( !window.requestAnimationFrame ){
+if( !window.requestAnimationFrame || !window.AudioContext ){
 	alert("It looks like your browser doesn't support this application. Please try a more modern Browser.");
 }
-	            
+
 navigator.vibrate = 
 		navigator.vibrate || 
 		navigator.webkitVibrate || 
@@ -217,6 +217,7 @@ NodeaStudio.prototype.initializeNoda = function(persistedNoda, keyRow){
 	this.swytcheContainer.children().eq(swytchePosition).replaceWith(interactiveNoda.swytche);
 	this.tracksContainer.children().eq(swytchePosition).replaceWith(interactiveNoda.trackline);
 	
+	var self = this;
 	interactiveNoda.noda.
 			mousedown(function(ev){ 
 				self.noteOn(interactiveNoda);
