@@ -29,7 +29,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	var self = this;
 	
 	// TODO: Don't know if i should add some global filters or effects to this and have those be configurable as well.
-	this.ctx = new webkitAudioContext(); 
+	this.ctx = new AudioContext(); 
 	
 	
 	
