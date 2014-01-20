@@ -44,7 +44,6 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.saved = true;
 		
 	this.beats_per_minute = project.beats_per_minute;
-	this.beats_per_bar = project.beats_per_bar;
 	this.resetPixelTiming();
 	
 	// === Main UI Containers ===
@@ -86,6 +85,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 			if( !persistedNoda ){
 				persistedNoda = { id: null, ordinal: keySetKey, handle: "Circuit", notes: [] };
 			}
+			
 			var nodaInitializer = function(){this.initializeNoda(persistedNoda, keyRow);};
 			if( this.loadedCircuits.indexOf(persistedNoda.handle) == -1 ){
 				this.loadCircuit(persistedNoda, nodaInitializer);
@@ -177,9 +177,21 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.maxBottom = $(circuitsContainer).outerHeight() + 10;
 	this.minBottom = 0;
 	this.bar_count = 0;
+	this.beats_per_bar = 0;
+	this.setBarSize(project.beats_per_bar, true);
 	this.setBarCount(project.bar_count, true);
 	this.setLocation(0);
 
+
+	// Drawers
+	$(".toggler").each(function(idx, toggler){
+		var togglee = $(toggler).closest(".toggle").find('.togglee');
+		var hoverFunc = function(){ $(this).toggleClass("hover"); };
+		$(toggler).
+				hover( hoverFunc, hoverFunc ).
+				click(function(){ togglee.toggle(); });
+	});
+	
 
 
 	// === Animation/Timing ===
@@ -237,7 +249,7 @@ NodeaStudio.prototype.initializeNoda = function(persistedNoda, keyRow){
 	});
 	
 	this.notes = this.notes.concat(interactiveNoda.notes);
-}
+};
 
 NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
 	var handle = persistedNoda.handle;
@@ -248,7 +260,7 @@ NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
 	circuitJavascript.onload = function(){ 
 		self.loadedCircuits.push(handle); 
 		callback.call(self); 
-	}
+	};
 	document.head.appendChild(circuitJavascript);
 	
 	var circuitStylesheet = document.createElement('link');
@@ -256,7 +268,7 @@ NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
 	circuitStylesheet.setAttribute("type","text/css");
 	circuitStylesheet.setAttribute("href","/nodea/circuits/"+handle+"/"+handle+".css");
 	document.head.appendChild(circuitStylesheet);
-}
+};
 
 
 
@@ -415,7 +427,7 @@ NodeaStudio.prototype.setLocation = function(location){
 	$(this.ideasContainer).css('bottom', (-location+this.maxBottom) + 'px');
 };
 
-NodeaStudio.prototype.setBarSize = function(howmany){
+NodeaStudio.prototype.setBarSize = function(howmany, duringStartup){
 	try{
 		howmany = parseInt(howmany);
 		if( howmany === this.beats_per_bar ){
@@ -436,8 +448,11 @@ NodeaStudio.prototype.setBarSize = function(howmany){
 		});
 		
 		this.beats_per_bar = howmany;
+		this.barSizeBox.val(howmany);
+		if(!duringStartup){
+			this.invalidateSavedStatus();
+		}
 		this.resetPixelTiming();
-		this.invalidateSavedStatus();
 	} catch (ex) {
 		this.notify("Invalid Value for Bar Size. Please Enter a Number.", ex.getMessage());
 	}

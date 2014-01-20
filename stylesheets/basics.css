@@ -1,0 +1,69 @@
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\000031}}
+.clearfix {
+  clear: both; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\000034}}
+hide {
+  display: none; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\000038}}
+spiv {
+  display: inline-block; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000312}}
+body, html {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000322}}
+.left {
+  position: fixed;
+  left: 0px; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000326}}
+.right {
+  position: fixed;
+  right: 0px; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000330}}
+.bottom {
+  position: fixed;
+  bottom: 0px; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000334}}
+.top {
+  position: fixed;
+  top: 0px; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000338}}
+.charm {
+  z-index: 5; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000341}}
+.strange {
+  z-index: -5; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000344}}
+.center {
+  margin-left: auto;
+  margin-right: auto; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000350}}
+.sinistra {
+  float: left; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000353}}
+.dextra {
+  float: right; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000358}}
+.toggler {
+  cursor: pointer; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000360}}
+  .toggler.hover {
+    color: #aaa; }

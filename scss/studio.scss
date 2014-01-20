@@ -159,9 +159,6 @@ a{
                             }
                         }
                     }
-                    .control.field{
-                        width: 100px;
-                    }
                 }
             }
         }
@@ -221,6 +218,10 @@ a{
             &.field{
                 padding: 2px; 
                 line-height: $control_dimension + 1px; /* inputs have some weirdness */
+                width: 100px;
+                &.threedigit{
+                    width: 48px;
+                }
             }
             &.select{
                 padding: 2px;

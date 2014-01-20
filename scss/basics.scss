@@ -53,3 +53,11 @@ body, html{
 .dextra{
     float: right;
 }
+
+
+.toggler{
+    cursor: pointer;
+    &.hover{
+        color: #aaa;
+    }
+}
