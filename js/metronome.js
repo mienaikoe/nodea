@@ -1,5 +1,10 @@
 var Metronome = function(ctx, button, bpm){
 	this.ctx = ctx;
+	var gainNode = this.ctx.createGainNode();
+	gainNode.gain.value = 0.1;
+	gainNode.connect(this.ctx.destination);
+	this.destination = gainNode;
+	
 	this.button = button;
 	this.armed = false;
 	this.oscillators = [];
@@ -71,8 +76,8 @@ Metronome.prototype.scheduleMetronome = function(){
 		var oscillator = this.ctx.createOscillator();
 		oscillator.type = "sine";
 		oscillator.frequency.value = 1000;
-		oscillator.connect(this.ctx.destination);
-				
+		oscillator.connect(this.destination);
+
 		oscillator.start(metroStart);
 		oscillator.stop(metroStart + .024);
 		

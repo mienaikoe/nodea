@@ -21,9 +21,9 @@ $node_margin: 5px;
 $node_text_color: #222;
 
 $note_color: #DDD;
-$active_color: #FFA;
+$active_color: #FEA;
 $warning_color: #FCC;
-$kosher_color: #CFC;
+$kosher_color: #CFE;
 
 $touchpad_dimension: 100px;
 
@@ -51,7 +51,7 @@ $control_dimension: 20px;
     box-shadow: 0px 0px 7px #333 inset;
     color: black;
     &.active{ 
-        background-color: #FFC !important; 
+        background-color: #FEA !important; 
     }
     &.recording{ 
         background-color: #DFD !important; 
@@ -101,6 +101,7 @@ a{
             overflow-x: hidden;
             .drawer_heading{
                 background-color: $drawer_content_color;
+                border-bottom: 1px solid white;
                 margin: 0px;
                 line-height:48px;
                 padding: 0px 10px;
@@ -125,8 +126,32 @@ a{
                 height: 20px;
             }
             .drawer_content{
-                padding: 10px;
                 font-family: monospace;
+                .drawer_section{
+                    border-bottom: 1px solid white;
+                    .ds_heading{
+                        background-color: #333;
+                        padding: 7px;
+                        font-size: 14px;
+                    }
+                    .ds_body{
+                        .effect{
+                            border-top: 1px solid #aaa;
+                            .effect_heading{
+                                padding:7px;
+                                background-color: #333;
+                                font-size: 11px;
+                            }
+                            .effect_body{
+                                padding: 10px;
+                            }
+                        }
+                    }
+                    
+                    
+                }
+                
+                
                 .fillOut{
                     font-family: monospace;
                     background-color: $drawer_content_color;
