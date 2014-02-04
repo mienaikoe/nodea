@@ -56,7 +56,7 @@ Metronome.prototype.stop = function(){
 
 Metronome.prototype.reset = function(){
 	this.resetting = true;
-	this.oscillators.forEach(function(osc){osc.stop(0);});
+	this.oscillators.forEach(function(osc){osc.disconnect(0);});
 	this.oscillators = [];
 	this.resetting = false;
 };

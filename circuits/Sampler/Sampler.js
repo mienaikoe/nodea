@@ -69,7 +69,7 @@ Sampler.prototype.allocateSource = function(){
 };
 
 Sampler.prototype.deallocateSource = function(src){
-	if(src){ src.stop(0); src.disconnect(0); }
+	if(src){ src.disconnect(0); }
 };
 
 
