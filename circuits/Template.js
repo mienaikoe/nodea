@@ -1,9 +1,9 @@
-function Template(ctx, persistedNoda) {
+function Template(ctx, persistedNoda, circuitReplacementCallback) {
 	/* The Super Constructor will Instantiate things 
 	 * that every circuit needs, including each 
 	 * visual component and the event ties for each one.
 	 **/
-	Circuit.call(this, ctx, persistedNoda);
+	Circuit.call(this, ctx, persistedNoda, circuitReplacementCallback);
 
 	/* Build out any further initialization you need 
 	 * to do here. Any necessary settings that you add 
@@ -35,7 +35,7 @@ Template.prototype = Object.create(Circuit.prototype, {
  * that a User may want to know about.
  */
 
-Template.prototype.generateDrawerSettings = function(detailsElement){
+Template.prototype.generateSettingsDivision = function(sectionBody){
 };
 
 

@@ -72,13 +72,13 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	
 	this.loadedCircuits = ["Circuit"];	
 	var nodeRowClass = "sinistra";
-	this.keyset.forEach(function(keySetRow){
+	this.keyset.forEach(function(keySetRow, idx){
 		var keyRow = jQuery('<div/>',{class: 'nodeRow '+nodeRowClass}).appendTo(this.keyContainer);
 		keySetRow.forEach(function(keySetKey){
 			// Bad Hack: Fills out Containers so incoming containers can have proper placement.
-			keyRow.append("<div/>");
-			this.swytcheContainer.append("<div/>");
-			this.tracksContainer.append("<div/>");
+			keyRow.append("<spiv/>");
+			this.swytcheContainer.append("<spiv/>");
+			this.tracksContainer.append("<spiv/>");
 			// End Bad Hack
 			
 			var persistedNoda = project.nodas.filter(function(noda){ return noda.ordinal === keySetKey; })[0];
@@ -86,13 +86,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 				persistedNoda = { id: null, ordinal: keySetKey, handle: "Circuit", notes: [] };
 			}
 			
-			var nodaInitializer = function(){this.initializeNoda(persistedNoda, keyRow);};
-			if( this.loadedCircuits.indexOf(persistedNoda.handle) == -1 ){
-				this.loadCircuit(persistedNoda, nodaInitializer);
-			} else {
-				nodaInitializer.call(this);
-			}
-			
+			this.initializeNoda(persistedNoda);
 		}, this);
 		nodeRowClass = nodeRowClass === 'sinistra' ? 'dextra' : 'sinistra';
 	}, this);
@@ -106,24 +100,26 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 			var interactiveNoda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
 	        self.noteOn( interactiveNoda );
 			interactiveNoda.keydown = true;
+			ev.preventDefault();
 	    } else if( ev.keyCode in self.eventControlMap ){
 	        self.eventControlMap[ev.keyCode](self);
+			ev.preventDefault();
 	    } else {
 			console.log(ev.keyCode);
 	        return;
 	    }
-	    ev.preventDefault();
 	}).keyup(function(ev) {
 	    if( ev.keyCode in self.keyCodeToAsciiMap ){
 			var interactiveNoda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
 	        self.noteOff( interactiveNoda );
 			interactiveNoda.keydown = false;
+			ev.preventDefault();
 	    } else if( ev.keyCode in self.eventControlMap ){
 	        // do nothing
+			ev.preventDefault();
 	    } else {
 	        return;
-	    }
-	    ev.preventDefault();
+		}
 	}).mouseup(function(ev){
 		self.nodas.forEach(function(noda){ if(noda.mousedown){ self.noteOff(noda); } });
 	});
@@ -184,6 +180,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 
 
 	// Drawers
+	// TODO: Make this work async
 	$(".toggler").each(function(idx, toggler){
 		var togglee = $(toggler).closest(".toggle").find('.togglee');
 		var hoverFunc = function(){ $(this).toggleClass("hover"); };
@@ -208,16 +205,40 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 // External Startup Functions
 
 
-NodeaStudio.prototype.initializeNoda = function(persistedNoda, keyRow){
+NodeaStudio.prototype.initializeNoda = function(persistedNoda, callback){
+	if(!callback){
+		callback = function(newCircuit){};
+	}
+	var nodaInitializer = function(){
+		var newCircuit = this.eagerInitializeNoda(persistedNoda);
+		callback.call(this, newCircuit);
+	};
+	
+	if( this.loadedCircuits.indexOf(persistedNoda.handle) == -1 ){
+		this.loadCircuit(persistedNoda, nodaInitializer);
+	} else {
+		nodaInitializer.call(this);
+	}
+};
+
+
+NodeaStudio.prototype.eagerInitializeNoda = function(persistedNoda){
 	var circuitConstructor = window[persistedNoda.handle];
-	var interactiveNoda = new circuitConstructor(this.ctx, persistedNoda);
+	var self = this;
+	var replacementCallback = function(oldCircuit, newHandle){
+		 self.replaceCircuit(oldCircuit, newHandle);
+	};
+	var interactiveNoda = new circuitConstructor(this.ctx, persistedNoda, replacementCallback);
+	
 	this.nodas[persistedNoda.ordinal] = interactiveNoda;
 	
+	var keyRowPosition = 0;
 	var keyPosition = 0;
 	var swytchePosition = 0;
 	for( idx in this.keyset ){
+		keyRowPosition = idx;
 		var keysetRow = this.keyset[idx];
-		var keyPosition = keysetRow.indexOf(persistedNoda.ordinal);
+		keyPosition = keysetRow.indexOf(persistedNoda.ordinal);
 		if( keyPosition != -1 ){
 			swytchePosition += keyPosition;
 			break;
@@ -225,7 +246,7 @@ NodeaStudio.prototype.initializeNoda = function(persistedNoda, keyRow){
 			swytchePosition += keysetRow.length;
 		}
 	}	
-	keyRow.children().eq(keyPosition).replaceWith(interactiveNoda.noda);
+	this.keyContainer.children().eq(keyRowPosition).children().eq(keyPosition).replaceWith(interactiveNoda.noda);
 	this.swytcheContainer.children().eq(swytchePosition).replaceWith(interactiveNoda.swytche);
 	this.tracksContainer.children().eq(swytchePosition).replaceWith(interactiveNoda.trackline);
 	
@@ -249,6 +270,8 @@ NodeaStudio.prototype.initializeNoda = function(persistedNoda, keyRow){
 	});
 	
 	this.notes = this.notes.concat(interactiveNoda.notes);
+	
+	return interactiveNoda;
 };
 
 NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
@@ -615,7 +638,7 @@ NodeaStudio.prototype.marshal = function(){
 			map(function(noda){ return noda.marshal(); }).
 			filter(function(noda){ return noda.handle !== 'Circuit'; })
 	};
-}
+};
 
 
 NodeaStudio.prototype.save = function(){
@@ -630,7 +653,7 @@ NodeaStudio.prototype.save = function(){
 			self.notify("Save Failed. Please let me know about this.", msg);
 		}
 	}
-}
+};
 
 
 NodeaStudio.prototype.publish = function(){
@@ -673,6 +696,21 @@ NodeaStudio.prototype.deleteNote = function(note){
 };
 
 
+NodeaStudio.prototype.replaceCircuit = function( oldCircuit, newHandle ){
+	var persistedNoda = oldCircuit.persistedNoda;
+	persistedNoda.handle = newHandle;
+	
+	var self = this;
+	this.initializeNoda( persistedNoda, function(newCircuit){
+		self.nodas[oldCircuit.ordinal] = newCircuit;
+		newCircuit.swytche.click();
+		self.invalidateSavedStatus();
+	});
+};
+
+
+
+
 
 
 
@@ -698,14 +736,6 @@ NodeaStudio.prototype.keyCodeToAsciiMap = {
 	80:  112,	81:  113,	82:  114,	83:  115,	84:  116,	
 	85:  117,	86:  118,	87:  119,	88:  120,	89:  121,	
 	90:  122,	
-	
-	// lowercase latin
-	97:  97,	98:  98,	99:  99,	100: 100,	101: 101,	
-	102: 102,	103: 103,	104: 104,	105: 105,	106: 106,	
-	107: 107,	108: 108,	109: 109,	110: 110,	111: 111,	
-	112: 112,	113: 113,	114: 114,	115: 115,	116: 116,	
-	117: 117,	118: 118,	119: 119,	120: 120,	121: 121,	
-	122: 122,	
 	
 	// punctuation
 	186: 59,	188: 44,	190: 46,	191: 47

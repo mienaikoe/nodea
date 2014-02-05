@@ -11,9 +11,10 @@
  */
 
 
-function Circuit(ctx, persistedNoda) {
-
+function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
 	this.ctx = ctx;	
+	this.persistedNoda = persistedNoda;
+	this.circuitReplacementCallback = circuitReplacementCallback;
 	
 	this.id = persistedNoda.id;
 	this.asciiCode = persistedNoda.ordinal;
@@ -37,29 +38,61 @@ function Circuit(ctx, persistedNoda) {
 
 // Drawers and Circuit Bindings
 
-Circuit.prototype.generateDrawer = function(){
-	studio.nodas.forEach(function(noda){ noda.lightOff('selected'); });
-	this.lightOn('selected');
-	
-	var detailsElement = $("#circuit_details");
+Circuit.prototype.generateDrawer = function(){	
+	var detailsElement = $("#circuit_controls");
 	detailsElement.empty();
+		
+	var circuitSection = this.createDrawerSection(detailsElement, this.constructor.name);
 	
+	this.generateGeneralDivision(this.createDrawerDivision(circuitSection, "General"));
+	// Overriden
+	if( this.constructor !== Circuit ){
+		this.generateSettingsDivision(this.createDrawerDivision(circuitSection, "Settings"));
+		
+		var effectsSection = this.createDrawerSection(detailsElement, "Effects");
+		// TODO: Fill out Effects Section based on persisted node
+	}
+};
+
+Circuit.prototype.generateGeneralDivision = function(divisionBody){		
 	// TODO: Add Key Code
 	// TODO: Other useful data
 	
+	var selector = $("<select/>").appendTo(divisionBody);
+	Circuit.circuitsManifest.forEach(function(circuitName){
+		$("<option/>",{
+			html: circuitName, 
+			value: circuitName,
+			selected: (this.constructor.name === circuitName)
+		}).appendTo(selector);
+	}, this);
 	
-	// Overriden
-	this.generateDrawerSettings(detailsElement);
-	
-
-	
-	// TODO: Effects
+	var commiter = $("<button>Change</button>").appendTo(divisionBody);
+	var self = this;
+	$(commiter).click(function(){
+		if( $(selector).val()){
+			self.circuitReplacementCallback(self, $(selector).val());
+		}
+	});
 };
 
-Circuit.prototype.generateDrawerSettings = function(detailsElement){	
-	detailsElement.text("You've Chosen a Blank Node. You may bind this node to a new circuit.");
-	
-	// TODO: ciruit binding select options
+
+Circuit.prototype.generateSettingsDivision = function(divisionBody) {	
+};
+
+
+
+
+Circuit.prototype.createDrawerSection = function(container, title){
+	var drawerSection = $("<div/>", {class: "drawer_section toggle"}).appendTo(container);
+	$("<div/>", {class: "ds_heading toggler", text: '>> '+title}).appendTo(drawerSection);
+	return $("<div/>", {class: "ds_body togglee"}).appendTo(drawerSection);
+};
+
+Circuit.prototype.createDrawerDivision = function(section, title){
+	var drawerDivision = $("<div/>", {class: "drawer_division toggle"}).appendTo(section);
+	$("<div/>", {class: "dd_heading toggler", text: '>> '+title}).appendTo(drawerDivision);
+	return $("<div/>", {class: "dd_body togglee"}).appendTo(drawerDivision);
 };
 
 
@@ -156,3 +189,9 @@ Circuit.prototype.marshal = function(){
 Circuit.prototype.marshalSettings = function(){
 	return {};
 };
+
+
+Circuit.circuitsManifest = [
+	"",
+	"Sampler"
+];

@@ -1,12 +1,10 @@
-function Sampler(ctx, persistedNoda) {
-	Circuit.call(this, ctx, persistedNoda); // vital
+function Sampler(ctx, persistedNoda, circuitReplacementCallback) {
+	Circuit.call(this, ctx, persistedNoda, circuitReplacementCallback);
 	
-	this.bufferUrl = persistedNoda.settings.sourceFile;
-    if (!this.bufferUrl) {
-        return;
-    }
-	
-    this.resetBufferLocation();
+	if( persistedNoda.settings && persistedNoda.settings.sourceFile ){
+		this.bufferUrl = persistedNoda.settings.sourceFile;
+		this.resetBufferLocation();
+	}
 };
 
 
@@ -38,15 +36,10 @@ Sampler.prototype.resetBufferLocation = function(){
 };
 
 
-Sampler.prototype.generateDrawerSettings = function(detailsElement){
-	detailsElement.text("You've Chosen a Sampler. Here are the following details:");
-	
-	$("<div/>", {class: 'clearfix'}).appendTo(detailsElement);
-	
-	$("<div/>", {class: 'fieldLabel', html: 'Sample Source'}).appendTo(detailsElement);
-	
+Sampler.prototype.generateSettingsDivision = function(divisionBody){
+	$("<div/>", {class: 'fieldLabel', html: 'Sample Source'}).appendTo(divisionBody);
 	var self = this;
-	var mainFields = $("<div/>", {class: "mainFields"}).appendTo(detailsElement);
+	var mainFields = $("<div/>", {class: "mainFields"}).appendTo(divisionBody);
 	$("<textarea/>", {class: 'urlarea', html: this.bufferUrl}).appendTo(mainFields).
 		change(		function(ev){ self.bufferUrl = this.value; self.resetBufferLocation(); studio.invalidateSavedStatus(); }).
 	    keydown(    function(ev){ ev.stopPropagation(); }).
