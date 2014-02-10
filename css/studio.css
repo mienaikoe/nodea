@@ -2,157 +2,162 @@
 *= require_self
 *= require ../basics
 */
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000364}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000365}}
 body {
-  background-color: black; }
+  background: radial-gradient(black 20%, transparent 35%) 0 0, radial-gradient(black 20%, transparent 35%) 4px 4px, radial-gradient(#222222 20%, transparent 45%) 0 1px, radial-gradient(#222222 20%, transparent 45%) 4px 5px;
+  background-color: #0a0a0a;
+  background-size: 8px 8px; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000368}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000375}}
 a {
   text-decoration: none;
   color: #AFF; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000371}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000378}}
   a:active {
     color: #FFA; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000374}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000381}}
   a:visited {
     color: #FAF; }
 
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000380}}
-#studio {
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000386}}
+#studio_center {
   margin: 0px auto;
   height: 100%;
-  width: 1361px;
-  font-family: monospace;
-  box-shadow: 0px 0px 8px #555555; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000387}}
+  width: 1381px;
+  position: relative; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000393}}
+#studio {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0px;
+  right: 0px;
+  font-family: monospace; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003101}}
   #studio .drawer {
     color: white;
     width: 300px;
     height: 100%;
-    background-color: #222222;
-    position: relative; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000393}}
+    background-color: #555555;
+    position: absolute;
+    overflow-y: auto;
+    overflow-x: hidden; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003111}}
     #studio .drawer.sinistra {
       direction: rtl; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000396}}
-    #studio .drawer .drawerbox {
-      background-color: #555555;
-      position: absolute;
-      top: 10px;
-      bottom: 10px;
-      left: 10px;
-      right: 10px;
-      overflow-y: auto;
-      overflow-x: hidden; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003105}}
-      #studio .drawer .drawerbox .drawer_heading {
-        background-color: #777777;
-        border-bottom: 1px solid white;
-        margin: 0px;
-        line-height: 40px;
-        padding: 0px 10px;
-        font-weight: 100;
-        font-size: 18px;
-        clear: both; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003114}}
-        #studio .drawer .drawerbox .drawer_heading .heading_words {
-          float: left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003117}}
-        #studio .drawer .drawerbox .drawer_heading .controls {
-          float: right; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003121}}
-      #studio .drawer .drawerbox .fieldLabel {
-        font-size: 12px;
-        margin-bottom: 3px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003125}}
-      #studio .drawer .drawerbox .urlarea {
-        width: 100%;
-        height: 70px;
-        box-sizing: border-box;
-        padding: 5px;
-        background-color: #777;
-        color: white;
-        font-size: 12px;
-        border: 0px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003135}}
-      #studio .drawer .drawerbox .clearfix {
-        height: 20px; }
+    #studio .drawer.dextra {
+      right: 0px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003118}}
+    #studio .drawer .drawer_heading {
+      background-color: #777777;
+      border-bottom: 1px solid white;
+      margin: 0px;
+      line-height: 40px;
+      padding: 0px 10px;
+      font-weight: 100;
+      font-size: 18px;
+      clear: both; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003127}}
+      #studio .drawer .drawer_heading .heading_words {
+        float: left; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003130}}
+      #studio .drawer .drawer_heading .controls {
+        float: right; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003134}}
+    #studio .drawer .fieldLabel {
+      font-size: 12px;
+      margin-bottom: 3px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003138}}
-      #studio .drawer .drawerbox .drawer_content {
-        font-family: monospace; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003140}}
-        #studio .drawer .drawerbox .drawer_content .drawer_section {
-          border-bottom: 1px solid white; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003142}}
-          #studio .drawer .drawerbox .drawer_content .drawer_section .ds_heading {
-            background-color: #333;
-            padding: 7px;
-            font-size: 14px; }
+    #studio .drawer .urlarea {
+      width: 100%;
+      height: 70px;
+      box-sizing: border-box;
+      padding: 5px;
+      background-color: #777;
+      color: white;
+      font-size: 12px;
+      border: 0px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003148}}
-          #studio .drawer .drawerbox .drawer_content .drawer_section .ds_body .drawer_division {
-            border-top: 1px solid #aaa; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003150}}
-            #studio .drawer .drawerbox .drawer_content .drawer_section .ds_body .drawer_division .dd_heading {
-              padding: 7px;
-              background-color: #333;
-              font-size: 11px; }
+    #studio .drawer .clearfix {
+      height: 20px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003151}}
+    #studio .drawer .drawer_content {
+      font-family: monospace; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003153}}
+      #studio .drawer .drawer_content .drawer_section {
+        border-bottom: 1px solid white; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003155}}
-            #studio .drawer .drawerbox .drawer_content .drawer_section .ds_body .drawer_division .dd_body {
-              padding: 10px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003165}}
-        #studio .drawer .drawerbox .drawer_content .fillOut {
-          font-family: monospace;
-          background-color: #777777;
-          border: 0px;
-          color: white;
-          width: 250px;
-          padding: 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003172}}
-          #studio .drawer .drawerbox .drawer_content .fillOut#name {
-            font-size: 14px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003175}}
-          #studio .drawer .drawerbox .drawer_content .fillOut#description {
-            font-size: 14px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003180}}
-        #studio .drawer .drawerbox .drawer_content#project_details ul#authors {
-          margin: 4px;
-          padding-left: 10px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003183}}
-          #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author {
-            list-style-type: none; }
+        #studio .drawer .drawer_content .drawer_section .ds_heading {
+          background-color: #333;
+          padding: 7px;
+          font-size: 14px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003161}}
+        #studio .drawer .drawer_content .drawer_section .ds_body .drawer_division {
+          border-top: 1px solid #aaa; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003163}}
+          #studio .drawer .drawer_content .drawer_section .ds_body .drawer_division .dd_heading {
+            padding: 7px;
+            background-color: #333;
+            font-size: 11px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003168}}
+          #studio .drawer .drawer_content .drawer_section .ds_body .drawer_division .dd_body {
+            padding: 10px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003178}}
+      #studio .drawer .drawer_content .fillOut {
+        font-family: monospace;
+        background-color: #777777;
+        border: 0px;
+        color: white;
+        width: 250px;
+        padding: 5px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003185}}
-            #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author svg, #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author a {
-              display: inline-block;
-              vertical-align: middle; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003189}}
-            #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author a {
-              font-size: 14px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003192}}
-            #studio .drawer .drawerbox .drawer_content#project_details ul#authors li.author svg {
-              margin-right: 8px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003204}}
+        #studio .drawer .drawer_content .fillOut#name {
+          font-size: 14px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003188}}
+        #studio .drawer .drawer_content .fillOut#description {
+          font-size: 14px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003193}}
+      #studio .drawer .drawer_content#project_details ul#authors {
+        margin: 4px;
+        padding-left: 10px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003196}}
+        #studio .drawer .drawer_content#project_details ul#authors li.author {
+          list-style-type: none; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003198}}
+          #studio .drawer .drawer_content#project_details ul#authors li.author svg, #studio .drawer .drawer_content#project_details ul#authors li.author a {
+            display: inline-block;
+            vertical-align: middle; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003202}}
+          #studio .drawer .drawer_content#project_details ul#authors li.author a {
+            font-size: 14px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003205}}
+          #studio .drawer .drawer_content#project_details ul#authors li.author svg {
+            margin-right: 8px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003217}}
   #studio .controls {
     vertical-align: middle; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003206}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003219}}
     #studio .controls .ditch {
       display: inline-block;
       width: 20px;
       height: 10px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003211}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003224}}
     #studio .controls .spacer {
       height: 36px;
       padding-top: 6px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003214}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003227}}
       #studio .controls .spacer.group {
         padding-top: 5px;
         border-top: 1px solid #555555; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003221}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003234}}
     #studio .controls .button_box {
       width: 32px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003224}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003237}}
     #studio .controls .wide_box {
       margin: 0px 2px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003227}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003240}}
     #studio .controls .control {
       line-height: 20px;
       margin: 0px auto;
@@ -160,117 +165,117 @@ a {
       font-size: 14px;
       text-align: center;
       background-color: #dddddd; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003234}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003247}}
       #studio .controls .control.button {
         width: 20px;
         cursor: pointer;
         padding: 3px 3px 2px 2px;
         color: #222222;
         box-shadow: inset 0 0 5px #999; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003240}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003253}}
         #studio .controls .control.button.kosher {
           background-color: #ccffee;
           box-shadow: none; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003244}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003257}}
         #studio .controls .control.button.active {
           background-color: #ffeeaa;
           box-shadow: 0px 0px 7px #8af; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003248}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003261}}
         #studio .controls .control.button.warning {
           background-color: #ffcccc;
           box-shadow: none; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003253}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003266}}
       #studio .controls .control.field {
         padding: 2px;
         line-height: 21px;
         /* inputs have some weirdness */
         width: 100px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003257}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003270}}
         #studio .controls .control.field.threedigit {
           width: 48px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003261}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003274}}
       #studio .controls .control.select {
         padding: 2px;
         height: 27px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003273}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003286}}
     #studio .controls .label {
       color: white;
       font-size: 7px;
       font-family: sans-serif;
       line-height: 12px;
       text-align: center; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003283}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003296}}
   #studio #machine {
     width: 761px;
-    height: 100%;
-    float: left;
-    background-color: #222222; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003289}}
-    #studio #machine .shield {
-      height: 10px;
-      background-color: #222222;
+    position: absolute;
+    left: 310px;
+    top: 0px;
+    bottom: 0px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003304}}
+    #studio #machine #idea_window {
+      overflow: hidden;
       position: absolute;
-      z-index: 1;
-      width: 761px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003297}}
-    #studio #machine #ideas {
-      position: absolute;
-      background-color: #555555;
-      margin-left: auto;
-      margin-right: auto;
-      width: 761px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003303}}
-      #studio #machine #ideas #tracks {
+      top: 0px;
+      bottom: 309px;
+      width: 100%; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003311}}
+      #studio #machine #idea_window #ideas {
         position: absolute;
-        bottom: 0px;
-        width: 761px;
-        height: 100%;
-        border-left: 1px dotted #222222; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003309}}
-        #studio #machine #ideas #tracks .nodeTrack {
-          width: 18px;
-          border-right: 1px dotted #222222;
-          height: 100%; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003312}}
-          #studio #machine #ideas #tracks .nodeTrack .note {
-            background-color: #dddddd;
-            opacity: 0.7;
-            position: absolute;
-            width: 18px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003317}}
-            #studio #machine #ideas #tracks .nodeTrack .note.recording {
-              background-color: #ccffee; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003320}}
-            #studio #machine #ideas #tracks .nodeTrack .note.selected {
-              opacity: 1; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003326}}
-      #studio #machine #ideas #barlines {
-        position: absolute;
-        bottom: 0px;
+        background-color: #555555;
+        margin-left: auto;
+        margin-right: auto;
         width: 761px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003330}}
-        #studio #machine #ideas #barlines .bar {
-          width: 100%;
-          border-bottom: 1px solid #222222; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003333}}
-          #studio #machine #ideas #barlines .bar .beat {
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003317}}
+        #studio #machine #idea_window #ideas #tracks {
+          position: absolute;
+          bottom: 0px;
+          width: 761px;
+          height: 100%;
+          border-left: 1px dotted #222222; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003323}}
+          #studio #machine #idea_window #ideas #tracks .nodeTrack {
+            width: 18px;
+            border-right: 1px dotted #222222;
+            height: 100%; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003326}}
+            #studio #machine #idea_window #ideas #tracks .nodeTrack .note {
+              background-color: #dddddd;
+              opacity: 0.7;
+              position: absolute;
+              width: 18px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003331}}
+              #studio #machine #idea_window #ideas #tracks .nodeTrack .note.recording {
+                background-color: #ccffee; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003334}}
+              #studio #machine #idea_window #ideas #tracks .nodeTrack .note.selected {
+                opacity: 1; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003340}}
+        #studio #machine #idea_window #ideas #barlines {
+          position: absolute;
+          bottom: 0px;
+          width: 761px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003344}}
+          #studio #machine #idea_window #ideas #barlines .bar {
             width: 100%;
-            border-bottom: 1px dotted #222222; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003341}}
+            border-bottom: 1px solid #222222; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003347}}
+            #studio #machine #idea_window #ideas #barlines .bar .beat {
+              width: 100%;
+              border-bottom: 1px dotted #222222; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003356}}
     #studio #machine #circuits {
       width: 761px;
-      background-color: #222222;
-      position: absolute;
-      bottom: 10px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003347}}
+      height: 309px;
+      position: absolute; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003362}}
       #studio #machine #circuits div {
         overflow: hidden; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003351}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003366}}
       #studio #machine #circuits #swytches {
         border-left: 1px solid #222222;
         border-top: 1px solid #222222;
         border-bottom: 1px solid #222222; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003355}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003370}}
         #studio #machine #circuits #swytches .trackSwitch {
           cursor: pointer;
           height: 18px;
@@ -282,35 +287,36 @@ a {
           background-color: #aaa;
           box-shadow: 0px 0px 7px #333 inset;
           color: black; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000353}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000354}}
           #studio #machine #circuits #swytches .trackSwitch.active {
             background-color: #FEA !important; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000356}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000357}}
           #studio #machine #circuits #swytches .trackSwitch.recording {
             background-color: #DFD !important; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000359}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000360}}
           #studio #machine #circuits #swytches .trackSwitch.selected {
             background-color: #DDD; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003366}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003381}}
       #studio #machine #circuits #edit_controls {
-        width: 761px;
-        margin-top: 8px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003371}}
+        width: 741px;
+        padding: 5px 10px 0px;
+        background-color: #222222; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003387}}
       #studio #machine #circuits #nodes {
         width: 761px;
         background-color: #555555; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003374}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003390}}
         #studio #machine #circuits #nodes .nodeRow {
           float: left;
           width: 310px;
           margin: 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003378}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003394}}
           #studio #machine #circuits #nodes .nodeRow.sinistra {
             float: left; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003381}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003397}}
           #studio #machine #circuits #nodes .nodeRow.dextra {
             float: right; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003385}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003401}}
           #studio #machine #circuits #nodes .nodeRow .node {
             border-radius: 3px;
             border: 1px solid black;
@@ -332,16 +338,16 @@ a {
             box-shadow: 0px 0px 7px #333 inset;
             color: black;
             cursor: pointer; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000353}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000354}}
             #studio #machine #circuits #nodes .nodeRow .node.active {
               background-color: #FEA !important; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000356}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000357}}
             #studio #machine #circuits #nodes .nodeRow .node.recording {
               background-color: #DFD !important; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000359}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\0000360}}
             #studio #machine #circuits #nodes .nodeRow .node.selected {
               background-color: #DDD; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003398}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003414}}
         #studio #machine #circuits #nodes .touchpad {
           width: 100px;
           height: 100px;

@@ -170,8 +170,6 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 
 	this.metronome = new Metronome(this.ctx, $("#metronome"), this.beats_per_minute);
 	
-	this.maxBottom = $(circuitsContainer).outerHeight() + 10;
-	this.minBottom = 0;
 	this.bar_count = 0;
 	this.beats_per_bar = 0;
 	this.setBarSize(project.beats_per_bar, true);
@@ -447,7 +445,7 @@ NodeaStudio.prototype.pixelForProgress = function(progress){
 
 NodeaStudio.prototype.setLocation = function(location){
 	this.location = location;
-	$(this.ideasContainer).css('bottom', (-location+this.maxBottom) + 'px');
+	$(this.ideasContainer).css('bottom', -location+'px');
 };
 
 NodeaStudio.prototype.setBarSize = function(howmany, duringStartup){
@@ -488,9 +486,8 @@ NodeaStudio.prototype.setBarCount = function(howmany, duringStartup){
 			return;
 		}
 		var difference = howmany - this.bar_count;
-		this.minBottom -= difference*this.pixels_per_bar;
-		this.maxLocation += difference;
-		this.ideasContainer.css("height", this.maxBottom-this.minBottom+'px');
+		this.maxLocation += difference*this.pixels_per_bar;
+		this.ideasContainer.css("height", this.maxLocation+'px');
 
 		if( howmany > this.bar_count ){
 			for( var i = difference; i > 0; i--){

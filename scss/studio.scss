@@ -10,6 +10,7 @@ $circuit_padding: 10px;
 $tracks_width: ($track_width*40) + (41px); //tracks + borders
 $machine_width: $tracks_width;
 $circuit_width: $machine_width;
+$circuit_height: 309px; // required for correct positioning of tracks
 
 $machine_color: #222;
 $case_color: #555;
@@ -62,7 +63,13 @@ $control_dimension: 20px;
 }
 
 body{
-    background-color: black;
+    background:
+        radial-gradient(black 20%, transparent 35%) 0 0,
+        radial-gradient(black 20%, transparent 35%) 4px 4px,
+        radial-gradient(#222 20%, transparent 45%) 0 1px,
+        radial-gradient(#222 20%, transparent 45%) 4px 5px;
+    background-color:#0a0a0a;
+    background-size:8px 8px;
 }
 
 a{
@@ -76,32 +83,38 @@ a{
     }
 }
 
-
-#studio{
+#studio_center{
     margin: 0px auto;
     height: 100%;
-    width: (2*$drawer_width) + $machine_width;
+    width: (2*$drawer_width) + $machine_width + (2*$circuit_padding);
+    position: relative;
+}
+
+#studio{
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 0px;
+    right: 0px;
     font-family: monospace;
-    box-shadow: 0px 0px 8px $case_color;
 
     .drawer{
         color: white;
         width: $drawer_width;
         height: 100%;
-        background-color: $machine_color;
-        position: relative;
+        //background-color: $machine_color;
+        background-color: $case_color;
+        position: absolute;
+        overflow-y: auto;
+        overflow-x: hidden;
+        
         &.sinistra{
             direction:rtl;
         }
-        .drawerbox{
-            background-color: $case_color;
-            position: absolute;
-            top: 10px;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            overflow-y: auto;
-            overflow-x: hidden;
+        &.dextra{
+            right: 0px;
+        }
+
             .drawer_heading{
                 background-color: $drawer_content_color;
                 border-bottom: 1px solid white;
@@ -196,7 +209,7 @@ a{
                     }
                 }
             }
-        }
+        
         
     }
     
@@ -282,17 +295,18 @@ a{
 
     #machine{
         width: $machine_width;
-        height: 100%;
-        float: left;
-        background-color: $machine_color;
-
-        .shield{
-            height: $circuit_padding;
-            background-color: $machine_color;
+        position: absolute;
+        left: $drawer_width + $circuit_padding;
+        top: 0px;
+        bottom: 0px;
+        //background-color: $machine_color;
+        
+        #idea_window{
+            overflow: hidden;
             position: absolute;
-            z-index: 1;
-            width: $machine_width;
-        }
+            top: 0px;
+            bottom: $circuit_height;
+            width: 100%;
         
         #ideas{
             position: absolute;
@@ -337,12 +351,13 @@ a{
                 }
             }
         }
+        }
 
         #circuits{
             width: $circuit_width;
-            background-color: $machine_color;
+            height: $circuit_height;
+            //background-color: $machine_color;
             position: absolute;
-            bottom: 10px;
 
             div{
                 overflow: hidden;
@@ -364,8 +379,9 @@ a{
             }
             
             #edit_controls{
-                width: $circuit_width;
-                margin-top: 8px;
+                width: $circuit_width - 20px;
+                padding: 5px 10px 0px;
+                background-color: $machine_color;
             }
 
             #nodes{
