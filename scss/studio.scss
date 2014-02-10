@@ -13,7 +13,7 @@ $circuit_width: $machine_width;
 $circuit_height: 309px; // required for correct positioning of tracks
 
 $machine_color: #222;
-$case_color: #555;
+$case_color: rgba(100,100,100,0.62);
 $drawer_content_color: #777;
 
 $node_height: 42px;
@@ -63,13 +63,9 @@ $control_dimension: 20px;
 }
 
 body{
-    background:
-        radial-gradient(black 20%, transparent 35%) 0 0,
-        radial-gradient(black 20%, transparent 35%) 4px 4px,
-        radial-gradient(#222 20%, transparent 45%) 0 1px,
-        radial-gradient(#222 20%, transparent 45%) 4px 5px;
     background-color:#0a0a0a;
-    background-size:8px 8px;
+    //background-image: url('http://www.userlogos.org/files/backgrounds/ArkAngel06/CarbonFiber_2.jpg');
+    background-image: url('../bg.png');
 }
 
 a{
@@ -307,10 +303,10 @@ a{
             top: 0px;
             bottom: $circuit_height;
             width: 100%;
+            background-color: $case_color;
         
         #ideas{
             position: absolute;
-            background-color: $case_color;
             margin-left: auto;
             margin-right: auto;
             width: $circuit_width;
