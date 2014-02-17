@@ -27,7 +27,7 @@ Sampler.prototype.extractSettings = function(settings){
 	}
 
 	if( !this.bufferUrl ){
-		this.bufferUrl = 'circuits/Sampler/samplers/Vibe_A3.wav';
+		this.bufferUrl = 'circuits/Sampler/samples/Vibe_A3.wav';
 	}
 };
 

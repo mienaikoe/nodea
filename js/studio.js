@@ -300,6 +300,7 @@ NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
 		
 		var self = this;
 		circuitJavascript.onload = function(){
+			self.loadedCircuits.push(handle);
 			loadingCircuit.callbacks.forEach(function(callback){ 
 				callback.call(self); 
 			});

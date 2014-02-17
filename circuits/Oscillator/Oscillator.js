@@ -46,7 +46,7 @@ Oscillator.prototype.extractSettings = function(settings){
 	}
 	
 	var gainNode = this.ctx.createGainNode();
-	gainNode.gain.value = 0.3; // default volume is way too loud!
+	gainNode.gain.value = 0.2; // default volume is way too loud!
 	gainNode.connect(this.ctx.destination);
 	this.destination = gainNode;
 };
@@ -69,14 +69,15 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 	$(circuitBody).find("#Oscillator-Frequency").
 		val(this.frequency).
 		change(	function(ev){ 
-			self.frequency = this.value;
+			self.frequency = parseInt(this.value);
 			studio.invalidateSavedStatus(); 
 		});
 		
 	var signalSelector = $(circuitBody).find("#Oscillator-SignalType");
 	signalSelector.find("option[value='"+self.signalType+"']").attr("selected","selected");
 	signalSelector.change( function(ev){ 
-		self.signalType = parseInt(this.value);
+		self.signalType = this.value;
+		self.resetOscillators();
 		studio.invalidateSavedStatus(); 
 	});	
 };
@@ -200,8 +201,3 @@ Oscillator.prototype.marshalSettings = function(){
 		signalType: this.signalType
 	};
 };
-
-
-
-
-Oscillator.prototype.signalTypes = ["sine","square"];
