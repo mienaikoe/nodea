@@ -36,7 +36,10 @@ Sampler.prototype.resetBufferLocation = function(){
 };
 
 
-Sampler.prototype.generateSettingsDivision = function(divisionBody){
+Sampler.prototype.generateCircuitBody = function(circuitBody){
+	$(circuitBody).find("#Sampler-Source").text(this.bufferUrl);
+	
+	/*
 	$("<div/>", {class: 'fieldLabel', html: 'Sample Source'}).appendTo(divisionBody);
 	var self = this;
 	var mainFields = $("<div/>", {class: "mainFields"}).appendTo(divisionBody);
@@ -44,6 +47,7 @@ Sampler.prototype.generateSettingsDivision = function(divisionBody){
 		change(		function(ev){ self.bufferUrl = this.value; self.resetBufferLocation(); studio.invalidateSavedStatus(); }).
 	    keydown(    function(ev){ ev.stopPropagation(); }).
 	    keyup(      function(ev){ ev.stopPropagation(); });
+	*/
 };
 
 

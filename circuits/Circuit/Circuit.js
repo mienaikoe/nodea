@@ -16,12 +16,13 @@ function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
 	this.persistedNoda = persistedNoda;
 	this.circuitReplacementCallback = circuitReplacementCallback;
 	
+	this.handle = this.constructor.name;
 	this.id = persistedNoda.id;
 	this.asciiCode = persistedNoda.ordinal;
 	this.key = String.fromCharCode(this.asciiCode);
 	
-	this.noda = jQuery('<spiv/>',{class: 'node ' + this.constructor.name, id: 'key_'+this.asciiCode, html: this.key});
-	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch ' + this.constructor.name, html: this.key});
+	this.noda = jQuery('<spiv/>',{class: 'node ' + this.handle, id: 'key_'+this.asciiCode, html: this.key});
+	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch ' + this.handle, html: this.key});
 	this.trackline = $('<spiv/>',{id: 'track_'+this.asciiCode, class:'nodeTrack'});
 	
 	this.notes = persistedNoda.notes.map( function(persistedNote){ 
@@ -41,13 +42,13 @@ function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
 Circuit.prototype.generateDrawer = function(){	
 	var detailsElement = $("#circuit_controls");
 	detailsElement.empty();
-		
-	var circuitSection = this.createDrawerSection(detailsElement, this.constructor.name);
+	
+	var circuitSection = this.createDrawerSection(detailsElement, this.handle);
 	
 	this.generateGeneralDivision(this.createDrawerDivision(circuitSection, "General"));
 	// Overriden
 	if( this.constructor !== Circuit ){
-		this.generateSettingsDivision(this.createDrawerDivision(circuitSection, "Settings"));
+		this.generateCircuitDivision(this.createDrawerDivision(circuitSection, this.handle)); //,"nopad"
 		
 		var effectsSection = this.createDrawerSection(detailsElement, "Effects");
 		// TODO: Fill out Effects Section based on persisted node
@@ -63,7 +64,7 @@ Circuit.prototype.generateGeneralDivision = function(divisionBody){
 		$("<option/>",{
 			html: circuitName, 
 			value: circuitName,
-			selected: (this.constructor.name === circuitName)
+			selected: (this.handle === circuitName)
 		}).appendTo(selector);
 	}, this);
 	
@@ -77,22 +78,32 @@ Circuit.prototype.generateGeneralDivision = function(divisionBody){
 };
 
 
-Circuit.prototype.generateSettingsDivision = function(divisionBody) {	
+Circuit.prototype.generateCircuitDivision = function(divisionBody) {
+	var self = this;
+	$.get("circuits/"+this.handle+"/"+this.handle+".html",null,function(data){
+		var samplerBody = $(data).appendTo(divisionBody);
+		self.generateCircuitBody.call(self,samplerBody);
+	});
+};
+
+Circuit.prototype.generateCircuitBody = function(circuitBody){	
 };
 
 
 
 
-Circuit.prototype.createDrawerSection = function(container, title){
+Circuit.prototype.createDrawerSection = function(container, title, className){
+	className = className ? className : '';
 	var drawerSection = $("<div/>", {class: "drawer_section toggle"}).appendTo(container);
 	$("<div/>", {class: "ds_heading toggler", text: '>> '+title}).appendTo(drawerSection);
-	return $("<div/>", {class: "ds_body togglee"}).appendTo(drawerSection);
+	return $("<div/>", {class: "ds_body togglee "+className}).appendTo(drawerSection);
 };
 
-Circuit.prototype.createDrawerDivision = function(section, title){
+Circuit.prototype.createDrawerDivision = function(section, title, className){
+	className = className ? className : '';
 	var drawerDivision = $("<div/>", {class: "drawer_division toggle"}).appendTo(section);
 	$("<div/>", {class: "dd_heading toggler", text: '>> '+title}).appendTo(drawerDivision);
-	return $("<div/>", {class: "dd_body togglee"}).appendTo(drawerDivision);
+	return $("<div/>", {class: "dd_body togglee "+className}).appendTo(drawerDivision);
 };
 
 
@@ -179,7 +190,7 @@ Circuit.prototype.lightsOut = function(){
 
 Circuit.prototype.marshal = function(){
 	return {
-		handle: this.constructor.name,
+		handle: this.handle,
 		ordinal: this.asciiCode,
 		notes: this.notes.map( function(note){return {start: note.start, finish: note.finish};} ),
 		settings: this.marshalSettings()
@@ -193,5 +204,6 @@ Circuit.prototype.marshalSettings = function(){
 
 Circuit.circuitsManifest = [
 	"",
-	"Sampler"
+	"Sampler",
+	"Oscillator"
 ];

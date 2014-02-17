@@ -35,8 +35,11 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	// TODO: Don't know if i should add some global filters or effects to this and have those be configurable as well.
 	this.ctx = new AudioContext(); 
 	
-	
-	
+	// Create space for Circuit-Specific Styles
+	this.circuitStylesheet = document.createElement('style');
+	this.circuitStylesheet.setAttribute("type","text/css");
+	document.head.appendChild(this.circuitStylesheet);
+
 	this.project_id = project.project_id;
 	this.project_name = project.name;
 	this.project_description = project.description;	
@@ -71,6 +74,8 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	
 	
 	this.loadedCircuits = ["Circuit"];	
+	this.loadingCircuits = {};
+	
 	var nodeRowClass = "sinistra";
 	this.keyset.forEach(function(keySetRow, idx){
 		var keyRow = jQuery('<div/>',{class: 'nodeRow '+nodeRowClass}).appendTo(this.keyContainer);
@@ -222,6 +227,11 @@ NodeaStudio.prototype.initializeNoda = function(persistedNoda, callback){
 
 NodeaStudio.prototype.eagerInitializeNoda = function(persistedNoda){
 	var circuitConstructor = window[persistedNoda.handle];
+	if(!circuitConstructor){
+		console.error("Could not find Constructor for "+persistedNoda.handle);
+		return;
+	}
+	
 	var self = this;
 	var replacementCallback = function(oldCircuit, newHandle){
 		 self.replaceCircuit(oldCircuit, newHandle);
@@ -274,21 +284,27 @@ NodeaStudio.prototype.eagerInitializeNoda = function(persistedNoda){
 
 NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
 	var handle = persistedNoda.handle;
-	var circuitJavascript = document.createElement('script');
-	circuitJavascript.setAttribute("type","text/javascript");
-	circuitJavascript.setAttribute("src","/nodea/circuits/"+handle+"/"+handle+".js");
-	var self = this;
-	circuitJavascript.onload = function(){ 
-		self.loadedCircuits.push(handle); 
-		callback.call(self); 
-	};
-	document.head.appendChild(circuitJavascript);
-	
-	var circuitStylesheet = document.createElement('link');
-	circuitStylesheet.setAttribute("rel", "stylesheet");
-	circuitStylesheet.setAttribute("type","text/css");
-	circuitStylesheet.setAttribute("href","/nodea/circuits/"+handle+"/"+handle+".css");
-	document.head.appendChild(circuitStylesheet);
+	var loadingCircuit = this.loadingCircuits[handle];
+	if( loadingCircuit ){
+		loadingCircuit.callbacks.push(callback);
+	} else {
+		var circuitJavascript = document.createElement('script');
+		circuitJavascript.setAttribute("type","text/javascript");
+		circuitJavascript.setAttribute("src","/nodea/circuits/"+handle+"/"+handle+".js");
+		document.head.appendChild(circuitJavascript);
+		
+		this.circuitStylesheet.innerHTML += ".node."+handle+"{ background-image: url('circuits/"+handle+"/"+handle+".png'); }";
+		
+		loadingCircuit = {js: circuitJavascript, callbacks: [callback]};
+		this.loadingCircuits[handle] = loadingCircuit;
+		
+		var self = this;
+		circuitJavascript.onload = function(){
+			loadingCircuit.callbacks.forEach(function(callback){ 
+				callback.call(self); 
+			});
+		};
+	}
 };
 
 

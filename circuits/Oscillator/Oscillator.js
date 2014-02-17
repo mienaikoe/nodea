@@ -1,4 +1,4 @@
-function Template(ctx, persistedNoda, circuitReplacementCallback) {
+function Oscillator(ctx, persistedNoda, circuitReplacementCallback) {
 	/* The Super Constructor will Instantiate things 
 	 * that every circuit needs, including each 
 	 * visual component and the event ties for each one.
@@ -14,9 +14,9 @@ function Template(ctx, persistedNoda, circuitReplacementCallback) {
 
 
 // This Inherits the prototype of Circuit
-Template.prototype = Object.create(Circuit.prototype, {
+Oscillator.prototype = Object.create(Circuit.prototype, {
 	constructor: { 
-		value: Template, // Change This to your Circuit Handle
+		value: Oscillator, // Change This to your Circuit Handle
 		enumerable: false 
 	}
 });
@@ -35,7 +35,7 @@ Template.prototype = Object.create(Circuit.prototype, {
  * Use this function to fill in info, turn knobs, attach events on {handle}.html
  */
 
-Template.prototype.generateCircuitBody = function(circuitBody){
+Oscillator.prototype.generateCircuitBody = function(circuitBody){
 };
 
 
@@ -46,10 +46,10 @@ Template.prototype.generateCircuitBody = function(circuitBody){
  * you'll want to do something extra to the note object. If your circuit
  * won't need these, then feel free to delete them.
  */
-Template.prototype.addNote = function(note){
+Oscillator.prototype.addNote = function(note){
 	Circuit.prototype.addNote.call(this, note);
 };
-Template.prototype.deleteNote = function(note){
+Oscillator.prototype.deleteNote = function(note){
 	Circuit.prototype.deleteNote.call(this, note);
 };
 
@@ -67,7 +67,7 @@ Template.prototype.deleteNote = function(note){
  *			playback should begin at. Schedule your notes based
  *			on this parameter.
  */
-Template.prototype.play = function(sliversPerSecond, startingAt){
+Oscillator.prototype.play = function(sliversPerSecond, startingAt){
     var startTime = this.ctx.startTime;
     this.notes.forEach( function(note){
         if( note.start >= startingAt ){
@@ -76,7 +76,7 @@ Template.prototype.play = function(sliversPerSecond, startingAt){
     });
 };
 
-Template.prototype.pause = function(){
+Oscillator.prototype.pause = function(){
 	Circuit.prototype.pause.call(this);
 	// Turn Off note scheduling here
 };
@@ -98,13 +98,13 @@ Template.prototype.pause = function(){
  * will be handled for you 
  */
 
-Template.prototype.on = function() {
+Oscillator.prototype.on = function() {
 	Circuit.prototype.on.call(this);
 	// schedule note to play
 };
 
 
-Template.prototype.off = function() {
+Oscillator.prototype.off = function() {
 	Circuit.prototype.off.call(this);
 	// stop note from playing
 };
@@ -123,7 +123,7 @@ Template.prototype.off = function() {
  * persistedNoda.settings
  */
 
-Template.prototype.marshalSettings = function(){
+Oscillator.prototype.marshalSettings = function(){
 	return {
 	};
 };

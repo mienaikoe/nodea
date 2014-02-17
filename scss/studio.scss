@@ -163,6 +163,9 @@ a{
                             }
                             .dd_body{
                                 padding: 10px;
+                                &.nopad{
+                                    padding: 0px;
+                                }
                             }
                         }
                     }
