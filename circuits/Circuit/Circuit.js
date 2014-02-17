@@ -25,15 +25,22 @@ function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
 	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch ' + this.handle, html: this.key});
 	this.trackline = $('<spiv/>',{id: 'track_'+this.asciiCode, class:'nodeTrack'});
 	
-	this.notes = persistedNoda.notes.map( function(persistedNote){ 
-		var studioNote = new Note(persistedNote);
-		studioNote.noda = this;
-		studioNote.createContainer().prependTo(this.trackline);
-		return studioNote;
-	}, this);
+	this.notes = [];
 };
 
 
+Circuit.prototype.extractSettings = function(settings){
+};
+
+Circuit.prototype.extractNotes = function(notes){
+	notes.forEach( function(persistedNote){ 
+		var studioNote = new Note(persistedNote);
+		studioNote.noda = this;
+		studioNote.createContainer().prependTo(this.trackline);
+		this.addNote(studioNote);
+		return studioNote;
+	}, this);
+};
 
 
 
@@ -81,8 +88,12 @@ Circuit.prototype.generateGeneralDivision = function(divisionBody){
 Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 	var self = this;
 	$.get("circuits/"+this.handle+"/"+this.handle+".html",null,function(data){
-		var samplerBody = $(data).appendTo(divisionBody);
-		self.generateCircuitBody.call(self,samplerBody);
+		var circuitBody = $(data).appendTo(divisionBody);
+		$(circuitBody).
+			keydown(    function(ev){ ev.stopPropagation(); }).
+			keyup(      function(ev){ ev.stopPropagation(); });
+	
+		self.generateCircuitBody.call(self,circuitBody);
 	});
 };
 

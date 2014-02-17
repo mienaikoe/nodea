@@ -1,10 +1,14 @@
 function Sampler(ctx, persistedNoda, circuitReplacementCallback) {
 	Circuit.call(this, ctx, persistedNoda, circuitReplacementCallback);
 	
-	if( persistedNoda.settings && persistedNoda.settings.sourceFile ){
-		this.bufferUrl = persistedNoda.settings.sourceFile;
-		this.resetBufferLocation();
-	}
+	/* The order and timing of setting and note extraction is up to you.
+	 */
+	this.extractSettings(persistedNoda.settings);
+	
+	var self = this;
+	this.resetBufferLocation(function(){
+		self.extractNotes(persistedNoda.notes);
+	});
 };
 
 
@@ -15,8 +19,21 @@ Sampler.prototype = Object.create(Circuit.prototype, {
 
 
 
+Sampler.prototype.extractSettings = function(settings){
+	if(settings){
+		if( settings.sourceFile ){
+			this.bufferUrl = settings.sourceFile;
+		}
+	}
 
-Sampler.prototype.resetBufferLocation = function(){
+	if( !this.bufferUrl ){
+		this.bufferUrl = 'circuits/Sampler/samplers/Vibe_A3.wav';
+	}
+};
+
+
+
+Sampler.prototype.resetBufferLocation = function(callback){
 	var self = this;
     var request = new XMLHttpRequest();
     request.open("GET", this.bufferUrl, true);
@@ -28,6 +45,7 @@ Sampler.prototype.resetBufferLocation = function(){
                 console.log('Setting Buffer for '+self.key);
                 self.buffer = buffer; 
                 self.resetSources();
+				callback.call(self);
             },
             function() { console.log("Error decoding sample for "+this.bufferUrl); }
         );
@@ -37,8 +55,15 @@ Sampler.prototype.resetBufferLocation = function(){
 
 
 Sampler.prototype.generateCircuitBody = function(circuitBody){
-	$(circuitBody).find("#Sampler-Source").text(this.bufferUrl);
-	
+	var self = this;
+	$(circuitBody).find("#Sampler-Source").
+		text(this.bufferUrl).
+		change(	function(ev){ 
+			self.bufferUrl = this.value; 
+			self.resetBufferLocation(); 
+			studio.invalidateSavedStatus(); 
+		});
+			
 	/*
 	$("<div/>", {class: 'fieldLabel', html: 'Sample Source'}).appendTo(divisionBody);
 	var self = this;
@@ -57,6 +82,10 @@ Sampler.prototype.addNote = function(note){
 	note.source = this.allocateSource();
 };
 
+Sampler.prototype.deleteNote = function(note){ // not sure if needed
+	this.deallocateSource(note.source);
+	Circuit.prototype.deleteNote.call(this, note);
+};
 
 Sampler.prototype.allocateSource = function(){
     var src = this.ctx.createBufferSource();

@@ -5,10 +5,13 @@ function Oscillator(ctx, persistedNoda, circuitReplacementCallback) {
 	 **/
 	Circuit.call(this, ctx, persistedNoda, circuitReplacementCallback);
 
+	/* The order and timing of setting and note extraction is up to you.
+	 */
+	this.extractSettings(persistedNoda.settings);
+	this.extractNotes(persistedNoda.notes);
+	
 	/* Build out any further initialization you need 
-	 * to do here. Any necessary settings that you add 
-	 * in the marshalSettings function will be in 
-	 * persistedNoda.settings
+	 * to do here. 
 	 */
 };
 
@@ -21,6 +24,32 @@ Oscillator.prototype = Object.create(Circuit.prototype, {
 	}
 });
 
+
+Oscillator.prototype.extractSettings = function(settings){
+	if( settings){
+		/* Any necessary settings that you add in the marshalSettings function 
+		 * will be in settings
+		 */
+		if(settings.frequency){
+			this.frequency = settings.frequency;
+		}
+		if(settings.type){
+			this.signalType = settings.signalType;
+		}
+	}
+	
+	if(!this.frequency){
+		this.frequency = 440; // Concert A ?
+	}
+	if(!this.signalType){
+		this.signalType = "sine";
+	}
+	
+	var gainNode = this.ctx.createGainNode();
+	gainNode.gain.value = 0.3; // default volume is way too loud!
+	gainNode.connect(this.ctx.destination);
+	this.destination = gainNode;
+};
 
 
 
@@ -36,6 +65,20 @@ Oscillator.prototype = Object.create(Circuit.prototype, {
  */
 
 Oscillator.prototype.generateCircuitBody = function(circuitBody){
+	var self = this;
+	$(circuitBody).find("#Oscillator-Frequency").
+		val(this.frequency).
+		change(	function(ev){ 
+			self.frequency = this.value;
+			studio.invalidateSavedStatus(); 
+		});
+		
+	var signalSelector = $(circuitBody).find("#Oscillator-SignalType");
+	signalSelector.find("option[value='"+self.signalType+"']").attr("selected","selected");
+	signalSelector.change( function(ev){ 
+		self.signalType = parseInt(this.value);
+		studio.invalidateSavedStatus(); 
+	});	
 };
 
 
@@ -48,11 +91,24 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
  */
 Oscillator.prototype.addNote = function(note){
 	Circuit.prototype.addNote.call(this, note);
+	note.oscillator = this.allocateOscillator();
 };
 Oscillator.prototype.deleteNote = function(note){
+	this.deallocateOscillator(note.oscillator);
 	Circuit.prototype.deleteNote.call(this, note);
 };
 
+Oscillator.prototype.allocateOscillator = function(){
+	var oscillator = this.ctx.createOscillator();
+	oscillator.type = this.signalType;
+	oscillator.frequency.value = this.frequency;
+	oscillator.connect(this.destination);
+	return oscillator;
+};
+
+Oscillator.prototype.deallocateOscillator = function(osc){
+	if(osc){ osc.disconnect(0); }
+};
 
 
 /*
@@ -67,19 +123,28 @@ Oscillator.prototype.deleteNote = function(note){
  *			playback should begin at. Schedule your notes based
  *			on this parameter.
  */
-Oscillator.prototype.play = function(sliversPerSecond, startingAt){
+Oscillator.prototype.play = function(pixelsPerSecond, startingAt){
     var startTime = this.ctx.startTime;
     this.notes.forEach( function(note){
         if( note.start >= startingAt ){
-            // Schedule when Note Plays and Stops here.
+            note.oscillator.start(((note.start-startingAt)/pixelsPerSecond)+startTime);
+            note.oscillator.stop(((note.finish-startingAt)/pixelsPerSecond)+startTime);
         }
     });
 };
 
 Oscillator.prototype.pause = function(){
 	Circuit.prototype.pause.call(this);
-	// Turn Off note scheduling here
+	this.resetOscillators();
 };
+
+Oscillator.prototype.resetOscillators = function(){
+	this.notes.forEach(function(note){ 
+		this.deallocateOscillator(note.oscillator); 
+		note.oscillator = this.allocateOscillator(); 
+	}, this);
+};
+
 
 
 
@@ -100,13 +165,19 @@ Oscillator.prototype.pause = function(){
 
 Oscillator.prototype.on = function() {
 	Circuit.prototype.on.call(this);
-	// schedule note to play
+	if (this.frequency && this.signalType && !this.oscillator) {
+        this.oscillator = this.allocateOscillator();
+        this.oscillator.start(0);
+    }
 };
 
 
 Oscillator.prototype.off = function() {
 	Circuit.prototype.off.call(this);
-	// stop note from playing
+	if( this.oscillator ){
+		this.deallocateOscillator(this.oscillator);
+        this.oscillator = null;
+	}
 };
 
 
@@ -125,5 +196,12 @@ Oscillator.prototype.off = function() {
 
 Oscillator.prototype.marshalSettings = function(){
 	return {
+		frequency: this.frequency,
+		signalType: this.signalType
 	};
 };
+
+
+
+
+Oscillator.prototype.signalTypes = ["sine","square"];

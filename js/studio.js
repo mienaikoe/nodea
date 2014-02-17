@@ -415,12 +415,14 @@ NodeaStudio.prototype.play = function(){
 	    $('#playpause').addClass("active");
 	    this.resetPixelTiming();
 		this.metronome.start();
-	    this.nodas.forEach(function(noda){
+	    this.startTime = Date.now() - (this.location / (this.pixels_per_second/1000));
+		this.lastLocation = this.location;
+		
+		this.nodas.forEach(function(noda){
 			noda.lightOff('active').lightOff('selected');
 			noda.play( this.pixels_per_second, this.location );
 		}, this);
-	    this.startTime = Date.now() - (this.location / (this.pixels_per_second/1000));
-		this.lastLocation = this.location;
+		
 	    requestAnimationFrame(this.frame.bind(this));
 	}
 };

@@ -5,10 +5,12 @@ function Template(ctx, persistedNoda, circuitReplacementCallback) {
 	 **/
 	Circuit.call(this, ctx, persistedNoda, circuitReplacementCallback);
 
-	/* Build out any further initialization you need 
-	 * to do here. Any necessary settings that you add 
-	 * in the marshalSettings function will be in 
-	 * persistedNoda.settings
+	/* The order and timing of setting and note extraction is up to you.
+	 */
+	this.extractSettings(persistedNoda.settings);
+	this.extractNotes(persistedNoda.notes);
+	
+	/* Build out any further initialization you need to do here. 
 	 */
 };
 
@@ -23,6 +25,16 @@ Template.prototype = Object.create(Circuit.prototype, {
 
 
 
+Template.prototype.extractSettings = function(settings){
+	if(settings){
+		/* Any necessary settings that you add in the marshalSettings function 
+		 * will be in settings
+		 */
+	}
+	
+	/* Set Default values here.
+	 */
+};
 
 
 
@@ -67,7 +79,7 @@ Template.prototype.deleteNote = function(note){
  *			playback should begin at. Schedule your notes based
  *			on this parameter.
  */
-Template.prototype.play = function(sliversPerSecond, startingAt){
+Template.prototype.play = function(pixelsPerSecond, startingAt){
     var startTime = this.ctx.startTime;
     this.notes.forEach( function(note){
         if( note.start >= startingAt ){
