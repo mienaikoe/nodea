@@ -8,9 +8,19 @@
   <link href="css/studio.css" media="all" rel="stylesheet" />
 
   <script src="lib/jquery-2.1.0.min.js"></script>
-  <script src="js/metronome.js"></script>
-  <script src="js/note.js"></script>
-  <script src="js/studio.js"></script>
+  
+  <!-- Core Scripts -->
+  <script src="core/DrawerUtils.js"></script>
+  <script src="core/EffectsChain.js"></script>
+  <script src="core/Metronome.js"></script>
+  <script src="core/Note.js"></script>
+  <script src="core/NodeaStudio.js"></script>
+  
+  <!-- Effect Scripts -->
+  <script src="effects/PassThrough/PassThrough.js"></script>
+  <script src="effects/Envelope/Envelope.js"></script>
+  <link href="effects/Envelope/Envelope.css" media="all" rel="stylesheet" /> 
+  
   
   <!-- Is Base of All Circuits, so Needs to Be Loaded beforehand -->
   <script src="circuits/Circuit/Circuit.js"></script>

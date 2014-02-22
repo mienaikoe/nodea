@@ -47,10 +47,18 @@ Sampler.prototype.resetBufferLocation = function(callback){
                 self.resetSources();
 				callback.call(self);
             },
-            function() { console.log("Error decoding sample for "+this.bufferUrl); }
+            function() { 
+				console.log("Error decoding sample for "+this.bufferUrl); 
+			}
         );
     };
-    request.send();
+	try{
+		request.send();
+	} catch(err) { // Not working...
+		console.error("Error when trying to fetch Buffer Source");
+		console.error(err);
+		callback.call(self);
+	}
 };
 
 
@@ -79,7 +87,12 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 
 Sampler.prototype.addNote = function(note){
 	Circuit.prototype.addNote.call(this, note);
-	note.source = this.allocateSource();
+	try{ 
+		note.source = this.allocateSource(); 
+	} catch (exception) {
+		console.error("Error Allocating Source: ");
+		console.error(exception);
+	}
 };
 
 Sampler.prototype.deleteNote = function(note){ // not sure if needed

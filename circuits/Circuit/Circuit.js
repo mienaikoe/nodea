@@ -26,6 +26,9 @@ function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
 	this.trackline = $('<spiv/>',{id: 'track_'+this.asciiCode, class:'nodeTrack'});
 	
 	this.notes = [];
+	
+	this.chain = new EffectsChain(this.ctx, this.ctx.destination);
+	this.destination = this.chain.input;
 };
 
 
@@ -50,15 +53,16 @@ Circuit.prototype.generateDrawer = function(){
 	var detailsElement = $("#circuit_controls");
 	detailsElement.empty();
 	
-	var circuitSection = this.createDrawerSection(detailsElement, this.handle);
+	var circuitSection = DrawerUtils.createSection(detailsElement, this.handle);
 	
-	this.generateGeneralDivision(this.createDrawerDivision(circuitSection, "General"));
+	this.generateGeneralDivision(DrawerUtils.createDivision(circuitSection, "General"));
 	// Overriden
 	if( this.constructor !== Circuit ){
-		this.generateCircuitDivision(this.createDrawerDivision(circuitSection, this.handle)); //,"nopad"
+		this.generateCircuitDivision(DrawerUtils.createDivision(circuitSection, this.handle));
 		
-		var effectsSection = this.createDrawerSection(detailsElement, "Effects");
+		var effectsSection = DrawerUtils.createSection(detailsElement, "Effects");
 		// TODO: Fill out Effects Section based on persisted node
+		this.chain.render(effectsSection);
 	}
 };
 
@@ -103,19 +107,7 @@ Circuit.prototype.generateCircuitBody = function(circuitBody){
 
 
 
-Circuit.prototype.createDrawerSection = function(container, title, className){
-	className = className ? className : '';
-	var drawerSection = $("<div/>", {class: "drawer_section toggle"}).appendTo(container);
-	$("<div/>", {class: "ds_heading toggler", text: '>> '+title}).appendTo(drawerSection);
-	return $("<div/>", {class: "ds_body togglee "+className}).appendTo(drawerSection);
-};
 
-Circuit.prototype.createDrawerDivision = function(section, title, className){
-	className = className ? className : '';
-	var drawerDivision = $("<div/>", {class: "drawer_division toggle"}).appendTo(section);
-	$("<div/>", {class: "dd_heading toggler", text: '>> '+title}).appendTo(drawerDivision);
-	return $("<div/>", {class: "dd_body togglee "+className}).appendTo(drawerDivision);
-};
 
 
 

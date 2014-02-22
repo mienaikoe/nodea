@@ -45,10 +45,7 @@ Oscillator.prototype.extractSettings = function(settings){
 		this.signalType = "sine";
 	}
 	
-	var gainNode = this.ctx.createGainNode();
-	gainNode.gain.value = 0.2; // default volume is way too loud!
-	gainNode.connect(this.ctx.destination);
-	this.destination = gainNode;
+	this.chain.push(this.ctx.createEnvelope());
 };
 
 
@@ -128,8 +125,12 @@ Oscillator.prototype.play = function(pixelsPerSecond, startingAt){
     var startTime = this.ctx.startTime;
     this.notes.forEach( function(note){
         if( note.start >= startingAt ){
-            note.oscillator.start(((note.start-startingAt)/pixelsPerSecond)+startTime);
-            note.oscillator.stop(((note.finish-startingAt)/pixelsPerSecond)+startTime);
+			var startWhen = ((note.start-startingAt)/pixelsPerSecond)+startTime;
+			var endWhen = ((note.finish-startingAt)/pixelsPerSecond)+startTime
+            note.oscillator.start(startWhen);
+			chain.start(startWhen);
+            note.oscillator.stop(endWhen);
+			chain.stop(endWhen);
         }
     });
 };
@@ -166,9 +167,11 @@ Oscillator.prototype.resetOscillators = function(){
 
 Oscillator.prototype.on = function() {
 	Circuit.prototype.on.call(this);
-	if (this.frequency && this.signalType && !this.oscillator) {
+	if( !this.oscillator ){
+		var curTime = this.ctx.currentTime;
         this.oscillator = this.allocateOscillator();
-        this.oscillator.start(0);
+        this.oscillator.start(curTime);
+		this.chain.start(curTime);
     }
 };
 
@@ -178,6 +181,7 @@ Oscillator.prototype.off = function() {
 	if( this.oscillator ){
 		this.deallocateOscillator(this.oscillator);
         this.oscillator = null;
+		this.chain.stop(this.ctx.currentTime);
 	}
 };
 

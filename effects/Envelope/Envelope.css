@@ -1,0 +1,11 @@
+.envelope_slider {
+}
+
+.envelope_slider label{
+    width: 64px;
+    display: inline-block;
+}
+
+.envelope_slider input{
+    vertical-align: middle;
+}
