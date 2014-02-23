@@ -120,16 +120,13 @@ Sampler.prototype.deallocateSource = function(src){
 
 // playback
 
-Sampler.prototype.play = function(pixelsPerSecond, startingAt){
-    var startTime = this.ctx.startTime;
-    this.notes.forEach( function(note){
-        if( note.start >= startingAt ){
-			var startWhen = ((note.start-startingAt)/pixelsPerSecond)+startTime;
-			var endWhen = ((note.finish-startingAt)/pixelsPerSecond)+startTime;
-            note.source.start(startWhen+this.chain.start(startWhen));
-            note.source.stop(endWhen+this.chain.stop(endWhen));
-        }
-    }, this);
+
+Sampler.prototype.scheduleCircuitStart = function(startWhen, note){
+	note.source.start(startWhen+this.chain.start(startWhen));
+};
+
+Sampler.prototype.scheduleCircuitStop = function(endWhen, note){
+	note.source.stop(endWhen+this.chain.stop(endWhen));
 };
 
 Sampler.prototype.pause = function(){
@@ -158,7 +155,7 @@ Sampler.prototype.resetSources = function(){
 Sampler.prototype.on = function() {
 	Circuit.prototype.on.call(this);
 	this.src = this.allocateSource();
-	this.src.start(this.chain.start(this.ctx.currentTime));
+	this.scheduleCircuitStart(this.chain.start(this.ctx.currentTime), {source: this.src});
 };
 
 
@@ -168,7 +165,8 @@ Sampler.prototype.off = function() {
 		var targetSrc = this.src;
 		var curTime = this.ctx.currentTime;
 		var delayTime = this.chain.stop(curTime);
-		targetSrc.stop(curTime+delayTime);
+		
+		this.scheduleCircuitStop(curTime+delayTime, {source: targetSrc});
 		
 		var self = this;
 		window.setTimeout(function(){

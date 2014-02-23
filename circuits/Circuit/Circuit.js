@@ -139,8 +139,25 @@ Circuit.prototype.deleteNote = function(note){
 
 // playback
 
-Circuit.prototype.play = function(sliversPerSecond, startingAt){
+Circuit.prototype.play = function(pixelsPerSecond, startingAt){
+    var startTime = this.ctx.startTime;
+    this.notes.forEach( function(note){
+        if( note.start >= startingAt ){
+			var startWhen = ((note.start-startingAt)/pixelsPerSecond)+startTime;
+			var endWhen = ((note.finish-startingAt)/pixelsPerSecond)+startTime;
+            this.scheduleCircuitStart(startWhen, note);
+			this.scheduleCircuitStop(endWhen, note);
+        }
+    }, this);
 };
+
+
+Circuit.prototype.scheduleCircuitStart = function(startWhen, note){
+};
+
+Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
+};
+
 
 Circuit.prototype.pause = function(){
 	this.turnOffPassiveRecording();

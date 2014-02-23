@@ -74,25 +74,21 @@ Template.prototype.deleteNote = function(note){
  *		
  * These functions alert your circuit to when the User has requested
  * the song to Play or Pause. 
- * @param sliversPerSecond is an integer that represents the Studio's
- *			note resolution. Combine this with a variable in units of 
- *			slivers or seconds to translate between the two units.
- * @param startAt is an integer that represents the sliver that the
- *			playback should begin at. Schedule your notes based
- *			on this parameter.
+ * @param startWhen is a float that represents the Studio's startTime with offset.
+ * @param note is the note associated with the start event. 
+ *   If there is no backing note, you are required to pass an anonymous object 
+ *   that has any parameters you would require of a normal note.
  */
-Template.prototype.play = function(pixelsPerSecond, startingAt){
-    var startTime = this.ctx.startTime;
-    this.notes.forEach( function(note){
-        if( note.start >= startingAt ){
-            // Schedule when Note Plays and Stops here.
-        }
-    });
+Template.prototype.scheduleCircuitStart = function(startWhen, note){
 };
+
+Template.prototype.scheduleCircuitStop = function(endWhen, note){
+};
+
 
 Template.prototype.pause = function(){
 	Circuit.prototype.pause.call(this);
-	// Turn Off note scheduling here
+	// Turn Off note scheduling here.
 };
 
 

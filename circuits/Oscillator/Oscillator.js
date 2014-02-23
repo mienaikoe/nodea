@@ -121,22 +121,20 @@ Oscillator.prototype.deallocateOscillator = function(osc){
  *			playback should begin at. Schedule your notes based
  *			on this parameter.
  */
-Oscillator.prototype.play = function(pixelsPerSecond, startingAt){
-    var startTime = this.ctx.startTime;
-    this.notes.forEach( function(note){
-        if( note.start >= startingAt ){
-			var startWhen = ((note.start-startingAt)/pixelsPerSecond)+startTime;
-			var endWhen = ((note.finish-startingAt)/pixelsPerSecond)+startTime;
-            note.oscillator.start(startWhen+this.chain.start(startWhen));
-            note.oscillator.stop(endWhen+this.chain.stop(endWhen));
-        }
-    }, this);
+Oscillator.prototype.scheduleCircuitStart = function(startWhen, note){
+	note.oscillator.start(startWhen+this.chain.start(startWhen));
+};
+
+Oscillator.prototype.scheduleCircuitStop = function(endWhen, note){
+	note.oscillator.stop(endWhen+this.chain.stop(endWhen));
 };
 
 Oscillator.prototype.pause = function(){
 	Circuit.prototype.pause.call(this);
 	this.resetOscillators();
 };
+
+
 
 Oscillator.prototype.resetOscillators = function(){
 	this.notes.forEach(function(note){ 
@@ -166,7 +164,7 @@ Oscillator.prototype.resetOscillators = function(){
 Oscillator.prototype.on = function() {
 	Circuit.prototype.on.call(this);
 	this.oscillator = this.allocateOscillator();
-	this.oscillator.start(this.chain.start(this.ctx.currentTime));
+	this.scheduleCircuitStart(this.chain.start(this.ctx.currentTime), {oscillator: this.oscillator});
 };
 
 
@@ -176,7 +174,8 @@ Oscillator.prototype.off = function() {
 		var targetOsc = this.oscillator;
 		var curTime = this.ctx.currentTime;
 		var delayTime = this.chain.stop(curTime);
-		targetOsc.stop(curTime+delayTime);
+		
+		this.scheduleCircuitStop(this.chain.start(this.ctx.currentTime), {oscillator: targetOsc});
 		
 		var self = this;
 		window.setTimeout(function(){
