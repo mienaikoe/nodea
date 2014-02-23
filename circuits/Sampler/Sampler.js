@@ -4,10 +4,11 @@ function Sampler(ctx, persistedNoda, circuitReplacementCallback) {
 	/* The order and timing of setting and note extraction is up to you.
 	 */
 	this.extractSettings(persistedNoda.settings);
+	this.extractNotes(persistedNoda.notes);
 	
 	var self = this;
 	this.resetBufferLocation(function(){
-		self.extractNotes(persistedNoda.notes);
+		self.bindBufferToNotes();
 	});
 };
 
@@ -20,6 +21,7 @@ Sampler.prototype = Object.create(Circuit.prototype, {
 
 
 Sampler.prototype.extractSettings = function(settings){
+	Circuit.prototype.extractSettings.call(this, settings);
 	if(settings){
 		if( settings.sourceFile ){
 			this.bufferUrl = settings.sourceFile;
@@ -85,10 +87,11 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 
 
 
-Sampler.prototype.addNote = function(note){
-	Circuit.prototype.addNote.call(this, note);
+Sampler.prototype.bindBufferToNotes = function(){
 	try{ 
-		note.source = this.allocateSource(); 
+		this.notes.forEach(function(note){
+			note.source = this.allocateSource(); 
+		}, this);
 	} catch (exception) {
 		console.error("Error Allocating Source: ");
 		console.error(exception);
@@ -103,7 +106,7 @@ Sampler.prototype.deleteNote = function(note){ // not sure if needed
 Sampler.prototype.allocateSource = function(){
     var src = this.ctx.createBufferSource();
     src.buffer = this.buffer;
-    src.connect(this.ctx.destination);
+    src.connect(this.destination);
     return src;
 };
 
@@ -121,10 +124,12 @@ Sampler.prototype.play = function(pixelsPerSecond, startingAt){
     var startTime = this.ctx.startTime;
     this.notes.forEach( function(note){
         if( note.start >= startingAt ){
-            note.source.start(((note.start-startingAt)/pixelsPerSecond)+startTime);
-            note.source.stop(((note.finish-startingAt)/pixelsPerSecond)+startTime);
+			var startWhen = ((note.start-startingAt)/pixelsPerSecond)+startTime;
+			var endWhen = ((note.finish-startingAt)/pixelsPerSecond)+startTime;
+            note.source.start(startWhen+this.chain.start(startWhen));
+            note.source.stop(endWhen+this.chain.stop(endWhen));
         }
-    });
+    }, this);
 };
 
 Sampler.prototype.pause = function(){
@@ -152,18 +157,23 @@ Sampler.prototype.resetSources = function(){
 
 Sampler.prototype.on = function() {
 	Circuit.prototype.on.call(this);
-    if (this.buffer && !this.src) {
-        this.src = this.allocateSource();
-        this.src.start(0);
-    }
+	this.src = this.allocateSource();
+	this.src.start(this.chain.start(this.ctx.currentTime));
 };
 
 
 Sampler.prototype.off = function() {
 	Circuit.prototype.off.call(this);
     if (this.src) {
-        this.deallocateSource(this.src);
-        this.src = null;
+		var targetSrc = this.src;
+		var curTime = this.ctx.currentTime;
+		var delayTime = this.chain.stop(curTime);
+		targetSrc.stop(curTime+delayTime);
+		
+		var self = this;
+		window.setTimeout(function(){
+			self.deallocateSource(targetSrc);
+		}, delayTime*1000);
     }
 };
 

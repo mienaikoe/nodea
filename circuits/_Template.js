@@ -26,6 +26,8 @@ Template.prototype = Object.create(Circuit.prototype, {
 
 
 Template.prototype.extractSettings = function(settings){
+	Circuit.prototype.extractSettings.call(this, settings);
+	
 	if(settings){
 		/* Any necessary settings that you add in the marshalSettings function 
 		 * will be in settings

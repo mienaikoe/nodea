@@ -29,6 +29,7 @@ function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
 	
 	this.chain = new EffectsChain(this.ctx, this.ctx.destination);
 	this.destination = this.chain.input;
+	
 };
 
 
@@ -42,6 +43,9 @@ Circuit.prototype.extractChain = function(settings){
 
 
 Circuit.prototype.extractSettings = function(settings){
+	if( settings ){
+		this.extractChain(settings);
+	}
 };
 
 Circuit.prototype.extractNotes = function(notes){

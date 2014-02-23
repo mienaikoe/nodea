@@ -53,15 +53,14 @@ Envelope.prototype.render = function(division) {
 
 Envelope.prototype.start = function(when) {
 	var gain = this.input.gain;
-	gain.cancelScheduledValues(when);
 	gain.setValueAtTime(gain.value, when);
 	gain.linearRampToValueAtTime(1.0, when + this.attack);
 	gain.linearRampToValueAtTime(this.sustain, when + this.attack + this.decay);
+	return 0;
 };
 
 Envelope.prototype.stop = function(when) {
 	var gain = this.input.gain;
-	gain.cancelScheduledValues(0.0);
 	gain.setValueAtTime(gain.value, when);
 	gain.linearRampToValueAtTime(0.0, when + this.release);
 	return this.release;

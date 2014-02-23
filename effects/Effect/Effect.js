@@ -37,7 +37,7 @@ Effect.prototype.render = function(divisionBody) {
 };
 
 Effect.prototype.start = function(now) {
-
+	return 0;
 };
 
 Effect.prototype.stop = function(now) {

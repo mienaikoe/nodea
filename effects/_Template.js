@@ -21,7 +21,7 @@ Template.prototype.render = function(division) {
 
 
 Template.prototype.start = function(now) {
-
+	return 0;
 };
 
 Template.prototype.stop = function(now) {

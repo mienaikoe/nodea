@@ -95,8 +95,11 @@ EffectsChain.prototype.remove = function(idx){
 
 
 EffectsChain.prototype.start = function(when){
-	this.chain.forEach(function(effect){ effect.start(when); }, this);
-	return when;
+	var waitTime = 0;
+	this.chain.forEach(function(effect){ 
+		waitTime += effect.start(when); 
+	}, this);
+	return waitTime;
 };
 
 EffectsChain.prototype.stop = function(when){

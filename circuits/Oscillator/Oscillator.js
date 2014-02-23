@@ -26,12 +26,12 @@ Oscillator.prototype = Object.create(Circuit.prototype, {
 
 
 Oscillator.prototype.extractSettings = function(settings){
+	Circuit.prototype.extractSettings.call(this, settings);
+	
 	if( settings){
 		/* Any necessary settings that you add in the marshalSettings function 
 		 * will be in settings
-		 */
-		this.extractChain(settings);
-		
+		 */		
 		if(settings.frequency){
 			this.frequency = settings.frequency;
 		}
@@ -127,9 +127,8 @@ Oscillator.prototype.play = function(pixelsPerSecond, startingAt){
         if( note.start >= startingAt ){
 			var startWhen = ((note.start-startingAt)/pixelsPerSecond)+startTime;
 			var endWhen = ((note.finish-startingAt)/pixelsPerSecond)+startTime;
-            note.oscillator.start(this.chain.start(startWhen));
+            note.oscillator.start(startWhen+this.chain.start(startWhen));
             note.oscillator.stop(endWhen+this.chain.stop(endWhen));
-			
         }
     }, this);
 };
@@ -166,10 +165,8 @@ Oscillator.prototype.resetOscillators = function(){
 
 Oscillator.prototype.on = function() {
 	Circuit.prototype.on.call(this);
-	var curTime = this.ctx.currentTime;
 	this.oscillator = this.allocateOscillator();
-	this.oscillator.start(curTime);
-	this.chain.start(curTime);
+	this.oscillator.start(this.chain.start(this.ctx.currentTime));
 };
 
 
