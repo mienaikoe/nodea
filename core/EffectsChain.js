@@ -182,11 +182,9 @@ EffectsChain.prototype.replaceEffect = function( oldEffect, newHandle ){
 	var newEffect = new window[newHandle](this.ctx, this.replacementCallback());
 	this.chain[idx] = newEffect;
 	
-	if( idx > 0 ){
-		var prevEffect = this.chain.get(idx-1);
-		prevEffect.output.disconnect(0);
-		prevEffect.output.connect(newEffect.input);
-	}
+	var prevEffect = this.get(idx-1);
+	prevEffect.output.disconnect(0);
+	prevEffect.output.connect(newEffect.input);
 	
 	var nextEffect = this.get(idx+1);
 	newEffect.output.connect(nextEffect.input);
