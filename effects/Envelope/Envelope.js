@@ -4,42 +4,45 @@
  * 
  */
 
-function Envelope(ctx) {
+function Envelope(ctx, effectReplacementCallback) {
 	this.ctx = ctx;
+	this.effectReplacementCallback = effectReplacementCallback;
 
 	this.input = ctx.createGainNode();
 	this.input.gain.value = 0.0;
 	this.output = this.input;
 
 	for( key in Envelope.SLIDER_ATTRIBUTES){
-		this[key] = Envelope.SLIDER_ATTRIBUTES[key].value;
+		this[key] = Envelope.SLIDER_ATTRIBUTES[key].default;
 	}
 }
 
 
-// This allows all other places in the studio to create one of these 
-// and auto-tie it to the context they were working with.
-window.AudioContext.prototype.createEnvelope = function() {
-	return new Envelope(this);
-};
 
 
 
 Envelope.SLIDER_ATTRIBUTES = {
-	attack:		{min: 0.0, max: 3.0, step: 0.1,		value: 0.2},
-	decay:		{min: 0.0, max: 3.0, step: 0.1,		value: 0.2},
-	sustain:	{min: 0.0, max: 1.0, step: 0.05,	value: 0.2},
-	release:	{min: 0.0, max: 3.0, step: 0.1,		value: 0.2}
+	attack:		{min: 0.0, max: 2.0, step: 0.05,	default: 0.05},
+	decay:		{min: 0.0, max: 2.0, step: 0.05,	default: 0.05},
+	sustain:	{min: 0.0, max: 1.0, step: 0.05,	default: 0.2},
+	release:	{min: 0.0, max: 2.0, step: 0.05,	default: 0.1}
 };
 
 Envelope.prototype.render = function(division) {
+	var changeMaker = function(self, envelopeKey){
+		return function(){
+			self[envelopeKey] = parseFloat(this.value); 
+			studio.invalidateSavedStatus();
+		};
+	};
+	
 	var self = this;
 	for(key in Envelope.SLIDER_ATTRIBUTES){
 		var sliderBox = $("<div>",{class:"envelope_slider"}).appendTo(division);
 		$("<label>"+key+"</label>").appendTo(sliderBox);
-		$("<input/>", $.extend({type:'range'}, Envelope.SLIDER_ATTRIBUTES[key])).
+		$("<input/>", $.extend({type:'range', value: this[key], id: 'slider_'+key}, Envelope.SLIDER_ATTRIBUTES[key])).
 			appendTo(sliderBox).
-			change(function(){ self[key] = this.value; });
+			change(changeMaker(self, key));
 	}
 };
 
@@ -61,4 +64,22 @@ Envelope.prototype.stop = function(when) {
 	gain.cancelScheduledValues(0.0);
 	gain.setValueAtTime(gain.value, when);
 	gain.linearRampToValueAtTime(0.0, when + this.release);
+	return this.release;
+};
+
+
+
+// marshal / load
+Envelope.prototype.marshal = function() {
+	var ret = {};
+	for( envParam in Envelope.SLIDER_ATTRIBUTES ){
+		ret[envParam] = this[envParam];
+	}
+	return ret;
+};
+
+Envelope.prototype.load = function(settings){
+	for( envParam in settings ){
+		this[envParam] = settings[envParam];
+	}
 };

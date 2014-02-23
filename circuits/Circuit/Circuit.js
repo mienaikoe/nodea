@@ -32,6 +32,15 @@ function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
 };
 
 
+Circuit.prototype.extractChain = function(settings){
+	if( settings.chain ){
+		this.chain.load(settings.chain);
+	} else { // defaults	
+		this.chain.loadDefault();
+	}
+};
+
+
 Circuit.prototype.extractSettings = function(settings){
 };
 
@@ -54,16 +63,14 @@ Circuit.prototype.generateDrawer = function(){
 	detailsElement.empty();
 	
 	var circuitSection = DrawerUtils.createSection(detailsElement, this.handle);
-	
 	this.generateGeneralDivision(DrawerUtils.createDivision(circuitSection, "General"));
-	// Overriden
 	if( this.constructor !== Circuit ){
 		this.generateCircuitDivision(DrawerUtils.createDivision(circuitSection, this.handle));
-		
-		var effectsSection = DrawerUtils.createSection(detailsElement, "Effects");
-		// TODO: Fill out Effects Section based on persisted node
-		this.chain.render(effectsSection);
 	}
+	
+	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects") );
+	
+	DrawerUtils.activateDrawerToggles($("#circuit_drawer"));
 };
 
 Circuit.prototype.generateGeneralDivision = function(divisionBody){		
@@ -201,7 +208,9 @@ Circuit.prototype.marshal = function(){
 };
 
 Circuit.prototype.marshalSettings = function(){
-	return {};
+	return {
+		chain: this.chain.marshal()
+	};
 };
 
 

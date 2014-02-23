@@ -183,14 +183,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 
 
 	// Drawers
-	// TODO: Make this work async
-	$(".toggler").each(function(idx, toggler){
-		var togglee = $(toggler).closest(".toggle").find('.togglee');
-		var hoverFunc = function(){ $(this).toggleClass("hover"); };
-		$(toggler).
-				hover( hoverFunc, hoverFunc ).
-				click(function(){ togglee.toggle(); });
-	});
+	DrawerUtils.activateDrawerToggles($("#master_drawer"));
 	
 
 

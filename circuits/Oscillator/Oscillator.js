@@ -30,6 +30,8 @@ Oscillator.prototype.extractSettings = function(settings){
 		/* Any necessary settings that you add in the marshalSettings function 
 		 * will be in settings
 		 */
+		this.extractChain(settings);
+		
 		if(settings.frequency){
 			this.frequency = settings.frequency;
 		}
@@ -44,8 +46,6 @@ Oscillator.prototype.extractSettings = function(settings){
 	if(!this.signalType){
 		this.signalType = "sine";
 	}
-	
-	this.chain.push(this.ctx.createEnvelope());
 };
 
 
@@ -126,13 +126,12 @@ Oscillator.prototype.play = function(pixelsPerSecond, startingAt){
     this.notes.forEach( function(note){
         if( note.start >= startingAt ){
 			var startWhen = ((note.start-startingAt)/pixelsPerSecond)+startTime;
-			var endWhen = ((note.finish-startingAt)/pixelsPerSecond)+startTime
-            note.oscillator.start(startWhen);
-			chain.start(startWhen);
-            note.oscillator.stop(endWhen);
-			chain.stop(endWhen);
+			var endWhen = ((note.finish-startingAt)/pixelsPerSecond)+startTime;
+            note.oscillator.start(this.chain.start(startWhen));
+            note.oscillator.stop(endWhen+this.chain.stop(endWhen));
+			
         }
-    });
+    }, this);
 };
 
 Oscillator.prototype.pause = function(){
@@ -167,21 +166,25 @@ Oscillator.prototype.resetOscillators = function(){
 
 Oscillator.prototype.on = function() {
 	Circuit.prototype.on.call(this);
-	if( !this.oscillator ){
-		var curTime = this.ctx.currentTime;
-        this.oscillator = this.allocateOscillator();
-        this.oscillator.start(curTime);
-		this.chain.start(curTime);
-    }
+	var curTime = this.ctx.currentTime;
+	this.oscillator = this.allocateOscillator();
+	this.oscillator.start(curTime);
+	this.chain.start(curTime);
 };
 
 
 Oscillator.prototype.off = function() {
 	Circuit.prototype.off.call(this);
 	if( this.oscillator ){
-		this.deallocateOscillator(this.oscillator);
-        this.oscillator = null;
-		this.chain.stop(this.ctx.currentTime);
+		var targetOsc = this.oscillator;
+		var curTime = this.ctx.currentTime;
+		var delayTime = this.chain.stop(curTime);
+		targetOsc.stop(curTime+delayTime);
+		
+		var self = this;
+		window.setTimeout(function(){
+			self.deallocateOscillator(targetOsc);
+		}, delayTime*1000);
 	}
 };
 
@@ -200,8 +203,8 @@ Oscillator.prototype.off = function() {
  */
 
 Oscillator.prototype.marshalSettings = function(){
-	return {
-		frequency: this.frequency,
-		signalType: this.signalType
-	};
+	return $.extend(Circuit.prototype.marshalSettings.call(this), 
+		{	frequency: this.frequency,
+			signalType: this.signalType
+		} );
 };
