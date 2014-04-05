@@ -321,16 +321,36 @@ a{
                 .nodeTrack{
                     @include track(1px dotted $node_text_color);
                     height: 100%;
-                    .note{
-                        background-color: $note_color;
-                        opacity: 0.7;
+                    .noteCapsule{
                         position: absolute;
                         width: $track_width;
-                        &.recording{
-                            background-color: $kosher_color;
+                        .noteExpander{
+                            height: 2px;
+                            width: 100%;
+                            background-color: #D82;
+                            visibility: hidden;
+                            cursor: n-resize;
+                            border-bottom: 1px solid #C60;
+                            border-top: 1px solid #C60;
+                        }
+                        .note{
+                            background-color: $note_color;
+                            opacity: 0.7;
+                            width: 100%;
                         }
                         &.selected{
-                            opacity: 1;
+                            .noteExpander{
+                                visibility: visible;
+                            }
+                            .note{
+                                cursor: move;
+                                opacity: 1;
+                            }
+                        }
+                        &.recording{
+                            .note{
+                                background-color: $kosher_color;
+                            }
                         }
                     }
                 }
