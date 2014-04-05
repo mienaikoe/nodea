@@ -101,7 +101,12 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	
 	// === Event Handling ===
 	$("body").keydown(function(ev) {
-	    if( ev.keyCode in self.keyCodeToAsciiMap ){
+		if( ev.ctrlKey ){
+			if( ev.keyCode === 83 || ev.keyCode === 115){
+				self.save();
+				ev.preventDefault();
+			}
+		} else if( ev.keyCode in self.keyCodeToAsciiMap ){
 			var interactiveNoda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
 	        self.noteOn( interactiveNoda );
 			interactiveNoda.keydown = true;
@@ -286,7 +291,7 @@ NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
 		circuitJavascript.setAttribute("src","/nodea/circuits/"+handle+"/"+handle+".js");
 		document.head.appendChild(circuitJavascript);
 		
-		this.circuitStylesheet.innerHTML += ".node."+handle+"{ background-image: url('circuits/"+handle+"/"+handle+".png'); }";
+		this.circuitStylesheet.innerHTML += ".node."+handle+"{ background-image: url('circuits/"+handle+"/"+handle+".png'); background-size: contain; }";
 		
 		loadingCircuit = {js: circuitJavascript, callbacks: [callback]};
 		this.loadingCircuits[handle] = loadingCircuit;
@@ -774,8 +779,8 @@ NodeaStudio.prototype.eventControlMap = {
 	32: function(studio){ studio.playpause(); },
 	
 	// home, page, end
-	33: function(studio){ studio.advance(-8); },
-	34: function(studio){ studio.advance(8); },
+	33: function(studio){ studio.advance(-studio.advanceAmount * studio.beats_per_bar); },
+	34: function(studio){ studio.advance(studio.advanceAmount * studio.beats_per_bar); },
 	35: function(studio){ studio.head(); },
 	36: function(studio){ studio.tail(); },
 	

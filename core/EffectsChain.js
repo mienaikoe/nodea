@@ -42,7 +42,7 @@ EffectsChain.prototype.pop = function(){
 	if( this.chain.length === 0 ){ return; }
 	
 	var effect = this.chain.pop();
-	effect.disconnect();
+	effect.output.disconnect();
 	
 	var prevEffect = this.get(this.chain.length-1);
 	prevEffect.output.disconnect();
@@ -119,7 +119,12 @@ EffectsChain.prototype.render = function(section){
 	DrawerUtils.makeSectionAddable(section, function(ev){
 		var effect = new Effect(self.ctx, self.replacementCallback());
 		self.chain.push(effect);
+		var effectIndex = self.chain.length - 1;
 		var division = DrawerUtils.createDivision(section,"Effect");
+		DrawerUtils.makeDivisionRemovable(division, function(ev){
+			self.remove(effectIndex);
+			$(division).parent().remove();
+		});
 		effect.render(division);
 	});
 	
@@ -129,9 +134,13 @@ EffectsChain.prototype.render = function(section){
 EffectsChain.prototype.rerender = function(){
 	if( this.section ){
 		this.section.empty();
-		
-		this.chain.forEach(function(effect){ 
+		var self = this;
+		this.chain.forEach(function(effect, effectIndex){ 
 			var division = DrawerUtils.createDivision(this.section, effect.constructor.name);
+			DrawerUtils.makeDivisionRemovable(division, function(ev){
+				self.remove(effectIndex);
+				$(division).parent().remove();
+			});
 			effect.render(division);
 		}, this);
 	}

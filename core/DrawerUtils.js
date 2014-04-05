@@ -20,6 +20,14 @@ var DrawerUtils = {
 		$("<div/>", {class: "dd_heading toggler", text: '>> '+title}).appendTo(drawerDivision);
 		return $("<div/>", {class: "dd_body togglee "+className}).appendTo(drawerDivision);
 	},
+	
+	makeDivisionRemovable: function(sectionBody, removerCallback){
+		var heading = $(sectionBody).siblings(".dd_heading").first();
+		$("<span/>",{class: 'dextra', text: '\u00d7'}).appendTo(heading).click(function(ev){
+			ev.stopPropagation();
+			removerCallback();
+		});
+	},
 
 	activateDrawerToggles: function(drawer){
 		$(drawer).find(".toggler").each(function(idx, toggler){
