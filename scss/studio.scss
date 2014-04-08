@@ -339,6 +339,7 @@ a{
                             width: 100%;
                         }
                         &.selected{
+                            z-index: 2;
                             .noteExpander{
                                 visibility: visible;
                             }

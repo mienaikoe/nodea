@@ -6,6 +6,17 @@ var Note = function(options){
 
 Note.EXPANDER_HEIGHT = 4;
 
+
+Note.selecteds = [];
+
+Note.unselectAll = function(){
+	if( Note.selecteds.length > 0 ){
+		Note.selecteds = [];
+		$(".noteCapsule.selected").removeClass("selected"); 
+	}
+};
+
+
 Note.prototype.createContainer = function(){
 	var clazz = '';
 	if( typeof this.finish === 'undefined' ){
@@ -15,56 +26,77 @@ Note.prototype.createContainer = function(){
 	var slivers = this.finish - this.start;
 	var self = this;
 	
-	this.container = jQuery('<div/>',{ class: 'noteCapsule ' + clazz, style: 'bottom: '+(this.start-Note.EXPANDER_HEIGHT)+'px; height: '+(slivers+(Note.EXPANDER_HEIGHT*2))+'px;'}).
-			mousedown(function(ev){
-				$(".noteCapsule.selected").removeClass("selected"); 
+	this.container = jQuery('<div/>',{ 
+			class: 'noteCapsule ' + clazz, 
+			style: 'bottom: '+(this.start-Note.EXPANDER_HEIGHT)+'px; height: '+(slivers+(Note.EXPANDER_HEIGHT*2))+'px;'
+		}).mousedown(function(ev){
+				if(!ev.ctrlKey){
+					Note.unselectAll();
+				}
 				$(this).addClass("selected");
-				studio.selectedNote = self;
+				Note.selecteds.push(self);
+				ev.stopPropagation();
 			});
 			
 	this.noteBox = jQuery('<div/>',{ class: 'note', style: 'height: '+slivers+'px;'}).
 			mousedown(function(ev){
 				if( self.container.hasClass("selected") ){
-					self.container.addClass("dragging");
-					self.mouseSetpoint = parseInt(self.container.css('bottom')) + ev.pageY;
-					$(document.body).mousemove(function(ev_move){
-						self.container.css('bottom', (self.mouseSetpoint - ev_move.pageY)+'px');
-					}).mouseup(function(ev_up){
-						self.move(self.mouseSetpoint - ev_up.pageY);
-						self.container.removeClass("dragging");
+					Note.selecteds.forEach(function(note){
+						note.mouseSetpoint = parseInt(note.container.css('bottom')) + ev.pageY;
 					});
+					$(document.body).mousemove(function(ev_move){
+						Note.selecteds.forEach(function(note){
+							note.container.css('bottom', (note.mouseSetpoint - ev_move.pageY)+'px');
+						});
+					}).mouseup(function(ev_up){
+						Note.selecteds.forEach(function(note){
+							note.move(note.mouseSetpoint - ev_up.pageY);
+						});
+					});
+					ev.stopPropagation();
 				}
 			});
 	
 	this.northExpander = jQuery('<div/>',{ class: 'noteExpander north'}).
 			mousedown(function(ev){
 				if( self.container.hasClass("selected") ){
-					self.container.addClass("expandingNorth");
-					self.heightSetpoint = parseInt(self.container.css('height')) + ev.pageY;
-					$(document.body).mousemove(function(ev_move){
-						self.container.css('height', (self.heightSetpoint - ev_move.pageY)+'px');
-						self.noteBox.css('height', (self.heightSetpoint - (Note.EXPANDER_HEIGHT*2) - ev_move.pageY)+'px');
-					}).mouseup(function(ev_up){
-						self.newFinish(self.start + self.heightSetpoint - ev_up.pageY);
-						self.container.removeClass("expandingNorth");
+					Note.selecteds.forEach(function(note){
+						note.heightSetpoint = parseInt(note.container.css('height')) + ev.pageY;
 					});
+					$(document.body).mousemove(function(ev_move){
+						Note.selecteds.forEach(function(note){
+							note.container.css('height', (note.heightSetpoint - ev_move.pageY)+'px');
+							note.noteBox.css('height', (note.heightSetpoint - (Note.EXPANDER_HEIGHT*2) - ev_move.pageY)+'px');
+						});
+					}).mouseup(function(ev_up){
+						Note.selecteds.forEach(function(note){
+							note.newFinish(note.start + note.heightSetpoint - ev_up.pageY);
+						});
+					});
+					ev.stopPropagation();
 				}
 			});
 	
 	this.southExpander = jQuery('<div/>',{ class: 'noteExpander south'}).
 			mousedown(function(ev){
 				if( self.container.hasClass("selected") ){
-					self.container.addClass("expandingSouth");
-					self.mouseSetpoint = parseInt(self.container.css('bottom')) + ev.pageY;
-					self.heightSetpoint = parseInt(self.container.css('height')) - ev.pageY;
-					$(document.body).mousemove(function(ev_move){
-						self.container.css('bottom', (self.mouseSetpoint - ev_move.pageY)+'px');
-						self.container.css('height', (self.heightSetpoint + ev_move.pageY)+'px');
-						self.noteBox.css('height', (self.heightSetpoint - (Note.EXPANDER_HEIGHT*2) + ev_move.pageY)+'px');
-					}).mouseup(function(ev_up){
-						self.newStart(self.mouseSetpoint - ev_up.pageY);
-						self.container.removeClass("expandingSouth");
+					Note.selecteds.forEach(function(note){
+						note.mouseSetpoint = parseInt(note.container.css('bottom')) + ev.pageY;
+						note.heightSetpoint = parseInt(note.container.css('height')) - ev.pageY;
 					});
+					$(document.body).mousemove(function(ev_move){
+						Note.selecteds.forEach(function(note){
+							note.container.css('bottom', (note.mouseSetpoint - ev_move.pageY)+'px');
+							note.container.css('height', (note.heightSetpoint + ev_move.pageY)+'px');
+							note.noteBox.css('height', (note.heightSetpoint - (Note.EXPANDER_HEIGHT*2) + ev_move.pageY)+'px');
+						});
+					}).mouseup(function(ev_up){
+						Note.selecteds.forEach(function(note){
+							note.newStart(note.mouseSetpoint - ev_up.pageY);
+							note.container.removeClass("expandingSouth");
+						});
+					});
+					ev.stopPropagation();
 				}
 			});
 			

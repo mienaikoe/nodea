@@ -59,6 +59,9 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.ideasContainer = $(ideasContainer).
 		bind('mousewheel', function(ev){ 
 			self.advance((ev.originalEvent.wheelDelta > 0) ? self.advanceAmount : -self.advanceAmount); 
+		}).mousedown(function(ev){
+			// unless propagation stopped by notes
+			Note.unselectAll();
 		});
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
 	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
@@ -792,9 +795,9 @@ NodeaStudio.prototype.eventControlMap = {
 	40: function(studio){ studio.advance(-studio.advanceAmount); },
 	
 	// delete key
-	46: function(studio){ studio.deleteNote(studio.selectedNote); },
+	46: function(studio){ Note.selecteds.forEach(function(note){studio.deleteNote(note);}); },
 	
 	// backspace key
-	8: function(studio){ studio.deleteNote(studio.selectedNote); }
+	8: function(studio){ Note.selecteds.forEach(function(note){studio.deleteNote(note);}); }
 	
 };
