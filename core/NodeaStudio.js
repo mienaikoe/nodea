@@ -53,7 +53,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.circuitsContainer = $(circuitsContainer).click(function(ev){ 
 		self.nodas.forEach(function(noda){ 
 			noda.lightOff('selected'); 
-		}); 
+		});
 	});
 
 	this.ideasContainer = $(ideasContainer).
@@ -199,7 +199,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.startTime = null;
 	this.startFrameTimestamp = null;
 	this.recording = false;
-	this.recordingNotes = [];
+	this.recordingNodas = [];
 };
 
 
@@ -294,7 +294,8 @@ NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
 		circuitJavascript.setAttribute("src","/nodea/circuits/"+handle+"/"+handle+".js");
 		document.head.appendChild(circuitJavascript);
 		
-		this.circuitStylesheet.innerHTML += ".node."+handle+"{ background-image: url('circuits/"+handle+"/"+handle+".png'); background-size: contain; }";
+		this.circuitStylesheet.innerHTML += ".node."+handle+
+				"{ background-image: url('circuits/"+handle+"/"+handle+".png'); background-size: cover; }";
 		
 		loadingCircuit = {js: circuitJavascript, callbacks: [callback]};
 		this.loadingCircuits[handle] = loadingCircuit;
@@ -325,14 +326,10 @@ NodeaStudio.prototype.resetPixelTiming = function(){
 // Recording
 
 NodeaStudio.prototype.toggleRecording = function(){
-	this.recording = !this.recording;
-	if( !this.recording ) {
-		this.recordingNotes.forEach(function(note){ 
-			this.noteOff(note.noda);
-			note.noda.turnOffPassiveRecording();
-		}, this);
-	    this.recordingNotes = [];
+	if( this.recording ) {
+		this.recordingNodas.forEach(function(noda){ this.noteOff(noda);}, this);
 	}
+	this.recording = !this.recording;
 	$('#mode_controls #record').toggleClass("active");
 };
 
@@ -345,61 +342,26 @@ NodeaStudio.prototype.noteOn = function( noda ){
 	if( noda.keydown || noda.mousedown ){
 		return;
 	}
-	noda.on();
+	
 	if( this.recording ){
-		if( this.startTime !== null ){ //active recording
-			this.recordingOn( noda );
-		} else if( noda.passiveRecording ){
-			noda.turnOffPassiveRecording();
-		} else {
-			noda.turnOnPassiveRecording();
-			this.recordingOn( noda );
-		}
+		noda.on(this.pixelFor(Date.now()));
+		this.recordingNodas.push(noda);
 	} else {
-		noda.lightOn('active');
+		noda.on();
 	}
 };
-
-NodeaStudio.prototype.recordingOn = function( noda ){
-	var note = new Note({start: this.pixelFor(Date.now()), noda: noda});
-	this.recordingNotes[noda.key] = note;
-	note.createContainer();
-	this.invalidateSavedStatus();
-	noda.lightOn('recording');
-};
-
 
 
 NodeaStudio.prototype.noteOff = function( noda ){
-	noda.off();
 	if( this.recording ){
-		if( this.startTime !== null ){ //active recording
-			this.recordingOff(noda);
-			noda.lightOff('recording');
-		}
-	} else {
-		noda.lightOff('active');
-	}
-};
-
-NodeaStudio.prototype.recordingOff = function( noda ){
-	var note = this.recordingNotes[noda.key];
-	if( typeof note === 'undefined' ){ 
-	    return;
-	}
-
-	if( note.start === this.location ){
-	    note.container.remove();
-	} else {
-	    note.finish = this.location;
-	    note.container.css('height',(note.finish-note.start)+'px');
-	    note.noda.addNote(note);
-	    this.notes.push(note);
+		noda.off(this.location);
 		this.invalidateSavedStatus();
+		this.recordingNodas.splice(this.recordingNodas.indexOf(noda), 1);
+	} else {
+		noda.off();
 	}
-
-	delete this.recordingNotes[noda.key];
 };
+
 
 
 
@@ -421,7 +383,7 @@ NodeaStudio.prototype.play = function(){
 		this.lastLocation = this.location;
 		
 		this.nodas.forEach(function(noda){
-			noda.lightOff('active').lightOff('selected');
+			noda.lightOff('active');
 			noda.play( this.pixels_per_second, this.location );
 		}, this);
 		
@@ -435,8 +397,12 @@ NodeaStudio.prototype.pause = function(){
 		
 	    $('#playpause').removeClass("active");
 		this.metronome.stop();
-	    this.nodas.forEach(function(noda){ noda.pause(); });
-		this.recordingNotes.forEach(function(note){ this.noteOff(note.noda); }, this);
+	    this.nodas.forEach(function(noda){ 
+			noda.pause(); 
+			if( this.recordingNodas.indexOf(noda) !== -1){
+				this.noteOff(noda);
+			}
+		}, this);
 		this.startTime = null;
 	    this.startFrameTimestamp = null;
 	}
@@ -583,10 +549,8 @@ NodeaStudio.prototype.frame = function( timestamp ){
 	        note.noda.lightOff('active');
 	    }
 	}, this);
-	this.recordingNotes.forEach( function(note){
-		if( note.container ){ 
-			note.container.css('height', newLocation-note.start+'px'); 
-		}
+	this.recordingNodas.forEach( function(noda){
+		noda.frame(newLocation);
 	});
 
 	this.lastLocation = newLocation;

@@ -26,6 +26,7 @@ function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
 	this.trackline = $('<spiv/>',{id: 'track_'+this.asciiCode, class:'nodeTrack'});
 	
 	this.notes = [];
+	this.recordingNote = null;
 	
 	this.chain = new EffectsChain(this.ctx, this.ctx.destination);
 	this.destination = this.chain.input;
@@ -160,7 +161,6 @@ Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
 
 
 Circuit.prototype.pause = function(){
-	this.turnOffPassiveRecording();
     this.lightOff('active');
 };
 
@@ -168,24 +168,45 @@ Circuit.prototype.pause = function(){
 
 // recording
 
-Circuit.prototype.on = function() {
+Circuit.prototype.on = function(location) {
+	if(location){
+		this.recordingNote = new Note({start: location, noda: this});
+		this.recordingNote.createContainer();
+		this.lightOn('recording');
+	} else {
+		this.lightOn('active');
+	}
+	
 	navigator.vibrate(10);
 };
 
-Circuit.prototype.off = function() {
-	navigator.vibrate(10);
+Circuit.prototype.off = function(location) {
+	if(location && this.recordingNote !== null){
+		var note = this.recordingNote;
+		if( note.start === location ){
+			note.container.remove();
+		} else {
+			note.newFinish(location);
+			this.addNote(note);
+		}
+		this.recordingNote = null;
+		this.lightOff('recording');
+	} else {
+		this.lightOff('active');
+	}
 };
 
 
 
-Circuit.prototype.turnOnPassiveRecording = function(){
-	this.passiveRecording = true;
+
+Circuit.prototype.frame = function( location ){
+	var note = this.recordingNote;
+	if( note !== null && note.container ){ 
+		note.container.css('height', location-note.start+'px'); 
+	}
 };
 
-Circuit.prototype.turnOffPassiveRecording = function(){
-	this.passiveRecording = false;
-	this.lightOff('recording');
-};
+
 
 
 

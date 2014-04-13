@@ -71,6 +71,7 @@ Note.prototype.createContainer = function(){
 					}).mouseup(function(ev_up){
 						Note.selecteds.forEach(function(note){
 							note.newFinish(note.start + note.heightSetpoint - ev_up.pageY);
+							$(document.body).unbind("mousemove").unbind("mouseup");
 						});
 					});
 					ev.stopPropagation();
@@ -94,6 +95,7 @@ Note.prototype.createContainer = function(){
 						Note.selecteds.forEach(function(note){
 							note.newStart(note.mouseSetpoint - ev_up.pageY);
 							note.container.removeClass("expandingSouth");
+							$(document.body).unbind("mousemove").unbind("mouseup");	
 						});
 					});
 					ev.stopPropagation();
@@ -134,10 +136,7 @@ Note.prototype.move = function( newStart ){
 
 Note.prototype.newStart = function( newStart ){
 	this.container.css('bottom', (newStart)+'px');
-	$(document.body).unbind("mousemove").unbind("mouseup");
-	
 	this.start = newStart;
-	
 	studio.invalidateSavedStatus();
 };
 
@@ -145,10 +144,6 @@ Note.prototype.newFinish = function( newFinish ){
 	var newHeight = newFinish - this.start;
 	this.container.css('height', newHeight+'px');
 	this.noteBox.css('height', (newHeight - (Note.EXPANDER_HEIGHT*2))+'px');
-	
-	$(document.body).unbind("mousemove").unbind("mouseup");
-	
 	this.finish = newFinish;
-	
 	studio.invalidateSavedStatus();
 };

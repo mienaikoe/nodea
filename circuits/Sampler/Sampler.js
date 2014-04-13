@@ -22,9 +22,15 @@ Sampler.prototype = Object.create(Circuit.prototype, {
 
 Sampler.prototype.extractSettings = function(settings){
 	Circuit.prototype.extractSettings.call(this, settings);
+	
+	this.recordEntire = false;
+	
 	if(settings){
 		if( settings.sourceFile ){
 			this.bufferUrl = settings.sourceFile;
+		}
+		if( settings.recordEntire ){
+			this.recordEntire = settings.recordEntire;
 		}
 	}
 
@@ -72,17 +78,13 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 			self.bufferUrl = this.value; 
 			self.resetBufferLocation(); 
 			studio.invalidateSavedStatus(); 
+		}); // TODO: Make this more foolproof.
+		
+	$(circuitBody).find("#Sampler-Entire").
+		attr("checked", self.recordEntire).
+		change(function(ev){
+			self.recordEntire = this.checked;
 		});
-			
-	/*
-	$("<div/>", {class: 'fieldLabel', html: 'Sample Source'}).appendTo(divisionBody);
-	var self = this;
-	var mainFields = $("<div/>", {class: "mainFields"}).appendTo(divisionBody);
-	$("<textarea/>", {class: 'urlarea', html: this.bufferUrl}).appendTo(mainFields).
-		change(		function(ev){ self.bufferUrl = this.value; self.resetBufferLocation(); studio.invalidateSavedStatus(); }).
-	    keydown(    function(ev){ ev.stopPropagation(); }).
-	    keyup(      function(ev){ ev.stopPropagation(); });
-	*/
 };
 
 
@@ -152,15 +154,15 @@ Sampler.prototype.resetSources = function(){
 
 // recording
 
-Sampler.prototype.on = function() {
-	Circuit.prototype.on.call(this);
+Sampler.prototype.on = function(location) {
+	Circuit.prototype.on.call(this, location);
 	this.src = this.allocateSource();
 	this.scheduleCircuitStart(this.chain.start(this.ctx.currentTime), {source: this.src});
 };
 
 
-Sampler.prototype.off = function() {
-	Circuit.prototype.off.call(this);
+Sampler.prototype.off = function(location) {
+	Circuit.prototype.off.call(this, location);
     if (this.src) {
 		var targetSrc = this.src;
 		var curTime = this.ctx.currentTime;
@@ -174,9 +176,6 @@ Sampler.prototype.off = function() {
 		}, delayTime*1000);
     }
 };
-
-
-
 
 
 
