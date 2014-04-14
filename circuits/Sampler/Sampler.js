@@ -6,6 +6,8 @@ function Sampler(ctx, persistedNoda, circuitReplacementCallback) {
 	this.extractSettings(persistedNoda.settings);
 	this.extractNotes(persistedNoda.notes);
 	
+	this.dynamicNote = new Note({noda: this});
+	
 	var self = this;
 	this.resetBufferLocation(function(){
 		self.bindBufferToNotes();
@@ -23,14 +25,14 @@ Sampler.prototype = Object.create(Circuit.prototype, {
 Sampler.prototype.extractSettings = function(settings){
 	Circuit.prototype.extractSettings.call(this, settings);
 	
-	this.recordEntire = false;
+	this.playEntire = false;
 	
 	if(settings){
 		if( settings.sourceFile ){
 			this.bufferUrl = settings.sourceFile;
 		}
-		if( settings.recordEntire ){
-			this.recordEntire = settings.recordEntire;
+		if( settings.playEntire ){
+			this.playEntire = settings.playEntire;
 		}
 	}
 
@@ -81,9 +83,10 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 		}); // TODO: Make this more foolproof.
 		
 	$(circuitBody).find("#Sampler-Entire").
-		attr("checked", self.recordEntire).
+		attr("checked", self.playEntire).
 		change(function(ev){
-			self.recordEntire = this.checked;
+			self.playEntire = this.checked;
+			$(this).blur();
 		});
 };
 
@@ -124,11 +127,25 @@ Sampler.prototype.deallocateSource = function(src){
 
 
 Sampler.prototype.scheduleCircuitStart = function(startWhen, note){
-	note.source.start(startWhen+this.chain.start(startWhen));
+	startWhen += this.chain.start(startWhen);
+	note.source.start(startWhen);
+	note.started = startWhen; 	
 };
 
 Sampler.prototype.scheduleCircuitStop = function(endWhen, note){
-	note.source.stop(endWhen+this.chain.stop(endWhen));
+	if(this.playEntire){
+		endWhen = note.started + this.buffer.duration;
+	} 
+	endWhen += this.chain.stop(endWhen);
+	
+	
+	var targetSrc = note.source;
+	targetSrc.stop(endWhen);
+			
+	var self = this;
+	window.setTimeout(function(){
+		self.deallocateSource(targetSrc);
+	}, endWhen*1000);
 };
 
 Sampler.prototype.pause = function(){
@@ -156,24 +173,15 @@ Sampler.prototype.resetSources = function(){
 
 Sampler.prototype.on = function(location) {
 	Circuit.prototype.on.call(this, location);
-	this.src = this.allocateSource();
-	this.scheduleCircuitStart(this.chain.start(this.ctx.currentTime), {source: this.src});
+	this.dynamicNote.source = this.allocateSource();
+	this.scheduleCircuitStart(this.ctx.currentTime, this.dynamicNote);
 };
 
 
 Sampler.prototype.off = function(location) {
 	Circuit.prototype.off.call(this, location);
-    if (this.src) {
-		var targetSrc = this.src;
-		var curTime = this.ctx.currentTime;
-		var delayTime = this.chain.stop(curTime);
-		
-		this.scheduleCircuitStop(curTime+delayTime, {source: targetSrc});
-		
-		var self = this;
-		window.setTimeout(function(){
-			self.deallocateSource(targetSrc);
-		}, delayTime*1000);
+    if (this.dynamicNote.source) {
+		this.scheduleCircuitStop(this.ctx.currentTime, this.dynamicNote);
     }
 };
 
