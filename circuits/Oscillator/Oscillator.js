@@ -161,15 +161,15 @@ Oscillator.prototype.resetOscillators = function(){
  * will be handled for you 
  */
 
-Oscillator.prototype.on = function() {
-	Circuit.prototype.on.call(this);
+Oscillator.prototype.on = function(location) {
+	Circuit.prototype.on.call(this, location);
 	this.oscillator = this.allocateOscillator();
 	this.scheduleCircuitStart(this.chain.start(this.ctx.currentTime), {oscillator: this.oscillator});
 };
 
 
-Oscillator.prototype.off = function() {
-	Circuit.prototype.off.call(this);
+Oscillator.prototype.off = function(location) {
+	Circuit.prototype.off.call(this, location);
 	if( this.oscillator ){
 		var targetOsc = this.oscillator;
 		var curTime = this.ctx.currentTime;

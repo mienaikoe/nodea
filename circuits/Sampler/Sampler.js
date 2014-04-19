@@ -87,6 +87,7 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 		change(function(ev){
 			self.playEntire = this.checked;
 			$(this).blur();
+			studio.invalidateSavedStatus();
 		});
 };
 
@@ -192,6 +193,7 @@ Sampler.prototype.off = function(location) {
 
 Sampler.prototype.marshalSettings = function(){
 	return {
-		sourceFile: this.bufferUrl
+		sourceFile: this.bufferUrl,
+		playEntire: this.playEntire
 	};
 };

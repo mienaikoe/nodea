@@ -108,7 +108,7 @@
 				
 				<spiv class="group spacer" id="bar_controls">
 					<spiv class="wide_box">
-						<input class="control field threedigit" max="999" id="bar_size" type="number" value="3" />
+						<input class="control field twodigit" max="99" id="bar_size" type="number" value="3" />
 						<div class="label">BAR SIZE</div>
 					</spiv>
 					<spiv class="wide_box">
@@ -150,7 +150,7 @@
 							<option value="2_pixel">  1/12 Beat</option>
 							<option value="1_pixel">  1/24 Beat</option>
 						</select>
-						<div class="label">ADVANCE</div>
+						<div class="label">ADVANCEMENT</div>
 					</spiv>
 					<spiv class="button_box">
 						<div class="control button" id="head" onclick="studio.head();">&#x982d;</div>
@@ -159,6 +159,28 @@
 					<spiv class="button_box">
 						<div class="control button" id="tail" onclick="studio.tail();">&#x672b;</div>
 						<div class="label">TAIL</div>
+					</spiv>
+				</spiv>
+                                
+                                <div class="ditch"></div>
+                                
+                                <spiv class="group spacer" id="snap_controls">
+					<spiv class="wide_box">
+						<select class="control select" id="snap_resolution_box" name="snap_resolution_box">
+							<option value="24">1 Beat</option>
+							<option value="12">1/2 Beat</option>
+							<option value="8">1/3 Beat</option>
+							<option value="6">1/4 Beat</option>
+							<option value="4">1/6 Beat</option>
+							<option value="3">1/8 Beat</option>
+							<option value="2">1/12 Beat</option>
+							<option selected="selected" value="1">1/24 Beat</option>
+						</select>
+						<div class="label">SNAP TO</div>
+					</spiv>
+					<spiv class="button_box">
+						<div class="control button" id="snap" onclick="studio.snap();">&#x982d;</div>
+						<div class="label">SNAP</div>
 					</spiv>
 				</spiv>
 				

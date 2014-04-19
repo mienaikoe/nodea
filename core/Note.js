@@ -26,6 +26,8 @@ Note.prototype.createContainer = function(){
 	var slivers = this.finish - this.start;
 	var self = this;
 	
+	console.log(this.start);
+	
 	this.container = jQuery('<div/>',{ 
 			class: 'noteCapsule ' + clazz, 
 			style: 'bottom: '+(this.start-Note.EXPANDER_HEIGHT)+'px; height: '+(slivers+(Note.EXPANDER_HEIGHT*2))+'px;'
@@ -70,7 +72,7 @@ Note.prototype.createContainer = function(){
 						});
 					}).mouseup(function(ev_up){
 						Note.selecteds.forEach(function(note){
-							note.newFinish(note.start + note.heightSetpoint - ev_up.pageY);
+							note.newFinish(note.start + note.heightSetpoint - ev_up.pageY - (Note.EXPANDER_HEIGHT*2));
 							$(document.body).unbind("mousemove").unbind("mouseup");
 						});
 					});
@@ -142,8 +144,8 @@ Note.prototype.newStart = function( newStart ){
 
 Note.prototype.newFinish = function( newFinish ){
 	var newHeight = newFinish - this.start;
-	this.container.css('height', newHeight+'px');
-	this.noteBox.css('height', (newHeight - (Note.EXPANDER_HEIGHT*2))+'px');
+	this.container.css('height', newHeight+(Note.EXPANDER_HEIGHT*2)+'px');
+	this.noteBox.css('height', newHeight+'px');
 	this.finish = newFinish;
 	studio.invalidateSavedStatus();
 };

@@ -45,7 +45,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.project_description = project.description;	
 	this.keysetName = project.keyset;
 	this.saved = true;
-		
+	
 	this.beats_per_minute = project.beats_per_minute;
 	this.resetPixelTiming();
 	
@@ -69,7 +69,6 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	
 	// === Instantiate Nodas ===
 	this.nodas = [];
-	this.notes = [];
 	this.keyset = this.keySets[this.keysetName];
 	this.keyContainer = $(this.circuitsContainer).find("#nodes");
 	this.swytcheContainer = $(this.circuitsContainer).find("#swytches");
@@ -143,18 +142,24 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	// TODO: Should these be initialized in js?
 	this.advanceBox = $("#advance_box");
 	this.advanceAmount = this.pixels_per_beat;
-	this.advanceBox.
-			change(	function(){ 
-				var parts = this.value.split("_");
-				var counter = parseInt(parts[0]);
-				switch(parts[1]){
-					case "bar": self.advanceAmount = counter * self.pixels_per_bar; break;
-					case "beat":
-						self.advanceAmount = counter * self.pixels_per_beat; break;
-					case "pixel":
-						self.advanceAmount = counter; break;
-				}
-			});
+	this.advanceBox.change(	function(){ 
+		var parts = this.value.split("_");
+		var counter = parseInt(parts[0]);
+		switch(parts[1]){
+			case "bar": self.advanceAmount = counter * self.pixels_per_bar; break;
+			case "beat":
+				self.advanceAmount = counter * self.pixels_per_beat; break;
+			case "pixel":
+				self.advanceAmount = counter; break;
+		}
+	});
+			
+	this.snapBox = $("#snap_resolution_box");
+	this.snapResolution = parseInt(this.snapBox.val());
+	this.snapBox.change( function(){
+		self.snapResolution = parseInt(this.value);
+	});
+			
 	
 	this.bpmBox = $("#bpm");
 	this.bpmBox.
@@ -278,8 +283,6 @@ NodeaStudio.prototype.eagerInitializeNoda = function(persistedNoda){
 				ev.stopPropagation();
 	});
 	
-	this.notes = this.notes.concat(interactiveNoda.notes);
-	
 	return interactiveNoda;
 };
 
@@ -333,6 +336,20 @@ NodeaStudio.prototype.toggleRecording = function(){
 	$('#mode_controls #record').toggleClass("active");
 };
 
+NodeaStudio.prototype.snap = function(){
+	var snapMiddle = this.snapResolution/2;
+	Note.selecteds.forEach(function(note){
+		var snapRemainder = note.start % this.snapResolution;
+		if( snapRemainder !== 0 ){
+			if( snapRemainder > snapMiddle ){
+				note.newStart(note.start - snapRemainder + this.snapResolution);
+			} else {
+				note.newStart(note.start - snapRemainder);
+			}
+		}
+	}, this);
+	this.invalidateSavedStatus();
+};
 
 
 
@@ -414,11 +431,19 @@ NodeaStudio.prototype.playpause = function(){
 
 
 NodeaStudio.prototype.pixelFor = function(epoch){
+	var pixel = 0;
 	if( this.startTime === null ){
-	    return this.location;
+	    pixel = this.location;
 	} else {
-	    return this.pixelForProgress(epoch - this.startTime);
+	    pixel = this.pixelForProgress(epoch - this.startTime);
 	}
+	
+	var snapRemainder = pixel % this.snapResolution;
+	if( snapRemainder === 0){
+		return pixel;
+	} else {
+		return pixel - snapRemainder + this.snapResolution;
+	} 
 };
 
 NodeaStudio.prototype.pixelForProgress = function(progress){
@@ -542,13 +567,16 @@ NodeaStudio.prototype.frame = function( timestamp ){
 	this.setLocation(newLocation);
 	
 	// handle lighting
-	this.notes.forEach( function(note){
-	    if( note.start <= newLocation && note.start >= this.lastLocation ){
-	        note.noda.lightOn('active');
-	    } else if( note.finish <= newLocation && note.finish > this.lastLocation ){
-	        note.noda.lightOff('active');
-	    }
+	this.nodas.forEach( function(noda){
+		noda.notes.forEach( function(note){
+			if( note.start <= newLocation && note.start >= this.lastLocation ){
+				noda.lightOn('active');
+			} else if( note.finish <= newLocation && note.finish > this.lastLocation ){
+				noda.lightOff('active');
+			}
+		}, this);
 	}, this);
+
 	this.recordingNodas.forEach( function(noda){
 		noda.frame(newLocation);
 	});
@@ -667,10 +695,8 @@ NodeaStudio.prototype.notify = function(words, errorMessage){
 
 
 NodeaStudio.prototype.deleteNote = function(note){
-	var idx = this.notes.indexOf(note);
-	if( idx !== -1 ){
+	if(note.noda){
 		note.removeContainer();
-		this.notes.splice(idx,1);
 		note.noda.deleteNote(note);
 		this.invalidateSavedStatus();
 	}

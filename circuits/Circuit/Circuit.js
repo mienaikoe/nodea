@@ -183,9 +183,12 @@ Circuit.prototype.on = function(location) {
 Circuit.prototype.off = function(location) {
 	if(location && this.recordingNote !== null){
 		var note = this.recordingNote;
-		if( note.start === location ){
+		if( note.start > location ){
 			note.container.remove();
 		} else {
+			if( note.start === location ){
+				location++;
+			}
 			note.newFinish(location);
 			this.addNote(note);
 		}
