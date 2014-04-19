@@ -53,6 +53,7 @@ Note.prototype.createContainer = function(){
 					}).mouseup(function(ev_up){
 						Note.selecteds.forEach(function(note){
 							note.move(note.mouseSetpoint - ev_up.pageY);
+							$(document.body).unbind("mousemove").unbind("mouseup");
 						});
 					});
 					ev.stopPropagation();
@@ -126,26 +127,76 @@ Note.prototype.turnOffRecording = function(){
 	this.container.css('height', (this.finish-this.start) + 'px');
 };
 
-Note.prototype.move = function( newStart ){
-	this.container.css('bottom', (newStart)+'px');
-	$(document.body).unbind("mousemove").unbind("mouseup");
+
+
+
+// Note Mobilization
+
+
+Note.prototype.moveNoUndo = function( newStart ){
+	this.container.css('bottom', (newStart-Note.EXPANDER_HEIGHT)+'px');
+	this.noteBox.css('bottom', newStart+'px');
 	
 	this.finish = this.finish + (newStart - this.start);
 	this.start = newStart;
+};
+
+
+Note.prototype.move = function( newStart ){
+	var oldStart = this.start;
+	this.moveNoUndo(newStart);
 	
-	studio.invalidateSavedStatus();
+	var self = this;
+	studio.pushUndoRedo(
+		function(){self.moveNoUndo(oldStart);}, 
+		function(){self.moveNoUndo(newStart);}
+	);
+};
+
+
+
+Note.prototype.newStartNoUndo = function( newStart ){
+	var newHeight = this.finish - newStart;
+
+	this.container.css('bottom', (newStart-Note.EXPANDER_HEIGHT)+'px');
+	this.container.css('height', newHeight + (Note.EXPANDER_HEIGHT*2) +'px');
+	this.noteBox.css('bottom', newStart+'px');
+	this.noteBox.css('height', newHeight+'px');
+	
+	this.start = newStart;
 };
 
 Note.prototype.newStart = function( newStart ){
-	this.container.css('bottom', (newStart)+'px');
-	this.start = newStart;
-	studio.invalidateSavedStatus();
+	var oldStart = this.start;
+	this.newStartNoUndo(newStart);
+	
+	var self = this;
+	studio.pushUndoRedo(
+		function(){self.newStartNoUndo(oldStart);}, 
+		function(){self.newStartNoUndo(newStart);}
+	);
 };
 
-Note.prototype.newFinish = function( newFinish ){
+
+
+
+Note.prototype.newFinishNoUndo = function( newFinish ){
 	var newHeight = newFinish - this.start;
+	
 	this.container.css('height', newHeight+(Note.EXPANDER_HEIGHT*2)+'px');
 	this.noteBox.css('height', newHeight+'px');
+	
 	this.finish = newFinish;
-	studio.invalidateSavedStatus();
+};
+
+
+Note.prototype.newFinish = function( newFinish ){
+	var oldFinish = this.finish;
+	this.newFinishNoUndo(newFinish);
+	
+	var self = this;
+	studio.pushUndoRedo(
+		function(){self.newFinishNoUndo(oldFinish);}, 
+		function(){self.newFinishNoUndo(newFinish);}
+	);
 };

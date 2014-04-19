@@ -121,20 +121,51 @@ Circuit.prototype.generateCircuitBody = function(circuitBody){
 
 
 
-
-
-Circuit.prototype.addNote = function(note){
-    if( note !== null ){
-        this.notes.push(note);
-    }
+Circuit.prototype.addNoteNoUndo = function(note){
+	if( note !== null ){
+		this.notes.push(note);
+		if( !note.container ){ 
+			note.createContainer(); 
+		}
+	}
 };
 
-Circuit.prototype.deleteNote = function(note){
+Circuit.prototype.addNote = function(note){
+	this.addNoteNoUndo(note);
+	
+	var self = this;
+	studio.pushUndoRedo(
+		function(){self.deleteNoteNoUndo(note);}, 
+		function(){self.addNoteNoUndo(note);}
+	);
+};
+
+
+
+
+Circuit.prototype.deleteNoteNoUndo = function(note){
 	var idx = this.notes.indexOf(note);
 	if( idx !== -1 ){
 		this.notes.splice(idx, 1);
+		if(note.container){ 
+			note.container.remove(); 
+			note.container = null; 
+		}
 	}
 };
+
+Circuit.prototype.deleteNote = function(note){
+	this.deleteNoteNoUndo(note);
+	
+	var self = this;
+	studio.pushUndoRedo(
+		function(){self.addNoteNoUndo(note);}, 
+		function(){self.deleteNoteNoUndo(note);}
+	);
+};
+
+
+
 
 
 
@@ -189,7 +220,7 @@ Circuit.prototype.off = function(location) {
 			if( note.start === location ){
 				location++;
 			}
-			note.newFinish(location);
+			note.newFinishNoUndo(location);
 			this.addNote(note);
 		}
 		this.recordingNote = null;

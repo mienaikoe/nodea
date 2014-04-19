@@ -44,7 +44,9 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.project_name = project.name;
 	this.project_description = project.description;	
 	this.keysetName = project.keyset;
+	
 	this.saved = true;
+	this.undoList = new UndoList();
 	
 	this.beats_per_minute = project.beats_per_minute;
 	this.resetPixelTiming();
@@ -103,11 +105,9 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	
 	// === Event Handling ===
 	$("body").keydown(function(ev) {
-		if( ev.ctrlKey ){
-			if( ev.keyCode === 83 || ev.keyCode === 115){
-				self.save();
-				ev.preventDefault();
-			}
+		if( ev.ctrlKey && ev.keyCode in self.ctrlKeyControlMap){
+			self.ctrlKeyControlMap[ev.keyCode](self);
+			ev.preventDefault();
 		} else if( ev.keyCode in self.keyCodeToAsciiMap ){
 			var interactiveNoda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
 	        self.noteOn( interactiveNoda );
@@ -342,9 +342,9 @@ NodeaStudio.prototype.snap = function(){
 		var snapRemainder = note.start % this.snapResolution;
 		if( snapRemainder !== 0 ){
 			if( snapRemainder > snapMiddle ){
-				note.newStart(note.start - snapRemainder + this.snapResolution);
+				note.move(note.start - snapRemainder + this.snapResolution);
 			} else {
-				note.newStart(note.start - snapRemainder);
+				note.move(note.start - snapRemainder);
 			}
 		}
 	}, this);
@@ -628,6 +628,11 @@ NodeaStudio.prototype.incrementAdvanceBox = function(larger){
 
 // saving project
 
+NodeaStudio.prototype.pushUndoRedo = function(undo, redo){
+	this.undoList.push(undo, redo);
+	this.invalidateSavedStatus();
+};
+
 NodeaStudio.prototype.invalidateSavedStatus = function(){
 	this.saved = false;
 	$('#save').addClass('warning');
@@ -790,4 +795,23 @@ NodeaStudio.prototype.eventControlMap = {
 	// backspace key
 	8: function(studio){ Note.selecteds.forEach(function(note){studio.deleteNote(note);}); }
 	
+};
+
+
+NodeaStudio.prototype.ctrlKeyControlMap = {
+
+	// ctrl-s
+	83:	function(studio){ studio.save(); },
+		
+	// ctrl-z
+	90:	function(studio){ studio.undoList.undo(); },
+	// ctrl-y
+	89: function(studio){ studio.undoList.redo(); },
+	
+	// ctrl-x
+	88: function(studio){ /*cut*/ },
+	// ctrl-c
+	67: function(studio){ /*copy*/ },
+	// ctrl-v
+	86: function(studio){ /*paste*/ }
 };
