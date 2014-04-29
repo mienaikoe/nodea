@@ -14,6 +14,10 @@ window.AudioContext =
 		window.AudioContext || 
 		window.webkitAudioContext;
 
+window.AudioContext.prototype.createGainNode =
+		window.AudioContext.prototype.createGainNode || 
+		window.AudioContext.prototype.createGain;
+
 if( !window.requestAnimationFrame || !window.AudioContext ){
 	alert("It looks like your browser doesn't support this application. Please try a more modern Browser.");
 }
@@ -45,6 +49,10 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.project_description = project.description;	
 	this.keysetName = project.keyset;
 	
+	this.looping = project.looping || false;
+	this.loop_start = project.loop_start || 0;
+	this.loop_end = project.loop_end || 48;
+	
 	this.saved = true;
 	this.undoList = new UndoList();
 	
@@ -67,6 +75,11 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 		});
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
 	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
+	
+	
+	// === Loopin Bars ===
+	$('<div/>', {class:'loop', id:'loopStart'}).css("bottom",this.loop_start+"px").appendTo(this.barsContainer);
+	$('<div/>', {class:'loop', id:'loopEnd'}).css("bottom",this.loop_end+"px").appendTo(this.barsContainer);
 	
 	
 	// === Instantiate Nodas ===
@@ -335,6 +348,18 @@ NodeaStudio.prototype.toggleRecording = function(){
 	this.recording = !this.recording;
 	$('#mode_controls #record').toggleClass("active");
 };
+
+NodeaStudio.prototype.toggleLooping = function(){
+	if( this.looping ){
+		$("#loopToggle").removeClass("active");
+		$(".loop").hide();
+	} else {
+		$("#loopToggle").addClass("active");
+		$(".loop").show();
+	}
+	this.looping = !this.looping;
+};
+
 
 NodeaStudio.prototype.snap = function(){
 	var snapMiddle = this.snapResolution/2;
@@ -648,6 +673,9 @@ NodeaStudio.prototype.marshal = function(){
 		beats_per_bar: this.beats_per_bar,
 		keyset: this.keysetName,
 		bar_count: this.bar_count,
+		looping: this.looping,
+		loop_start: this.loop_start,
+		loop_end: this.loop_end,
 		nodas: this.nodas.
 			map(function(noda){ return noda.marshal(); }).
 			filter(function(noda){ return noda.handle !== 'Circuit'; })

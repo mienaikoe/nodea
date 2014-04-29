@@ -21,6 +21,10 @@ $node_width: 50px;
 $node_margin: 5px;
 $node_text_color: #222;
 
+$bar_line_color: #222;
+$beat_line_color: #333;
+$track_line_color: #333;
+
 $note_color: #DDD;
 $active_color: #FEA;
 $warning_color: #FCC;
@@ -216,7 +220,7 @@ a{
          vertical-align: middle;
         .ditch{
             display:inline-block;
-            width: 18px;
+            width: 12px;
             height: 10px;
         }
         .spacer{
@@ -320,7 +324,7 @@ a{
                 height: 100%;
                 border-left: 1px dotted $node_text_color;
                 .nodeTrack{
-                    @include track(1px dotted $node_text_color);
+                    @include track(1px solid $track_line_color);
                     height: 100%;
                     .noteCapsule{
                         position: absolute;
@@ -363,11 +367,18 @@ a{
                 width: $tracks_width;
                 .bar{
                     width: 100%;
-                    border-bottom: 1px solid $node_text_color;
+                    border-bottom: 1px solid $bar_line_color;
                     .beat{
                         width: 100%;
-                        border-bottom: 1px dotted $node_text_color;
+                        border-bottom: 1px dotted $beat_line_color;
                     }
+                }
+                .loop{
+                    position: absolute;
+                    background-color: #8AF;
+                    height: 1px;
+                    width: 100%;
+                    display:none;
                 }
             }
         }
