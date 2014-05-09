@@ -317,6 +317,7 @@ a{
             margin-left: auto;
             margin-right: auto;
             width: $circuit_width;
+            cursor: crosshair;
             #tracks{
                 position: absolute;
                 bottom: 0px;
@@ -380,6 +381,11 @@ a{
                     width: 100%;
                     display:none;
                 }
+            }
+            .noteSelectBox{
+                position: absolute;
+                border: 1px dashed white;
+                cursor: crosshair;
             }
         }
         }

@@ -72,6 +72,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 		}).mousedown(function(ev){
 			// unless propagation stopped by notes
 			Note.unselectAll();
+			self.startSelectBox(ev.pageX, ev.pageY);
 		});
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
 	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
@@ -85,6 +86,9 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	// === Instantiate Nodas ===
 	this.nodas = [];
 	this.keyset = this.keySets[this.keysetName];
+	this.flatKeyset = this.keyset.reduce(function(a, b) {
+		return a.concat(b);
+	});
 	this.keyContainer = $(this.circuitsContainer).find("#nodes");
 	this.swytcheContainer = $(this.circuitsContainer).find("#swytches");
 	
@@ -650,6 +654,58 @@ NodeaStudio.prototype.incrementAdvanceBox = function(larger){
 };
 
 
+NodeaStudio.prototype.startSelectBox = function(x, y){
+	var noteSelectBox = $("<div></div>",{class: 'noteSelectBox'}).appendTo(this.ideasContainer);
+	var ideasOffset = this.ideasContainer.offset();
+	var ideasHeight = this.ideasContainer.height();
+	var self = this;
+
+	$(document.body).mousemove(function(ev_move){
+		var rawTop = Math.min(y, ev_move.pageY);
+		var rawLeft = Math.min(x, ev_move.pageX);
+		
+		var newTop = rawTop - ideasOffset.top;
+		var newHeight = Math.max(y, ev_move.pageY) - rawTop;
+		var newLeft = rawLeft - ideasOffset.left;
+		var newWidth = Math.max(x, ev_move.pageX) - rawLeft;
+		
+		noteSelectBox.
+				css("top",newTop+"px").
+				css("height",newHeight+"px").
+				css("left",newLeft+"px").
+				css("width",newWidth+"px");
+		
+		var firstTrackIndex = Math.ceil(newLeft / NodeaStudio.TRACK_WIDTH);
+		var lastTrackIndex = Math.floor((newLeft + newWidth) / NodeaStudio.TRACK_WIDTH);
+		var noteFinishBound = ideasHeight - newTop;
+		var noteStartBound = noteFinishBound - newHeight;
+		
+		console.log(noteStartBound +"|"+noteFinishBound);
+		
+		
+		self.flatKeyset.forEach(function(ascii, idx){
+			if(idx < firstTrackIndex || idx > lastTrackIndex){ 
+				self.nodas[ascii].notes.forEach(function(note){
+					note.unselect();
+				}, self);
+			} else {
+				self.nodas[ascii].notes.forEach(function(note){
+					if(note.start >= noteStartBound && note.finish <= noteFinishBound){
+						note.select();
+					} else {
+						note.unselect();
+					}
+				}, self);
+			}
+		}, self);
+	}).mouseup(function(ev_up){
+		noteSelectBox.remove();
+		$(document.body).unbind("mousemove").unbind("mouseup");
+	});
+};
+
+
+
 
 // saving project
 
@@ -753,7 +809,7 @@ NodeaStudio.prototype.replaceCircuit = function( oldCircuit, newHandle ){
 
 
 
-
+NodeaStudio.TRACK_WIDTH = 19; //px
 
 
 NodeaStudio.prototype.asciiKeys = [
@@ -784,19 +840,19 @@ NodeaStudio.prototype.keyCodeToAsciiMap = {
 NodeaStudio.prototype.keySets = {
 	desktop: [
 		// top numbers
-	    [49,  50,  51,  52,  53],
-	    [54,  55,  56,  57,  48],
-		
+		[49,  50,  51,  52,  53],
+		[54,  55,  56,  57,  48],
+
 		// left letters
 		[113, 119, 101, 114, 116, 
 		 97,  115, 100, 102, 103, 
 		 122, 120, 99,  118, 98],
-	 
+
 		// right letters
-	    [121, 117, 105, 111, 112, 
+		[121, 117, 105, 111, 112, 
 		 104, 106, 107, 108, 59,  
 		 110, 109, 44,  46,  47]
-	]	
+	]
 };
 
 

@@ -17,6 +17,22 @@ Note.unselectAll = function(){
 };
 
 
+Note.prototype.select = function(){
+	if( Note.selecteds.indexOf(this) === -1 ){
+		Note.selecteds.push(this);
+		this.container.addClass("selected");
+	}
+};
+
+Note.prototype.unselect = function(){
+	var selectedIdx = Note.selecteds.indexOf(this);
+	if( selectedIdx !== -1 ){
+		Note.selecteds.splice(selectedIdx, 1);
+		this.container.removeClass("selected");
+	}
+};
+
+
 Note.prototype.createContainer = function(){
 	var clazz = '';
 	if( typeof this.finish === 'undefined' ){
