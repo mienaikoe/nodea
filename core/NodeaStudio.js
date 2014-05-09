@@ -658,30 +658,32 @@ NodeaStudio.prototype.startSelectBox = function(x, y){
 	var noteSelectBox = $("<div></div>",{class: 'noteSelectBox'}).appendTo(this.ideasContainer);
 	var ideasOffset = this.ideasContainer.offset();
 	var ideasHeight = this.ideasContainer.height();
+	
+	var maxLeftWidth = x - ideasOffset.left;
+	var maxRightWidth = this.ideasContainer.width() - (x - ideasOffset.left);
+	var maxDownHeight = this.ideasContainer.height() - (y - ideasOffset.top);
 	var self = this;
 
-	$(document.body).mousemove(function(ev_move){
-		var rawTop = Math.min(y, ev_move.pageY);
-		var rawLeft = Math.min(x, ev_move.pageX);
-		
-		var newTop = rawTop - ideasOffset.top;
-		var newHeight = Math.max(y, ev_move.pageY) - rawTop;
-		var newLeft = rawLeft - ideasOffset.left;
-		var newWidth = Math.max(x, ev_move.pageX) - rawLeft;
+	$(document.body).mousemove(function(ev_move){		
+		var newTop =  Math.min(y, ev_move.pageY) - ideasOffset.top;
+		var newHeight = ev_move.pageY < y ? 
+				y - ev_move.pageY : // TODO: calculate bound
+				Math.min(maxDownHeight, ev_move.pageY - y);
+		var newLeft = Math.max(0, Math.min(x, ev_move.pageX) - ideasOffset.left);
+		var newWidth = ev_move.pageX < x ?
+				Math.min(maxLeftWidth, x - ev_move.pageX) :
+				Math.min(maxRightWidth, ev_move.pageX - x); 
 		
 		noteSelectBox.
 				css("top",newTop+"px").
-				css("height",newHeight+"px").
+				css("height",newHeight-2+"px").
 				css("left",newLeft+"px").
-				css("width",newWidth+"px");
+				css("width",newWidth-2+"px");
 		
 		var firstTrackIndex = Math.ceil(newLeft / NodeaStudio.TRACK_WIDTH);
 		var lastTrackIndex = Math.floor((newLeft + newWidth) / NodeaStudio.TRACK_WIDTH);
 		var noteFinishBound = ideasHeight - newTop;
 		var noteStartBound = noteFinishBound - newHeight;
-		
-		console.log(noteStartBound +"|"+noteFinishBound);
-		
 		
 		self.flatKeyset.forEach(function(ascii, idx){
 			if(idx < firstTrackIndex || idx > lastTrackIndex){ 
