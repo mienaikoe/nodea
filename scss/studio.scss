@@ -5,27 +5,34 @@
 
 $drawer_width: 300px;
 
-$track_width: 18px;
+$track_width: 19px;
 $circuit_padding: 10px;
-$tracks_width: ($track_width*40) + (41px); //tracks + borders
+$tracks_width: (($track_width+1px)*30) + 1px; //tracks + borders
 $machine_width: $tracks_width;
-$circuit_width: $machine_width;
-$circuit_height: 309px; // required for correct positioning of tracks
+$machine_height: 30px;
+$instrumentation_height: 259px; // required for correct positioning of tracks
 
 $machine_color: #222;
-$case_color: rgba(100,100,100,0.62);
+$case_color: #444; //rgba(100,100,100,0.62);
 $drawer_content_color: #777;
 
-$node_height: 42px;
-$node_width: 50px;
-$node_margin: 5px;
-$node_text_color: #222;
+$circuitrow_margin: 5px;
+$circuitrow_width: ($machine_width/2) - (2*$circuitrow_margin);
+
+$circuit_margin: 4px;
+$circuit_border: 1px;
+$circuits_per_row: 5;
+$circuit_width: ($circuitrow_width - ((2*$circuits_per_row)*($circuit_margin+$circuit_border))) / $circuits_per_row;
+$circuit_height: $circuit_width * .8;
+$circuit_text_color: #222;
 
 $bar_line_color: #222;
 $beat_line_color: #333;
 $track_line_color: #333;
 
 $note_color: #DDD;
+$note_expander_height: 2px;
+
 $active_color: #FEA;
 $warning_color: #FCC;
 $kosher_color: #CFE;
@@ -116,7 +123,7 @@ a{
         position: absolute;
         overflow-y: auto;
         overflow-x: hidden;
-        
+
         &.sinistra{
             direction:rtl;
         }
@@ -124,113 +131,113 @@ a{
             right: 0px;
         }
 
-            .drawer_heading{
-                background-color: $drawer_content_color;
+        .drawer_heading{
+            background-color: $drawer_content_color;
+            border-bottom: 1px solid white;
+            margin: 0px;
+            line-height: 40px;
+            padding: 0px 10px;
+            font-weight: 100;
+            font-size: 18px;
+            clear: both;
+            .heading_words{
+                float: left;
+            }
+            .controls{
+                float: right;
+            }
+        }
+        .fieldLabel{
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+        .urlarea{
+            width: 100%;
+            height: 70px;
+            box-sizing: border-box;
+            padding: 5px;
+            background-color: #777;
+            color: white;
+            font-size: 12px;
+            border: 0px;
+        }
+        .clearfix{
+            height: 20px;
+        }
+        .drawer_content{
+            font-family: monospace;
+            .drawer_section{
                 border-bottom: 1px solid white;
-                margin: 0px;
-                line-height: 40px;
-                padding: 0px 10px;
-                font-weight: 100;
-                font-size: 18px;
-                clear: both;
-                .heading_words{
-                    float: left;
+                .ds_heading{
+                    background-color: #333;
+                    padding: 7px;
+                    font-size: 14px;
                 }
-                .controls{
-                    float: right;
+                .ds_body{
+                    .drawer_division{
+                        border-top: 1px solid #aaa;
+                        .dd_heading{
+                            padding:7px;
+                            background-color: #333;
+                            font-size: 11px;
+                        }
+                        .dd_body{
+                            padding: 10px;
+                            &.nopad{
+                                padding: 0px;
+                            }
+                        }
+                    }
                 }
+
+
             }
-            .fieldLabel{
-                font-size: 12px;
-                margin-bottom: 3px;
-            }
-            .urlarea{
-                width: 100%;
-                height: 70px;
-                box-sizing: border-box;
-                padding: 5px;
-                background-color: #777;
-                color: white;
-                font-size: 12px;
-                border: 0px;
-            }
-            .clearfix{
-                height: 20px;
-            }
-            .drawer_content{
+
+
+            .fillOut{
                 font-family: monospace;
-                .drawer_section{
-                    border-bottom: 1px solid white;
-                    .ds_heading{
-                        background-color: #333;
-                        padding: 7px;
-                        font-size: 14px;
-                    }
-                    .ds_body{
-                        .drawer_division{
-                            border-top: 1px solid #aaa;
-                            .dd_heading{
-                                padding:7px;
-                                background-color: #333;
-                                font-size: 11px;
-                            }
-                            .dd_body{
-                                padding: 10px;
-                                &.nopad{
-                                    padding: 0px;
-                                }
-                            }
+                background-color: $drawer_content_color;
+                border: 0px;
+                color: white;
+                width: 250px;
+                padding: 5px;
+                &#name{
+                    font-size: 14px;
+                }
+                &#description{
+                    font-size: 14px;
+                }
+            }
+            &#project_details{
+                ul#authors{
+                    margin: 4px;
+                    padding-left: 10px;
+                    li.author{
+                        list-style-type: none;
+                        svg, a{
+                            display: inline-block;
+                            vertical-align: middle;
                         }
-                    }
-                    
-                    
-                }
-                
-                
-                .fillOut{
-                    font-family: monospace;
-                    background-color: $drawer_content_color;
-                    border: 0px;
-                    color: white;
-                    width: 250px;
-                    padding: 5px;
-                    &#name{
-                        font-size: 14px;
-                    }
-                    &#description{
-                        font-size: 14px;
-                    }
-                }
-                &#project_details{
-                    ul#authors{
-                        margin: 4px;
-                        padding-left: 10px;
-                        li.author{
-                            list-style-type: none;
-                            svg, a{
-                                display: inline-block;
-                                vertical-align: middle;
-                            }
-                            a{
-                                font-size: 14px;
-                            }
-                            svg{
-                                margin-right: 8px;
-                            }
+                        a{
+                            font-size: 14px;
+                        }
+                        svg{
+                            margin-right: 8px;
                         }
                     }
                 }
             }
-        
-        
+        }
     }
-    
-    
-     .controls{
-         vertical-align: middle;
+
+
+
+    .controls{
+        width: 100%;
+        vertical-align: middle;
         .ditch{
             display:inline-block;
-            width: 12px;
+            width: 5px;
             height: 10px;
         }
         .spacer{
@@ -241,59 +248,10 @@ a{
                 border-top: 1px solid $case_color;
             }
         }
-        
-        
+
+
         .button_box{
             width: $control_dimension+6px;
-        }
-        
-        .control{
-            line-height: $control_dimension;
-            margin: 0px auto;
-            border: 1px solid #000;
-            font-size: 14px;
-            text-align: center;
-            background-color: $note_color;
-            &.button{
-                width: $control_dimension;
-                cursor: pointer;
-                padding: 3px 2px 2px 2px;
-                color: $node_text_color;
-                box-shadow: inset 0 0 5px #999;
-                &.kosher{
-                    background-color: $kosher_color;
-                    box-shadow: none;
-                }
-                &.active{
-                    background-color: $active_color;
-                    box-shadow: 0px 0px 7px #8af;
-                }
-                &.warning{
-                    background-color: $warning_color;
-                    box-shadow: none;
-                }
-            }
-            &.field{
-                padding: 2px; 
-                line-height: $control_dimension + 1px; /* inputs have some weirdness */
-                width: 100px;
-                &.twodigit{
-                    width: 36px;
-                }
-                &.threedigit{
-                    width: 48px;
-                }
-            }
-            &.select{
-                padding: 2px;
-                height: $control_dimension + 7px;
-            }   
-            &#bpm_box{
-                //width: 42px;
-            }
-            &#advance_box{
-                //width: 44px;
-            }
         }
 
         .label{  
@@ -303,17 +261,68 @@ a{
             line-height: 12px;
             text-align: center;
         }
-        
+
     }
 
-    #machine{
+
+    .control{
+        min-height: $control_dimension;
+        padding: 3px 2px 2px 2px;
+        line-height: $control_dimension;
+        box-shadow: inset 0 0 5px #999;
+        margin: 0px auto;
+        border: 1px solid #000;
+        font-size: 14px;
+        text-align: center;
+        background-color: $note_color;
+        &.button{
+            width: $control_dimension;
+            cursor: pointer;
+            color: $circuit_text_color;
+            &.kosher{
+                background-color: $kosher_color;
+                box-shadow: none;
+            }
+            &.active{
+                background-color: $active_color;
+                box-shadow: 0px 0px 7px #8af;
+            }
+            &.warning{
+                background-color: $warning_color;
+                box-shadow: none;
+            }
+        }
+        &.field{
+            line-height: $control_dimension + 1px; /* inputs have some weirdness */
+            width: 100px;
+            &.twodigit{
+                width: 36px;
+            }
+            &.threedigit{
+                width: 48px;
+            }
+        }
+        &.select{
+            height: $control_dimension + 7px;
+        }   
+        &#bpm_box{
+            //width: 42px;
+        }
+        &#advance_box{
+            //width: 44px;
+        }
+    }
+
+
+
+    #editor{
         width: $machine_width;
         position: absolute;
         left: $drawer_width + $circuit_padding;
         top: 0px;
         bottom: 0px;
         //background-color: $machine_color;
-        
+
         #idea_window{
             overflow: hidden;
             position: absolute;
@@ -321,88 +330,90 @@ a{
             bottom: $circuit_height;
             width: 100%;
             background-color: $case_color;
-        
-        #ideas{
-            position: absolute;
-            margin-left: auto;
-            margin-right: auto;
-            width: $circuit_width;
-            cursor: crosshair;
-            #tracks{
+
+            #ideas{
                 position: absolute;
-                bottom: 0px;
-                width: $tracks_width;
-                height: 100%;
-                border-left: 1px dotted $node_text_color;
-                .nodeTrack{
-                    @include track(1px solid $track_line_color);
-                    height: 100%;
-                    .noteCapsule{
-                        position: absolute;
-                        width: $track_width;
-                        .noteExpander{
-                            height: 2px;
-                            width: 100%;
-                            background-color: #D82;
-                            visibility: hidden;
-                            cursor: n-resize;
-                            border-bottom: 1px solid #C60;
-                            border-top: 1px solid #C60;
-                        }
-                        .note{
-                            background-color: $note_color;
-                            opacity: 0.7;
-                            width: 100%;
-                        }
-                        &.selected{
-                            z-index: 2;
-                            .noteExpander{
-                                visibility: visible;
-                            }
-                            .note{
-                                cursor: move;
-                                opacity: 1;
-                            }
-                        }
-                        &.recording{
-                            .note{
-                                background-color: $kosher_color;
-                            }
-                        }
-                    }
-                }
-            }
-            #barlines{ 
-                position: absolute;
-                bottom: 0px;
-                width: $tracks_width;
-                .bar{
-                    width: 100%;
-                    border-bottom: 1px solid $bar_line_color;
-                    .beat{
-                        width: 100%;
-                        border-bottom: 1px dotted $beat_line_color;
-                    }
-                }
-                .loop{
-                    position: absolute;
-                    background-color: #8AF;
-                    height: 1px;
-                    width: 100%;
-                    display:none;
-                }
-            }
-            .noteSelectBox{
-                position: absolute;
-                border: 1px dashed white;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%;
                 cursor: crosshair;
+                #tracks{
+                    position: absolute;
+                    bottom: 0px;
+                    width: 100%;
+                    height: 100%;
+                    border-left: 1px dotted $circuit_text_color;
+                    .circuitTrack{
+                        @include track(1px solid $track_line_color);
+                        height: 100%;
+                        .noteCapsule{
+                            position: absolute;
+                            width: $track_width;
+                            min-height: (2*$note_expander_height)+1px;
+                            .noteExpander{
+                                height: $note_expander_height;
+                                width: 100%;
+                                background-color: #D82;
+                                visibility: hidden;
+                                cursor: n-resize;
+                                border-bottom: 1px solid #C60;
+                                border-top: 1px solid #C60;
+                            }
+                            .note{
+                                background-color: $note_color;
+                                opacity: 0.7;
+                                min-height: 1px;
+                                width: 100%;
+                            }
+                            &.selected{
+                                z-index: 2;
+                                .noteExpander{
+                                    visibility: visible;
+                                }
+                                .note{
+                                    cursor: move;
+                                    opacity: 1;
+                                }
+                            }
+                            &.recording{
+                                .note{
+                                    background-color: $kosher_color;
+                                }
+                            }
+                        }
+                    }
+                }
+                #barlines{ 
+                    position: absolute;
+                    bottom: 0px;
+                    width: 100%;
+                    .bar{
+                        width: 100%;
+                        border-bottom: 1px solid $bar_line_color;
+                        .beat{
+                            width: 100%;
+                            border-bottom: 1px dotted $beat_line_color;
+                        }
+                    }
+                    .loop{
+                        position: absolute;
+                        background-color: #8AF;
+                        height: 1px;
+                        width: 100%;
+                        display:none;
+                    }
+                }
+                .noteSelectBox{
+                    position: absolute;
+                    border: 1px dashed white;
+                    cursor: crosshair;
+                }
             }
-        }
         }
 
-        #circuits{
-            width: $circuit_width;
-            height: $circuit_height;
+        #instrumentation{
+            width: 100%;
+            height: $instrumentation_height;
             //background-color: $machine_color;
             position: absolute;
 
@@ -411,63 +422,79 @@ a{
             }
 
             #swytches{
-                border-left: 1px solid $node_text_color;
-                border-top: 1px solid $node_text_color;
-                border-bottom: 1px solid $node_text_color;
+                border-left: 1px solid $circuit_text_color;
+                border-top: 1px solid $circuit_text_color;
+                border-bottom: 1px solid $circuit_text_color;
                 .trackSwitch{
                     cursor: pointer;
                     height: $track_width;
                     line-height: $track_width;
-                    color: $node_text_color;
+                    color: $circuit_text_color;
                     text-align: center;
-                    @include track(1px solid $node_text_color);
+                    @include track(1px solid $circuit_text_color);
                     @include circuitry;
                 }
             }
-            
+
             #edit_controls{
-                width: $circuit_width - 20px;
-                padding: 5px 10px 0px;
+                width: $machine_width - 10px;
+                padding: 5px 5px 0px;
                 background-color: $machine_color;
             }
 
-            #nodes{
-                width: $circuit_width;
-                background-color: $case_color;
-                .nodeRow{
-                    float:left;
-                    width: 310px;
-                    margin: 5px;
-                    &.sinistra{
-                        float: left;
-                    }
-                    &.dextra{
-                        float: right;
-                    }
-                    
-                    .node{
-                        border-radius: 3px;
-                        border: 1px solid black;
-                        width: $node_width;
-                        height: $node_height;
-                        margin: $node_margin;
-                        text-align: center;
-                        line-height: $node_height;
-                        @include unselectable;
-                        @include circuitry;
-                        cursor: pointer;
+            #machines{
+                background-color: $machine_color;
+                .machine{
+                    width: (($machine_width - 9px) / 10);
+                    margin-right: 1px;
+                    border-bottom: 0px;
+                    height: $circuit_height - (2*$circuit_margin);
+                    text-size: 14px;
+                    line-height: 30px;
+                    text-align: center;
+                    background-color: $case_color;
+                    color: white;
+                    vertical-align: top;
+                    cursor: pointer;
+                    &:last-child{
+                        margin-right: 0px;
                     }
                 }
-                .touchpad{
-                    width: $touchpad_dimension;
-                    height: $touchpad_dimension;
-                    border: 1px solid $machine_color;
-                    margin: 62px auto;
-                    border-radius: 5px;
+            }
+            #circuits{
+                .circuits{
+                    width: $machine_width;
+                    background-color: $case_color;
+                    .circuitRow{
+                        float:left;
+                        width: $circuitrow_width;
+                        margin: $circuitrow_margin;
+
+                        .circuit{
+                            border-radius: 3px;
+                            border: $circuit_border solid black;
+                            width: $circuit_width;
+                            height: $circuit_height;
+                            margin: $circuit_margin;
+                            text-align: center;
+                            line-height: $circuit_height;
+                            @include unselectable;
+                            @include circuitry;
+                            cursor: pointer;
+                        }
+                    }
+                    .touchpad{
+                        width: $touchpad_dimension;
+                        height: $touchpad_dimension;
+                        border: 1px solid $machine_color;
+                        margin: 62px auto;
+                        border-radius: 5px;
+                    }
                 }
             }
         }
+
     }
-    
+
 
 }

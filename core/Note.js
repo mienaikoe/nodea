@@ -42,8 +42,6 @@ Note.prototype.createContainer = function(){
 	var slivers = this.finish - this.start;
 	var self = this;
 	
-	console.log(this.start);
-	
 	this.container = jQuery('<div/>',{ 
 			class: 'noteCapsule ' + clazz, 
 			style: 'bottom: '+(this.start-Note.EXPANDER_HEIGHT)+'px; height: '+(slivers+(Note.EXPANDER_HEIGHT*2))+'px;'

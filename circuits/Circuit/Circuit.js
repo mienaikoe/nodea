@@ -11,9 +11,11 @@
  */
 
 
-function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
+function Circuit(ctx, persistedNoda, trackline, swytche, circuitReplacementCallback) {
 	this.ctx = ctx;	
 	this.persistedNoda = persistedNoda;
+	this.trackline = trackline;
+	this.swytche = swytche;
 	this.circuitReplacementCallback = circuitReplacementCallback;
 	
 	this.handle = this.constructor.name;
@@ -21,9 +23,7 @@ function Circuit(ctx, persistedNoda, circuitReplacementCallback) {
 	this.asciiCode = persistedNoda.ordinal;
 	this.key = String.fromCharCode(this.asciiCode);
 	
-	this.noda = jQuery('<spiv/>',{class: 'node ' + this.handle, id: 'key_'+this.asciiCode, html: this.key});
-	this.swytche = jQuery('<spiv/>',{class: 'trackSwitch ' + this.handle, html: this.key});
-	this.trackline = $('<spiv/>',{id: 'track_'+this.asciiCode, class:'nodeTrack'});
+	this.container = jQuery('<spiv/>',{class: 'circuit ' + this.handle, id: 'key_'+this.asciiCode, html: this.key});
 	
 	this.notes = [];
 	this.recordingNote = null;
@@ -250,18 +250,18 @@ Circuit.prototype.frame = function( location ){
 // lighting
 
 Circuit.prototype.lightOn = function(lightType){
-    $(this.noda).addClass(lightType);
+    $(this.container).addClass(lightType);
     $(this.swytche).addClass(lightType);
 	return this;
 };
 Circuit.prototype.lightOff = function(lightType){
-    $(this.noda).removeClass(lightType);
+    $(this.container).removeClass(lightType);
     $(this.swytche).removeClass(lightType);
 	return this;
 };
 
 Circuit.prototype.lightsOut = function(){
-    $(this.noda).removeClass('active').removeClass('recording').removeClass('selected');
+    $(this.container).removeClass('active').removeClass('recording').removeClass('selected');
     $(this.swytche).removeClass('active').removeClass('recording').removeClass('selected');
 	return this;
 };

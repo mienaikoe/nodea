@@ -1,4 +1,4 @@
-function Template(ctx, persistedNoda, circuitReplacementCallback) {
+function CircuitTemplate(ctx, persistedNoda, circuitReplacementCallback) {
 	/* The Super Constructor will Instantiate things 
 	 * that every circuit needs, including each 
 	 * visual component and the event ties for each one.
@@ -16,16 +16,16 @@ function Template(ctx, persistedNoda, circuitReplacementCallback) {
 
 
 // This Inherits the prototype of Circuit
-Template.prototype = Object.create(Circuit.prototype, {
+CircuitTemplate.prototype = Object.create(Circuit.prototype, {
 	constructor: { 
-		value: Template, // Change This to your Circuit Handle
+		value: CircuitTemplate, // Change This to your Circuit Handle
 		enumerable: false 
 	}
 });
 
 
 
-Template.prototype.extractSettings = function(settings){
+CircuitTemplate.prototype.extractSettings = function(settings){
 	Circuit.prototype.extractSettings.call(this, settings);
 	
 	if(settings){
@@ -49,7 +49,7 @@ Template.prototype.extractSettings = function(settings){
  * Use this function to fill in info, turn knobs, attach events on {handle}.html
  */
 
-Template.prototype.generateCircuitBody = function(circuitBody){
+CircuitTemplate.prototype.generateCircuitBody = function(circuitBody){
 };
 
 
@@ -60,10 +60,10 @@ Template.prototype.generateCircuitBody = function(circuitBody){
  * you'll want to do something extra to the note object. If your circuit
  * won't need these, then feel free to delete them.
  */
-Template.prototype.addNote = function(note){
+CircuitTemplate.prototype.addNote = function(note){
 	Circuit.prototype.addNote.call(this, note);
 };
-Template.prototype.deleteNote = function(note){
+CircuitTemplate.prototype.deleteNote = function(note){
 	Circuit.prototype.deleteNote.call(this, note);
 };
 
@@ -79,14 +79,14 @@ Template.prototype.deleteNote = function(note){
  *   If there is no backing note, you are required to pass an anonymous object 
  *   that has any parameters you would require of a normal note.
  */
-Template.prototype.scheduleCircuitStart = function(startWhen, note){
+CircuitTemplate.prototype.scheduleCircuitStart = function(startWhen, note){
 };
 
-Template.prototype.scheduleCircuitStop = function(endWhen, note){
+CircuitTemplate.prototype.scheduleCircuitStop = function(endWhen, note){
 };
 
 
-Template.prototype.pause = function(){
+CircuitTemplate.prototype.pause = function(){
 	Circuit.prototype.pause.call(this);
 	// Turn Off note scheduling here.
 };
@@ -108,13 +108,13 @@ Template.prototype.pause = function(){
  * will be handled for you 
  */
 
-Template.prototype.on = function() {
+CircuitTemplate.prototype.on = function() {
 	Circuit.prototype.on.call(this);
 	// schedule note to play
 };
 
 
-Template.prototype.off = function() {
+CircuitTemplate.prototype.off = function() {
 	Circuit.prototype.off.call(this);
 	// stop note from playing
 };
@@ -133,7 +133,7 @@ Template.prototype.off = function() {
  * persistedNoda.settings
  */
 
-Template.prototype.marshalSettings = function(){
+CircuitTemplate.prototype.marshalSettings = function(){
 	return {
 	};
 };

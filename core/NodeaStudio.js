@@ -32,7 +32,7 @@ navigator.vibrate =
 
 
 
-function NodeaStudio(ideasContainer, circuitsContainer, project) {
+function NodeaStudio(editorContainer, project) {
 	// Convenience Variable for setting event handling.
 	var self = this;
 	
@@ -60,13 +60,13 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 	this.resetPixelTiming();
 	
 	// === Main UI Containers ===
-	this.circuitsContainer = $(circuitsContainer).click(function(ev){ 
+	this.instrumentationContainer = $(editorContainer).find("#instrumentation").click(function(ev){ 
 		self.nodas.forEach(function(noda){ 
 			noda.lightOff('selected'); 
 		});
 	});
 
-	this.ideasContainer = $(ideasContainer).
+	this.ideasContainer = $(editorContainer).find("#ideas").
 		bind('mousewheel', function(ev){ 
 			self.advance((ev.originalEvent.wheelDelta > 0) ? self.advanceAmount : -self.advanceAmount); 
 		}).mousedown(function(ev){
@@ -74,76 +74,91 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 			Note.unselectAll();
 			self.startSelectBox(ev.pageX, ev.pageY);
 		});
+		
+		
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
-	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
-	
-	
 	// === Loopin Bars ===
 	$('<div/>', {class:'loop', id:'loopStart'}).css("bottom",this.loop_start+"px").appendTo(this.barsContainer);
 	$('<div/>', {class:'loop', id:'loopEnd'}).css("bottom",this.loop_end+"px").appendTo(this.barsContainer);
 	
 	
-	// === Instantiate Nodas ===
+	
+	// === Setup Swytches & Tracks ===
 	this.nodas = [];
 	this.keyset = this.keySets[this.keysetName];
 	this.flatKeyset = this.keyset.reduce(function(a, b) {
 		return a.concat(b);
 	});
-	this.keyContainer = $(this.circuitsContainer).find("#nodes");
-	this.swytcheContainer = $(this.circuitsContainer).find("#swytches");
 	
-	
-	
-	this.loadedCircuits = ["Circuit"];	
-	this.loadingCircuits = {};
-	
-	var nodeRowClass = "sinistra";
-	this.keyset.forEach(function(keySetRow, idx){
-		var keyRow = jQuery('<div/>',{class: 'nodeRow '+nodeRowClass}).appendTo(this.keyContainer);
-		keySetRow.forEach(function(keySetKey){
-			// Bad Hack: Fills out Containers so incoming containers can have proper placement.
-			keyRow.append("<spiv/>");
-			this.swytcheContainer.append("<spiv/>");
-			this.tracksContainer.append("<spiv/>");
-			// End Bad Hack
-			
-			var persistedNoda = project.nodas.filter(function(noda){ return noda.ordinal === keySetKey; })[0];
-			if( !persistedNoda ){
-				persistedNoda = { id: null, ordinal: keySetKey, handle: "Circuit", notes: [] };
-			}
-			
-			this.initializeNoda(persistedNoda);
-		}, this);
-		nodeRowClass = nodeRowClass === 'sinistra' ? 'dextra' : 'sinistra';
+	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
+	this.swytchesContainer = $(this.instrumentationContainer).find("#swytches");	
+	this.tracks = {};
+	this.swytches = {};
+	this.flatKeyset.forEach(function(ordinal){
+		this.swytches[ordinal] = jQuery('<spiv/>',{class: 'trackSwitch', html: String.fromCharCode(ordinal)}).
+				appendTo(this.swytchesContainer).click(function(ev){
+					self.selectedMachine.swytcheSelected(ordinal);
+					ev.stopPropagation();
+				});
+		this.tracks[ordinal] = jQuery('<spiv/>',{id: 'track_'+ordinal, class:'circuitTrack'}).
+				appendTo(this.tracksContainer);
 	}, this);
 	
-	jQuery('<div/>',{class: 'touchpad'}).appendTo(this.keyContainer);
+	
+	
+	// === Instantiate Machines ===
+	this.machineContainer = $(this.instrumentationContainer).find("#machines");
+	this.circuitsContainer = $(this.instrumentationContainer).find("#circuits");
+	this.machines = {};
+	this.machineSet.forEach(function(tabDefinition){
+		var machine;
+		if( project.machines && tabDefinition.ascii in project.machines ){
+			var machineSettings = project.machines[tabDefinition.ascii];
+			DelayedLoad.load('machines', machineSettings.handle, function(){
+				machineConstructor = window[machineSettings.handle];
+				machine = new machineConstructor(this.ctx, tabDefinition, this, machineSettings);
+			});
+		} else {
+			machine = new Machine(this.ctx, tabDefinition, this, {});
+		}
+		machine.tab.appendTo(this.machineContainer);
+		machine.circuitsContainer.appendTo(this.circuitsContainer);
+		this.machines[tabDefinition.ascii] = machine;
+		
+	}, this);
+	this.selectMachine(49); // 1
+	
+	
 	
 	
 	// === Event Handling ===
 	$("body").keydown(function(ev) {
-		if( ev.ctrlKey && ev.keyCode in self.ctrlKeyControlMap){
-			self.ctrlKeyControlMap[ev.keyCode](self);
+		var key = ev.keyCode;
+		if( ev.ctrlKey && key in self.ctrlKeyControlMap){ // ctrl keys
+			self.ctrlKeyControlMap[key](self);
 			ev.preventDefault();
-		} else if( ev.keyCode in self.keyCodeToAsciiMap ){
-			var interactiveNoda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
-	        self.noteOn( interactiveNoda );
-			interactiveNoda.keydown = true;
+		} else if ( key >= 48 && key <= 57 ){ // machine
+			self.selectMachine(key);
+		} else if( key in self.keyCodeToAsciiMap ){ // circuit
+			var actCircuit = self.selectedMachine.circuits[self.keyCodeToAsciiMap[key]];
+	        self.noteOn( actCircuit );
+			actCircuit.keydown = true;
 			ev.preventDefault();
-	    } else if( ev.keyCode in self.eventControlMap ){
-	        self.eventControlMap[ev.keyCode](self);
+	    } else if( key in self.eventControlMap ){ // event keys
+	        self.eventControlMap[key](self);
 			ev.preventDefault();
 	    } else {
-			console.log(ev.keyCode);
+			console.log(key);
 	        return;
 	    }
 	}).keyup(function(ev) {
-	    if( ev.keyCode in self.keyCodeToAsciiMap ){
-			var interactiveNoda = self.nodas[self.keyCodeToAsciiMap[ev.keyCode]];
-	        self.noteOff( interactiveNoda );
-			interactiveNoda.keydown = false;
+		var key = ev.keyCode;
+	    if( key in self.keyCodeToAsciiMap ){
+			var actCircuit = self.selectedMachine.circuits[self.keyCodeToAsciiMap[key]];
+	        self.noteOff( actCircuit );
+			actCircuit.keydown = false;
 			ev.preventDefault();
-	    } else if( ev.keyCode in self.eventControlMap ){
+	    } else if( key in self.eventControlMap ){
 	        // do nothing
 			ev.preventDefault();
 	    } else {
@@ -231,104 +246,7 @@ function NodeaStudio(ideasContainer, circuitsContainer, project) {
 // External Startup Functions
 
 
-NodeaStudio.prototype.initializeNoda = function(persistedNoda, callback){
-	if(!callback){
-		callback = function(newCircuit){};
-	}
-	var nodaInitializer = function(){
-		var newCircuit = this.eagerInitializeNoda(persistedNoda);
-		callback.call(this, newCircuit);
-	};
-	
-	if( this.loadedCircuits.indexOf(persistedNoda.handle) == -1 ){
-		this.loadCircuit(persistedNoda, nodaInitializer);
-	} else {
-		nodaInitializer.call(this);
-	}
-};
 
-
-NodeaStudio.prototype.eagerInitializeNoda = function(persistedNoda){
-	var circuitConstructor = window[persistedNoda.handle];
-	if(!circuitConstructor){
-		console.error("Could not find Constructor for "+persistedNoda.handle);
-		return;
-	}
-	
-	var self = this;
-	var replacementCallback = function(oldCircuit, newHandle){
-		 self.replaceCircuit(oldCircuit, newHandle);
-	};
-	var interactiveNoda = new circuitConstructor(this.ctx, persistedNoda, replacementCallback);
-	
-	this.nodas[persistedNoda.ordinal] = interactiveNoda;
-	
-	var keyRowPosition = 0;
-	var keyPosition = 0;
-	var swytchePosition = 0;
-	for( idx in this.keyset ){
-		keyRowPosition = idx;
-		var keysetRow = this.keyset[idx];
-		keyPosition = keysetRow.indexOf(persistedNoda.ordinal);
-		if( keyPosition != -1 ){
-			swytchePosition += keyPosition;
-			break;
-		} else {
-			swytchePosition += keysetRow.length;
-		}
-	}	
-	this.keyContainer.children().eq(keyRowPosition).children().eq(keyPosition).replaceWith(interactiveNoda.noda);
-	this.swytcheContainer.children().eq(swytchePosition).replaceWith(interactiveNoda.swytche);
-	this.tracksContainer.children().eq(swytchePosition).replaceWith(interactiveNoda.trackline);
-	
-	var self = this;
-	interactiveNoda.noda.
-			mousedown(function(ev){ 
-				self.noteOn(interactiveNoda);
-				interactiveNoda.mousedown = true; 
-				ev.stopPropagation(); }).
-			mouseup(function(ev){ 
-				self.noteOff(interactiveNoda); 
-				interactiveNoda.mousedown = false;}).
-			click(function(ev){ ev.stopPropagation(); });
-			
-	interactiveNoda.swytche.
-			click(function(ev){
-				self.nodas.forEach(function(noda){noda.lightOff('selected');});
-				interactiveNoda.lightOn('selected');
-				interactiveNoda.generateDrawer();
-				ev.stopPropagation();
-	});
-	
-	return interactiveNoda;
-};
-
-NodeaStudio.prototype.loadCircuit = function(persistedNoda, callback){
-	var handle = persistedNoda.handle;
-	var loadingCircuit = this.loadingCircuits[handle];
-	if( loadingCircuit ){
-		loadingCircuit.callbacks.push(callback);
-	} else {
-		var circuitJavascript = document.createElement('script');
-		circuitJavascript.setAttribute("type","text/javascript");
-		circuitJavascript.setAttribute("src","/nodea/circuits/"+handle+"/"+handle+".js");
-		document.head.appendChild(circuitJavascript);
-		
-		this.circuitStylesheet.innerHTML += ".node."+handle+
-				"{ background-image: url('circuits/"+handle+"/"+handle+".png'); background-size: cover; }";
-		
-		loadingCircuit = {js: circuitJavascript, callbacks: [callback]};
-		this.loadingCircuits[handle] = loadingCircuit;
-		
-		var self = this;
-		circuitJavascript.onload = function(){
-			self.loadedCircuits.push(handle);
-			loadingCircuit.callbacks.forEach(function(callback){ 
-				callback.call(self); 
-			});
-		};
-	}
-};
 
 
 
@@ -406,6 +324,11 @@ NodeaStudio.prototype.noteOff = function( noda ){
 	} else {
 		noda.off();
 	}
+};
+
+NodeaStudio.prototype.selectMachine = function(idx){
+	this.selectedMachine = this.machines[idx];
+	this.selectedMachine.select();
 };
 
 
@@ -723,7 +646,7 @@ NodeaStudio.prototype.invalidateSavedStatus = function(){
 
 
 NodeaStudio.prototype.marshal = function(){
-	return {
+	var ret = {
 		project_id: this.project_id,
 		name: this.project_name,
 		description: this.project_description,
@@ -738,6 +661,17 @@ NodeaStudio.prototype.marshal = function(){
 			map(function(noda){ return noda.marshal(); }).
 			filter(function(noda){ return noda.handle !== 'Circuit'; })
 	};
+	
+	ret.machines = {};
+	for( idx in this.machines ){
+		console.log(idx);
+		var machine = machines[idx];
+		if(machine){
+			ret.machines[idx] = machine.marshal();
+		}
+	}
+	
+	return ret;
 };
 
 
@@ -750,7 +684,8 @@ NodeaStudio.prototype.save = function(){
 			setTimeout(function(){ $('#save').removeClass('kosher'); }, 3000 );
 		} catch (ex) {
 			$('#save').removeClass('active').addClass('warning');
-			self.notify("Save Failed. Please let me know about this.", msg);
+			console.error(ex);
+			alert("Save Failed. Please let me know about this.", ex);
 		}
 	}
 };
@@ -794,17 +729,7 @@ NodeaStudio.prototype.deleteNote = function(note){
 };
 
 
-NodeaStudio.prototype.replaceCircuit = function( oldCircuit, newHandle ){
-	var persistedNoda = oldCircuit.persistedNoda;
-	persistedNoda.handle = newHandle;
-	
-	var self = this;
-	this.initializeNoda( persistedNoda, function(newCircuit){
-		self.nodas[oldCircuit.ordinal] = newCircuit;
-		newCircuit.swytche.click();
-		self.invalidateSavedStatus();
-	});
-};
+
 
 
 
@@ -822,11 +747,7 @@ NodeaStudio.prototype.asciiKeys = [
 ];
 
 
-NodeaStudio.prototype.keyCodeToAsciiMap = {
-	// numbers  
-	48:  48,	49:  49,	50:  50,	51:  51,	52:  52,	
-	53:  53,	54:  54,	55:  55,	56:  56,	57:  57,	
-	
+NodeaStudio.prototype.keyCodeToAsciiMap = {	
 	 // uppercase latin
 	65:  97,	66:  98,	67:  99,	68:  100,	69:  101,	
 	70:  102,	71:  103,	72:  104,	73:  105,	74:  106,	
@@ -839,12 +760,23 @@ NodeaStudio.prototype.keyCodeToAsciiMap = {
 	186: 59,	188: 44,	190: 46,	191: 47
 };
 
+NodeaStudio.prototype.machineSet = [
+	{ascii: 49, color: "#76A"},
+	{ascii: 50, color: "#67A"},
+	{ascii: 51, color: "#699"},
+	{ascii: 52, color: "#597"},
+	{ascii: 53, color: "#795"},
+
+	{ascii: 54, color: "#9A5"},
+	{ascii: 55, color: "#A94"},
+	{ascii: 56, color: "#A74"},
+	{ascii: 57, color: "#A65"},
+	{ascii: 48, color: "#A56"}
+];
+
+
 NodeaStudio.prototype.keySets = {
 	desktop: [
-		// top numbers
-		[49,  50,  51,  52,  53],
-		[54,  55,  56,  57,  48],
-
 		// left letters
 		[113, 119, 101, 114, 116, 
 		 97,  115, 100, 102, 103, 
