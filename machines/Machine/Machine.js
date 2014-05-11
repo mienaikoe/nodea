@@ -73,10 +73,7 @@ Machine.prototype.eagerInitializeCircuit = function(marshalledCircuit){
 	
 	
 	var self = this;
-	var ordinal = marshalledCircuit.ordinal;
-	var trackline = this.studio.tracks[ordinal];
-	var swytche = this.studio.swytches[ordinal];
-	var circuit = new circuitConstructor(this.ctx, marshalledCircuit, trackline, swytche, function(oldCircuit, newHandle){
+	var circuit = new circuitConstructor(this.ctx, this, marshalledCircuit, function(oldCircuit, newHandle){
 		 self.replaceCircuit(oldCircuit, newHandle);
 	});
 	
@@ -157,12 +154,18 @@ Machine.prototype.swytcheSelected = function(ordinal){
 
 
 Machine.prototype.marshal = function(){
-	return {
+	var ret= {
 		ascii: this.ascii,
 		handle: this.constructor.name,
-		circuits: this.circuits.map(function(circuit){ circuit.marshal(); }),
+		circuits: {},
 		settings: this.marshalSettings()
 	};
+	
+	for( key in this.circuits ){
+		ret.circuits[key] = this.circuits[key].marshal();
+	}
+	
+	return ret;
 };
 
 Machine.prototype.marshalSettings = function(){

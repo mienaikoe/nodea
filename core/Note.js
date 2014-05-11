@@ -1,7 +1,7 @@
 var Note = function(options){
 	this.start = options.start;
 	if( options.finish ){ this.finish = options.finish; }
-	if( options.noda ){ this.noda = options.noda; } 
+	if( options.circuit ){ this.circuit = options.circuit; } 
 };
 
 Note.EXPANDER_HEIGHT = 4;
@@ -54,7 +54,7 @@ Note.prototype.createContainer = function(){
 				ev.stopPropagation();
 			});
 			
-	this.noteBox = jQuery('<div/>',{ class: 'note', style: 'height: '+slivers+'px;'}).
+	this.noteBox = jQuery('<div/>',{ class: 'note', style: 'height: '+slivers+'px; background-color: '+this.circuit.machine.color}).
 			mousedown(function(ev){
 				if( self.container.hasClass("selected") ){
 					Note.selecteds.forEach(function(note){
@@ -125,8 +125,8 @@ Note.prototype.createContainer = function(){
 	
 	
 			
-	if( this.noda ){
-		this.container.prependTo(this.noda.trackline);
+	if( this.circuit ){
+		this.container.prependTo(this.circuit.trackline);
 	}
 	
 	return this.container;
@@ -137,7 +137,7 @@ Note.prototype.removeContainer = function(){
 };
 
 Note.prototype.turnOffRecording = function(){
-	this.noda.turnOffPassiveRecording();
+	this.circuit.turnOffPassiveRecording();
 	this.container.css('height', (this.finish-this.start) + 'px');
 };
 

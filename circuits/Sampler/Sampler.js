@@ -1,5 +1,5 @@
-function Sampler(ctx, persistedNoda, trackline, swytche, circuitReplacementCallback) {
-	Circuit.call(this, ctx, persistedNoda, trackline, swytche, circuitReplacementCallback);
+function Sampler(ctx, machine, persistedNoda, circuitReplacementCallback) {
+	Circuit.call(this, ctx, machine, persistedNoda, circuitReplacementCallback);
 	
 	/* The order and timing of setting and note extraction is up to you.
 	 */

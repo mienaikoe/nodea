@@ -29,6 +29,8 @@ navigator.vibrate =
 		navigator.msVibrate ||
 		function(duration){};
 
+DelayedLoad.loadeds["circuits:Circuit"] = [];
+DelayedLoad.loadeds["machines:Machine"] = [];
 
 
 
@@ -110,23 +112,27 @@ function NodeaStudio(editorContainer, project) {
 	this.machineContainer = $(this.instrumentationContainer).find("#machines");
 	this.circuitsContainer = $(this.instrumentationContainer).find("#circuits");
 	this.machines = {};
+	var defaultMachineCode = 49;
 	this.machineSet.forEach(function(tabDefinition){
-		var machine;
+		var machineSettings;
 		if( project.machines && tabDefinition.ascii in project.machines ){
-			var machineSettings = project.machines[tabDefinition.ascii];
-			DelayedLoad.load('machines', machineSettings.handle, function(){
-				machineConstructor = window[machineSettings.handle];
-				machine = new machineConstructor(this.ctx, tabDefinition, this, machineSettings);
-			});
+			machineSettings = project.machines[tabDefinition.ascii];
 		} else {
-			machine = new Machine(this.ctx, tabDefinition, this, {});
+			machineSettings = {handle: "Machine"}; //new Machine(this.ctx, tabDefinition, this, {});
 		}
-		machine.tab.appendTo(this.machineContainer);
-		machine.circuitsContainer.appendTo(this.circuitsContainer);
-		this.machines[tabDefinition.ascii] = machine;
 		
+		var self = this;
+		DelayedLoad.load('machines', machineSettings.handle, function(){
+			machineConstructor = window[machineSettings.handle];
+			var machine = new machineConstructor(self.ctx, tabDefinition, self, machineSettings);
+			machine.tab.appendTo(self.machineContainer);
+			machine.circuitsContainer.appendTo(self.circuitsContainer);
+			self.machines[tabDefinition.ascii] = machine;
+			if(machine.ascii === defaultMachineCode){
+				self.selectMachine(defaultMachineCode);
+			}
+		});
 	}, this);
-	this.selectMachine(49); // 1
 	
 	
 	
@@ -302,27 +308,27 @@ NodeaStudio.prototype.snap = function(){
 
 
 
-NodeaStudio.prototype.noteOn = function( noda ){
-	if( noda.keydown || noda.mousedown ){
+NodeaStudio.prototype.noteOn = function( circuit ){
+	if( circuit.keydown || circuit.mousedown ){
 		return;
 	}
 	
 	if( this.recording ){
-		noda.on(this.pixelFor(Date.now()));
-		this.recordingNodas.push(noda);
+		circuit.on(this.pixelFor(Date.now()));
+		this.recordingNodas.push(circuit);
 	} else {
-		noda.on();
+		circuit.on();
 	}
 };
 
 
-NodeaStudio.prototype.noteOff = function( noda ){
+NodeaStudio.prototype.noteOff = function( circuit ){
 	if( this.recording ){
-		noda.off(this.location);
+		circuit.off(this.location);
 		this.invalidateSavedStatus();
-		this.recordingNodas.splice(this.recordingNodas.indexOf(noda), 1);
+		this.recordingNodas.splice(this.recordingNodas.indexOf(circuit), 1);
 	} else {
-		noda.off();
+		circuit.off();
 	}
 };
 
@@ -351,10 +357,14 @@ NodeaStudio.prototype.play = function(){
 	    this.startTime = Date.now() - (this.location / (this.pixels_per_second/1000));
 		this.lastLocation = this.location;
 		
-		this.nodas.forEach(function(noda){
-			noda.lightOff('active');
-			noda.play( this.pixels_per_second, this.location );
-		}, this);
+		for( mkey in this.machines ){
+			var machine = this.machines[mkey];
+			for( ckey in machine.circuits ){
+				var circuit = machine.circuits[ckey];
+				circuit.lightOff('active');
+				circuit.play( this.pixels_per_second, this.location );
+			}
+		}
 		
 	    requestAnimationFrame(this.frame.bind(this));
 	}
@@ -366,12 +376,18 @@ NodeaStudio.prototype.pause = function(){
 		
 	    $('#playpause').removeClass("active");
 		this.metronome.stop();
-	    this.nodas.forEach(function(noda){ 
-			noda.pause(); 
-			if( this.recordingNodas.indexOf(noda) !== -1){
-				this.noteOff(noda);
+		
+		for( mkey in this.machines ){
+			var machine = this.machines[mkey];
+			for( ckey in machine.circuits ){
+				var circuit = machine.circuits[ckey];
+				circuit.pause();
+				if( this.recordingNodas.indexOf(circuit) !== -1){
+					this.noteOff(circuit);
+				}
 			}
-		}, this);
+		}
+		
 		this.startTime = null;
 	    this.startFrameTimestamp = null;
 	}
@@ -610,17 +626,21 @@ NodeaStudio.prototype.startSelectBox = function(x, y){
 		
 		self.flatKeyset.forEach(function(ascii, idx){
 			if(idx < firstTrackIndex || idx > lastTrackIndex){ 
-				self.nodas[ascii].notes.forEach(function(note){
-					note.unselect();
-				}, self);
-			} else {
-				self.nodas[ascii].notes.forEach(function(note){
-					if(note.start >= noteStartBound && note.finish <= noteFinishBound){
-						note.select();
-					} else {
+				for( key in self.machines ){
+					self.machines[key].circuits[ascii].notes.forEach(function(note){
 						note.unselect();
-					}
-				}, self);
+					}, self);
+				}
+			} else {
+				for( key in self.machines ){
+					self.machines[key].circuits[ascii].notes.forEach(function(note){
+						if(note.start >= noteStartBound && note.finish <= noteFinishBound){
+							note.select();
+						} else {
+							note.unselect();
+						}
+					}, self);
+				}
 			}
 		}, self);
 	}).mouseup(function(ev_up){
@@ -664,8 +684,7 @@ NodeaStudio.prototype.marshal = function(){
 	
 	ret.machines = {};
 	for( idx in this.machines ){
-		console.log(idx);
-		var machine = machines[idx];
+		var machine = this.machines[idx];
 		if(machine){
 			ret.machines[idx] = machine.marshal();
 		}

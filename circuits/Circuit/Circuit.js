@@ -11,17 +11,19 @@
  */
 
 
-function Circuit(ctx, persistedNoda, trackline, swytche, circuitReplacementCallback) {
+function Circuit(ctx, machine, persistedNoda, circuitReplacementCallback) {
 	this.ctx = ctx;	
+	this.machine = machine;
 	this.persistedNoda = persistedNoda;
-	this.trackline = trackline;
-	this.swytche = swytche;
 	this.circuitReplacementCallback = circuitReplacementCallback;
 	
 	this.handle = this.constructor.name;
 	this.id = persistedNoda.id;
 	this.asciiCode = persistedNoda.ordinal;
 	this.key = String.fromCharCode(this.asciiCode);
+	
+	this.trackline = machine.studio.tracks[this.asciiCode];
+	this.swytche = machine.studio.swytches[this.asciiCode];
 	
 	this.container = jQuery('<spiv/>',{class: 'circuit ' + this.handle, id: 'key_'+this.asciiCode, html: this.key});
 	
@@ -52,7 +54,7 @@ Circuit.prototype.extractSettings = function(settings){
 Circuit.prototype.extractNotes = function(notes){
 	notes.forEach( function(persistedNote){ 
 		var studioNote = new Note(persistedNote);
-		studioNote.noda = this;
+		studioNote.circuit = this;
 		studioNote.createContainer().prependTo(this.trackline);
 		this.addNote(studioNote);
 		return studioNote;
@@ -201,7 +203,7 @@ Circuit.prototype.pause = function(){
 
 Circuit.prototype.on = function(location) {
 	if(location){
-		this.recordingNote = new Note({start: location, noda: this});
+		this.recordingNote = new Note({start: location, circuit: this});
 		this.recordingNote.createContainer();
 		this.lightOn('recording');
 	} else {

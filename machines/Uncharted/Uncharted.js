@@ -1,5 +1,5 @@
-var Uncharted = function( ctx, settings ){
-	Machine.call(this, ctx, settings);
+var Uncharted = function( ctx, tabDefinition, studio, marshaledMachine ){
+	Machine.call(this, ctx, tabDefinition, studio, marshaledMachine);
 	
 	
 };

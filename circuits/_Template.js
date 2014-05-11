@@ -1,9 +1,9 @@
-function CircuitTemplate(ctx, persistedNoda, circuitReplacementCallback) {
+function CircuitTemplate(ctx, machine, persistedNoda, circuitReplacementCallback) {
 	/* The Super Constructor will Instantiate things 
 	 * that every circuit needs, including each 
 	 * visual component and the event ties for each one.
 	 **/
-	Circuit.call(this, ctx, persistedNoda, circuitReplacementCallback);
+	Circuit.call(this, ctx, machine, persistedNoda, circuitReplacementCallback);
 
 	/* The order and timing of setting and note extraction is up to you.
 	 */
