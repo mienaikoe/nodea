@@ -112,7 +112,7 @@ a{
     bottom: 10px;
     left: 0px;
     right: 0px;
-    font-family: monospace;
+    font-family: Kiro Regular Web, Gudea, monospace;
 
     .drawer{
         color: white;
@@ -237,7 +237,7 @@ a{
         vertical-align: middle;
         .ditch{
             display:inline-block;
-            width: 5px;
+            width: 9px;
             height: 10px;
         }
         .spacer{
@@ -252,6 +252,9 @@ a{
 
         .button_box{
             width: $control_dimension+6px;
+            .label{
+                width: $control_dimension+6px;
+            }
         }
 
         .label{  
@@ -293,6 +296,7 @@ a{
             }
         }
         &.field{
+            padding: 2px;
             line-height: $control_dimension + 1px; /* inputs have some weirdness */
             width: 100px;
             &.twodigit{

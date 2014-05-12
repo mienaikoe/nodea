@@ -780,17 +780,17 @@ NodeaStudio.prototype.keyCodeToAsciiMap = {
 };
 
 NodeaStudio.prototype.machineSet = [
-	{ascii: 49, color: "#76A"},
-	{ascii: 50, color: "#67A"},
-	{ascii: 51, color: "#699"},
-	{ascii: 52, color: "#597"},
-	{ascii: 53, color: "#795"},
+	{ascii: 49, color: "#98C"},
+	{ascii: 50, color: "#89C"},
+	{ascii: 51, color: "#8BB"},
+	{ascii: 52, color: "#7B9"},
+	{ascii: 53, color: "#9B7"},
 
-	{ascii: 54, color: "#9A5"},
-	{ascii: 55, color: "#A94"},
-	{ascii: 56, color: "#A74"},
-	{ascii: 57, color: "#A65"},
-	{ascii: 48, color: "#A56"}
+	{ascii: 54, color: "#BC7"},
+	{ascii: 55, color: "#CB6"},
+	{ascii: 56, color: "#C96"},
+	{ascii: 57, color: "#C87"},
+	{ascii: 48, color: "#C78"}
 ];
 
 
@@ -814,8 +814,8 @@ NodeaStudio.prototype.eventControlMap = {
 	32: function(studio){ studio.playpause(); },
 	
 	// home, page, end
-	33: function(studio){ studio.advance(-studio.advanceAmount * studio.beats_per_bar); },
-	34: function(studio){ studio.advance(studio.advanceAmount * studio.beats_per_bar); },
+	33: function(studio){ studio.advance(studio.advanceAmount * studio.beats_per_bar); },
+	34: function(studio){ studio.advance(-studio.advanceAmount * studio.beats_per_bar); },
 	35: function(studio){ studio.head(); },
 	36: function(studio){ studio.tail(); },
 	

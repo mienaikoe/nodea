@@ -47,12 +47,6 @@
                         <span>Master Controls</span>
                     </div>
                     <div class="drawer_content" id="master_controls">
-                        <div class="drawer_section">
-                            <div id="save_controls">
-                                <div class="control button javascript" id="save" onclick="studio.save();">&#x5b58;</div>
-                                <div class="label">SAVE</div>
-                            </div>
-                        </div>
 
                         <div class="drawer_section toggle">
                             <div class="ds_heading toggler">
@@ -96,7 +90,16 @@
                     <div class="bottom charm" id="instrumentation">
                         <div id="swytches"></div>
                         <div class="controls" id="edit_controls">
+                            
+                            <spiv class="group spacer" id="save_controls">
+                                <spiv class="button_box">
+                                    <div class="control button javascript" id="save" onclick="studio.save();">&#x5b58;</div>
+                                    <div class="label">SAVE</div>
+                                </spiv>
+                            </spiv>
 
+                            <div class="ditch"></div>
+                            
                             <spiv class="group spacer" id="mode_controls">
                                 <spiv class="button_box">
                                     <div class="control button javascript" id="playpause" onclick="studio.playpause();">&#x6f14;</div>
