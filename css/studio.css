@@ -42,7 +42,7 @@ a {
   bottom: 10px;
   left: 0px;
   right: 0px;
-  font-family: Kiro Regular Web, Gudea, monospace; }
+  font-family: Kiro Regular Web, Gudea, sans-serif; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003117}}
   #studio .drawer {
     color: white;
@@ -54,7 +54,7 @@ a {
     overflow-x: hidden; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003127}}
     #studio .drawer.sinistra {
-      direction: rtl; }
+      left: 0px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003130}}
     #studio .drawer.dextra {
       right: 0px; }
@@ -360,7 +360,7 @@ a {
           margin-right: 1px;
           border-bottom: 0px;
           height: 30.48px;
-          text-size: 14px;
+          font-size: 14px;
           line-height: 30px;
           text-align: center;
           background-color: #444444;

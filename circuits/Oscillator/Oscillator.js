@@ -1,14 +1,9 @@
-function Oscillator(ctx, machine, persistedNoda, circuitReplacementCallback) {
+function Oscillator(ctx, machine, marshaledCircuit, destination, circuitReplacementCallback) {
 	/* The Super Constructor will Instantiate things 
 	 * that every circuit needs, including each 
 	 * visual component and the event ties for each one.
 	 **/
-	Circuit.call(this, ctx, machine, persistedNoda, circuitReplacementCallback);
-
-	/* The order and timing of setting and note extraction is up to you.
-	 */
-	this.extractSettings(persistedNoda.settings);
-	this.extractNotes(persistedNoda.notes);
+	Circuit.call(this, ctx, machine, marshaledCircuit, destination, circuitReplacementCallback);
 	
 	/* Build out any further initialization you need 
 	 * to do here. 
@@ -122,11 +117,11 @@ Oscillator.prototype.deallocateOscillator = function(osc){
  *			on this parameter.
  */
 Oscillator.prototype.scheduleCircuitStart = function(startWhen, note){
-	note.oscillator.start(startWhen+this.chain.start(startWhen));
+	note.oscillator.start(startWhen + Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note));
 };
 
 Oscillator.prototype.scheduleCircuitStop = function(endWhen, note){
-	note.oscillator.stop(endWhen+this.chain.stop(endWhen));
+	note.oscillator.stop(endWhen + Circuit.prototype.scheduleCircuitStop.call(this, endWhen, note));
 };
 
 Oscillator.prototype.pause = function(){

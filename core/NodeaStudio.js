@@ -112,26 +112,14 @@ function NodeaStudio(editorContainer, project) {
 	this.machineContainer = $(this.instrumentationContainer).find("#machines");
 	this.circuitsContainer = $(this.instrumentationContainer).find("#circuits");
 	this.machines = {};
-	var defaultMachineCode = 49;
 	this.machineSet.forEach(function(tabDefinition){
-		var machineSettings;
+		var marshaledMachine;
 		if( project.machines && tabDefinition.ascii in project.machines ){
-			machineSettings = project.machines[tabDefinition.ascii];
+			marshaledMachine = project.machines[tabDefinition.ascii];
 		} else {
-			machineSettings = {handle: "Machine"}; //new Machine(this.ctx, tabDefinition, this, {});
+			marshaledMachine = {handle: "Machine"}; //new Machine(this.ctx, tabDefinition, this, {});
 		}
-		
-		var self = this;
-		DelayedLoad.load('machines', machineSettings.handle, function(){
-			machineConstructor = window[machineSettings.handle];
-			var machine = new machineConstructor(self.ctx, tabDefinition, self, machineSettings);
-			machine.tab.appendTo(self.machineContainer);
-			machine.circuitsContainer.appendTo(self.circuitsContainer);
-			self.machines[tabDefinition.ascii] = machine;
-			if(machine.ascii === defaultMachineCode){
-				self.selectMachine(defaultMachineCode);
-			}
-		});
+		this.initializeMachine(tabDefinition, marshaledMachine);
 	}, this);
 	
 	
@@ -143,14 +131,16 @@ function NodeaStudio(editorContainer, project) {
 		if( ev.ctrlKey && key in self.ctrlKeyControlMap){ // ctrl keys
 			self.ctrlKeyControlMap[key](self);
 			ev.preventDefault();
-		} else if ( key >= 48 && key <= 57 ){ // machine
-			self.selectMachine(key);
 		} else if( key in self.keyCodeToAsciiMap ){ // circuit
-			var actCircuit = self.selectedMachine.circuits[self.keyCodeToAsciiMap[key]];
-	        self.noteOn( actCircuit );
-			actCircuit.keydown = true;
+			if( ev.shiftKey ){
+				self.selectedMachine.swytcheSelected(self.keyCodeToAsciiMap[key]);
+			} else {
+				self.selectedMachine.circuitOn(self.keyCodeToAsciiMap[key]);		
+			}
 			ev.preventDefault();
-	    } else if( key in self.eventControlMap ){ // event keys
+	    } else if ( key >= 48 && key <= 57 ){ // machine
+			self.selectMachine(key);
+		} else if( key in self.eventControlMap ){ // event keys
 	        self.eventControlMap[key](self);
 			ev.preventDefault();
 	    } else {
@@ -160,9 +150,7 @@ function NodeaStudio(editorContainer, project) {
 	}).keyup(function(ev) {
 		var key = ev.keyCode;
 	    if( key in self.keyCodeToAsciiMap ){
-			var actCircuit = self.selectedMachine.circuits[self.keyCodeToAsciiMap[key]];
-	        self.noteOff( actCircuit );
-			actCircuit.keydown = false;
+			self.selectedMachine.circuitOff(self.keyCodeToAsciiMap[key]);
 			ev.preventDefault();
 	    } else if( key in self.eventControlMap ){
 	        // do nothing
@@ -171,7 +159,7 @@ function NodeaStudio(editorContainer, project) {
 	        return;
 		}
 	}).mouseup(function(ev){
-		self.nodas.forEach(function(noda){ if(noda.mousedown){ self.noteOff(noda); } });
+		self.selectedMachine.mouseup();
 	});
 	
 	
@@ -247,11 +235,41 @@ function NodeaStudio(editorContainer, project) {
 
 
 
+NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMachine, callback){
+	var self = this;
+	DelayedLoad.load('machines', marshaledMachine.handle, function(){
+		machineConstructor = window[marshaledMachine.handle];
+		var machine = new machineConstructor(self.ctx, tabDefinition, self, marshaledMachine, function(oldMachine, newHandle){
+			 self.replaceMachine(oldMachine, newHandle);
+		});
+		machine.tab.appendTo(self.machineContainer);
+		machine.circuitsContainer.appendTo(self.circuitsContainer);
+		self.machines[tabDefinition.ascii] = machine;
+		if(machine.ascii === NodeaStudio.defaultMachineCode){
+			self.selectMachine(NodeaStudio.defaultMachineCode);
+		}
+		if(callback){
+			callback.call(this, machine);
+		}
+	});
+};
+
+
+
 
 
 // External Startup Functions
 
-
+NodeaStudio.prototype.replaceMachine = function( oldMachine, newHandle ){
+	var marshaledMachine = oldMachine.marshaledMachine;
+	var tabDefinition = NodeaStudio.machineSet[oldMachine.ascii];
+	marshaledMachine.handle = newHandle;
+	
+	var self = this;
+	this.initializeMachine( tabDefinition, marshaledMachine, function(newMachine){
+		self.invalidateSavedStatus();
+	});
+};
 
 
 
@@ -306,31 +324,6 @@ NodeaStudio.prototype.snap = function(){
 
 
 
-
-
-NodeaStudio.prototype.noteOn = function( circuit ){
-	if( circuit.keydown || circuit.mousedown ){
-		return;
-	}
-	
-	if( this.recording ){
-		circuit.on(this.pixelFor(Date.now()));
-		this.recordingNodas.push(circuit);
-	} else {
-		circuit.on();
-	}
-};
-
-
-NodeaStudio.prototype.noteOff = function( circuit ){
-	if( this.recording ){
-		circuit.off(this.location);
-		this.invalidateSavedStatus();
-		this.recordingNodas.splice(this.recordingNodas.indexOf(circuit), 1);
-	} else {
-		circuit.off();
-	}
-};
 
 NodeaStudio.prototype.selectMachine = function(idx){
 	this.selectedMachine = this.machines[idx];
@@ -807,6 +800,9 @@ NodeaStudio.prototype.keySets = {
 		 110, 109, 44,  46,  47]
 	]
 };
+
+
+NodeaStudio.defaultMachineCode = 49;
 
 
 NodeaStudio.prototype.eventControlMap = {

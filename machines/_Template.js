@@ -1,5 +1,5 @@
-var MachineTemplate = function( ctx, tabDefinition, studio, settings ){
-	Machine.call(this, ctx, tabDefinition, studio, settings);
+function MachineTemplate( ctx, tabDefinition, studio, marshalledMachine, machineReplacementCallback ){
+	Machine.call(this, ctx, tabDefinition, studio, marshalledMachine, machineReplacementCallback);
 	
 	
 };

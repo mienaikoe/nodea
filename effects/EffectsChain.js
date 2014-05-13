@@ -1,17 +1,18 @@
 AudioNode.prototype.input = this;
 AudioNode.prototype.output = this;
+// TODO: Swap out output/input for just one field: node
 
 
-
-var EffectsChain = function(ctx, destination){
+var EffectsChain = function(ctx, destination, type){
 	this.chain = [];
 	this.ctx = ctx;
+	this.type = type;
 	
 	this.source = new Effect(this.ctx, this.replacementCallback());
 	this.input = this.source.input;
 	
 	this.destination = {input: destination, output: destination};
-	this.output = this.destination.output;
+	this.output = destination;
 	
 	this.input.connect(this.output);
 };
@@ -125,7 +126,7 @@ EffectsChain.prototype.render = function(section){
 			self.remove(effectIndex);
 			$(division).parent().remove();
 		});
-		effect.render(division);
+		effect.render(division, self.type);
 	});
 	
 	this.rerender();
@@ -141,7 +142,7 @@ EffectsChain.prototype.rerender = function(){
 				self.remove(effectIndex);
 				$(division).parent().remove();
 			});
-			effect.render(division);
+			effect.render(division, self.type);
 		}, this);
 	}
 };
@@ -165,9 +166,12 @@ EffectsChain.prototype.replacementCallback = function(){
 EffectsChain.prototype.load = function(chainSettings){
 	chainSettings.forEach(function(effectSettings){
 		if( window[effectSettings.type] ){
-			var newEffect = new window[effectSettings.type](this.ctx, this.replacementCallback());
-			newEffect.load(effectSettings);
-			this.push( newEffect );
+			var self = this;
+			DelayedLoad.load('effects', effectSettings.type, function(){
+				var newEffect = new window[effectSettings.type](self.ctx, self.replacementCallback());
+				newEffect.load(effectSettings);
+				self.push( newEffect );
+			});
 		}
 	}, this);
 };

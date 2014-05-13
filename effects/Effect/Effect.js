@@ -17,9 +17,9 @@ function Effect(ctx, effectReplacementCallback) {
 
 
 
-Effect.prototype.render = function(divisionBody) {
+Effect.prototype.render = function(divisionBody, type) {
 	var selector = $("<select/>").appendTo(divisionBody);
-	Effect.effectsManifest.forEach(function(effectName){
+	Effect.effectsManifest[type].forEach(function(effectName){
 		$("<option/>",{
 			html: effectName, 
 			value: effectName,
@@ -46,7 +46,8 @@ Effect.prototype.stop = function(now) {
 
 
 
-Effect.effectsManifest = [
-	"",
-	"Envelope"
-];
+// TODO: Mark that Envelope is exclusively for circuits
+Effect.effectsManifest = {
+	machines: [""],
+	circuits: ["","Envelope"]
+};

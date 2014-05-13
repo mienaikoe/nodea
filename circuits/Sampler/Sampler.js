@@ -1,10 +1,5 @@
-function Sampler(ctx, machine, persistedNoda, circuitReplacementCallback) {
-	Circuit.call(this, ctx, machine, persistedNoda, circuitReplacementCallback);
-	
-	/* The order and timing of setting and note extraction is up to you.
-	 */
-	this.extractSettings(persistedNoda.settings);
-	this.extractNotes(persistedNoda.notes);
+function Sampler(ctx, machine, marshaledCircuit, destination, circuitReplacementCallback) {
+	Circuit.call(this, ctx, machine, marshaledCircuit, destination, circuitReplacementCallback);
 	
 	this.dynamicNote = new Note({noda: this});
 	

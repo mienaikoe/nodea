@@ -112,7 +112,7 @@ a{
     bottom: 10px;
     left: 0px;
     right: 0px;
-    font-family: Kiro Regular Web, Gudea, monospace;
+    font-family: Kiro Regular Web, Gudea, sans-serif;
 
     .drawer{
         color: white;
@@ -125,7 +125,7 @@ a{
         overflow-x: hidden;
 
         &.sinistra{
-            direction:rtl;
+            left: 0px;
         }
         &.dextra{
             right: 0px;
@@ -453,7 +453,7 @@ a{
                     margin-right: 1px;
                     border-bottom: 0px;
                     height: $circuit_height - (2*$circuit_margin);
-                    text-size: 14px;
+                    font-size: 14px;
                     line-height: 30px;
                     text-align: center;
                     background-color: $case_color;

@@ -13,14 +13,14 @@
 
         <!-- Core Scripts -->
         <script src="core/DrawerUtils.js"></script>
-        <script src="core/EffectsChain.js"></script>
         <script src="core/Metronome.js"></script>
         <script src="core/Note.js"></script>
         <script src="core/UndoList.js"></script>
         <script src="core/DelayedLoad.js"></script>
-        <script src="core/NodeaStudio.js"></script>
 
         <!-- Effect Scripts -->
+        
+        <script src="effects/EffectsChain.js"></script>
         <script src="effects/Effect/Effect.js"></script>
         <script src="effects/Envelope/Envelope.js"></script>
         <link href="effects/Envelope/Envelope.css" media="all" rel="stylesheet" /> 
@@ -31,7 +31,9 @@
         <!-- Is Base of All Machines, so Needs to Be Loaded beforehand -->
         <script src="machines/Machine/Machine.js"></script>
 
-
+        <!-- Main Script -->
+        <script src="core/NodeaStudio.js"></script>
+        
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     </head>
     <body>
@@ -41,44 +43,13 @@
 
 
 
-                <div id="master_drawer" class="drawer sinistra">
+                <div id="machine_drawer" class="drawer sinistra">
 
                     <div class="drawer_heading">
-                        <span>Master Controls</span>
+                        <span>Machine Controls</span>
                     </div>
-                    <div class="drawer_content" id="master_controls">
+                    <div class="drawer_content" id="machine_controls">
 
-                        <div class="drawer_section toggle">
-                            <div class="ds_heading toggler">
-                                &gt;&gt; Effects
-                            </div>
-                            <div class="ds_body togglee">
-                                <div class="drawer_division toggle">
-                                    <div class="dd_heading toggler">
-                                        &gt;&gt; Leveling
-                                    </div>
-                                    <div class="dd_body togglee">
-                                        Leveling Body
-                                    </div>
-                                </div>
-                                <div class="drawer_division toggle">
-                                    <div class="dd_heading toggler">
-                                        &gt;&gt; Compression
-                                    </div>
-                                    <div class="dd_body togglee">
-                                        Compression Body
-                                    </div>
-                                </div>
-                                <div class="drawer_division toggle">
-                                    <div class="dd_heading toggler">
-                                        &gt;&gt; Equalization
-                                    </div>
-                                    <div class="dd_body togglee">
-                                        Equalization Body
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                 </div>

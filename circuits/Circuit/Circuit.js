@@ -11,15 +11,15 @@
  */
 
 
-function Circuit(ctx, machine, persistedNoda, circuitReplacementCallback) {
+function Circuit(ctx, machine, marshaledCircuit, destination, circuitReplacementCallback) {
 	this.ctx = ctx;	
 	this.machine = machine;
-	this.persistedNoda = persistedNoda;
+	this.marshaledCircuit = marshaledCircuit;
 	this.circuitReplacementCallback = circuitReplacementCallback;
 	
 	this.handle = this.constructor.name;
-	this.id = persistedNoda.id;
-	this.asciiCode = persistedNoda.ordinal;
+	this.id = marshaledCircuit.id;
+	this.asciiCode = marshaledCircuit.ordinal;
 	this.key = String.fromCharCode(this.asciiCode);
 	
 	this.trackline = machine.studio.tracks[this.asciiCode];
@@ -30,17 +30,19 @@ function Circuit(ctx, machine, persistedNoda, circuitReplacementCallback) {
 	this.notes = [];
 	this.recordingNote = null;
 	
-	this.chain = new EffectsChain(this.ctx, this.ctx.destination);
+	this.chain = new EffectsChain(this.ctx, destination, "circuits");
 	this.destination = this.chain.input;
 	
+	this.extractSettings(marshaledCircuit.settings);
+	this.extractNotes(marshaledCircuit.notes);	
 };
 
 
 Circuit.prototype.extractChain = function(settings){
 	if( settings.chain ){
 		this.chain.load(settings.chain);
-	} else { // defaults	
-		this.chain.loadDefault();
+	} else {
+		this.chain.load([{type:"Envelope", attack:0.1, decay:0.1, sustain:0.1, release:0.1}]);
 	}
 };
 
@@ -187,9 +189,11 @@ Circuit.prototype.play = function(pixelsPerSecond, startingAt){
 
 
 Circuit.prototype.scheduleCircuitStart = function(startWhen, note){
+	return this.chain.start(startWhen);
 };
 
 Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
+	return this.chain.stop(endWhen);
 };
 
 
