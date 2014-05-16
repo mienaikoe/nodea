@@ -5,36 +5,32 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         
-        <!--  <link href="css/application.css" media="all" rel="stylesheet" /> -->
-        <link href="css/basics.css" media="all" rel="stylesheet" />
+        <!-- Third Party Assets -->
+        <link href="fonts/kiroregular/stylesheet.css" media="all" rel="stylesheet" />
+        <link href="fonts/gudea/stylesheet.css" media="all" rel="stylesheet" />
+	<script src="lib/jquery-2.1.0.min.js"></script>
+		
+        <!-- CSS -->
+	<link href="css/basics.css" media="all" rel="stylesheet" />
         <link href="css/studio.css" media="all" rel="stylesheet" />
+        <link href="effects/Envelope/Envelope.css" media="all" rel="stylesheet" /> 
 
-        <script src="lib/jquery-2.1.0.min.js"></script>
+        <!-- Effect Assets -->
+        <script src="effects/EffectsChain.js"></script>
+        <script src="effects/Effect/Effect.js"></script>
+        <script src="effects/Envelope/Envelope.js"></script>
+	<!-- TODO: Delayed Load These -->
 
         <!-- Core Scripts -->
-        <script src="core/DrawerUtils.js"></script>
+        <script src="circuits/Circuit/Circuit.js"></script>
+        <script src="machines/Machine/Machine.js"></script>
+	<script src="core/DrawerUtils.js"></script>
         <script src="core/Metronome.js"></script>
         <script src="core/Note.js"></script>
         <script src="core/UndoList.js"></script>
         <script src="core/DelayedLoad.js"></script>
-
-        <!-- Effect Scripts -->
-        
-        <script src="effects/EffectsChain.js"></script>
-        <script src="effects/Effect/Effect.js"></script>
-        <script src="effects/Envelope/Envelope.js"></script>
-        <link href="effects/Envelope/Envelope.css" media="all" rel="stylesheet" /> 
-
-        <!-- Is Base of All Circuits, so Needs to Be Loaded beforehand -->
-        <script src="circuits/Circuit/Circuit.js"></script>
-
-        <!-- Is Base of All Machines, so Needs to Be Loaded beforehand -->
-        <script src="machines/Machine/Machine.js"></script>
-
-        <!-- Main Script -->
         <script src="core/NodeaStudio.js"></script>
         
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     </head>
     <body>
 

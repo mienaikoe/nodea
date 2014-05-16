@@ -3,6 +3,9 @@
 *= require ../basics
 */
 
+$drawer_font: "kiroregular, sans-serif";
+$interface_font: "kiroregular, sans-serif";
+
 $drawer_width: 300px;
 
 $track_width: 19px;
@@ -112,9 +115,9 @@ a{
     bottom: 10px;
     left: 0px;
     right: 0px;
-    font-family: Kiro Regular Web, Gudea, sans-serif;
 
     .drawer{
+        font-family: $drawer_font;
         color: white;
         width: $drawer_width;
         height: 100%;
@@ -151,6 +154,26 @@ a{
             font-size: 12px;
             margin-bottom: 3px;
         }
+        label{
+            font-size: 12px;
+            line-height: 18px;
+            display: inline-block;
+            vertical-align: top;
+        }
+        input[type=range] {
+            -webkit-appearance: none;
+            background-color: #333;
+            height:12px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+             -webkit-appearance: none;
+            background-color: #DA3;
+            width: 4px;
+            height: 10px;
+        }
+        
+        
         .urlarea{
             width: 100%;
             height: 70px;
@@ -165,7 +188,6 @@ a{
             height: 20px;
         }
         .drawer_content{
-            font-family: monospace;
             .drawer_section{
                 border-bottom: 1px solid white;
                 .ds_heading{
@@ -189,137 +211,18 @@ a{
                         }
                     }
                 }
-
-
-            }
-
-
-            .fillOut{
-                font-family: monospace;
-                background-color: $drawer_content_color;
-                border: 0px;
-                color: white;
-                width: 250px;
-                padding: 5px;
-                &#name{
-                    font-size: 14px;
-                }
-                &#description{
-                    font-size: 14px;
-                }
-            }
-            &#project_details{
-                ul#authors{
-                    margin: 4px;
-                    padding-left: 10px;
-                    li.author{
-                        list-style-type: none;
-                        svg, a{
-                            display: inline-block;
-                            vertical-align: middle;
-                        }
-                        a{
-                            font-size: 14px;
-                        }
-                        svg{
-                            margin-right: 8px;
-                        }
-                    }
-                }
             }
         }
     }
 
 
 
-    .controls{
-        width: 100%;
-        vertical-align: middle;
-        .ditch{
-            display:inline-block;
-            width: 9px;
-            height: 10px;
-        }
-        .spacer{
-            height: $control_dimension+16px;
-            padding-top: 6px;
-            &.group{
-                padding-top: 5px;
-                border-top: 1px solid $case_color;
-            }
-        }
 
-
-        .button_box{
-            width: $control_dimension+6px;
-            .label{
-                width: $control_dimension+6px;
-            }
-        }
-
-        .label{  
-            color: white;
-            font-size: 7px;
-            font-family: sans-serif;
-            line-height: 12px;
-            text-align: center;
-        }
-
-    }
-
-
-    .control{
-        min-height: $control_dimension;
-        padding: 3px 2px 2px 2px;
-        line-height: $control_dimension;
-        box-shadow: inset 0 0 5px #999;
-        margin: 0px auto;
-        border: 1px solid #000;
-        font-size: 14px;
-        text-align: center;
-        background-color: $note_color;
-        &.button{
-            width: $control_dimension;
-            cursor: pointer;
-            color: $circuit_text_color;
-            &.kosher{
-                background-color: $kosher_color;
-                box-shadow: none;
-            }
-            &.active{
-                background-color: $active_color;
-                box-shadow: 0px 0px 7px #8af;
-            }
-            &.warning{
-                background-color: $warning_color;
-                box-shadow: none;
-            }
-        }
-        &.field{
-            padding: 2px;
-            line-height: $control_dimension + 1px; /* inputs have some weirdness */
-            width: 100px;
-            &.twodigit{
-                width: 36px;
-            }
-            &.threedigit{
-                width: 48px;
-            }
-        }
-        &.select{
-            height: $control_dimension + 7px;
-        }   
-        &#bpm_box{
-            //width: 42px;
-        }
-        &#advance_box{
-            //width: 44px;
-        }
-    }
 
 
 
     #editor{
+        font-family: $interface_font;
         width: $machine_width;
         position: absolute;
         left: $drawer_width + $circuit_padding;
@@ -444,7 +347,87 @@ a{
                 width: $machine_width - 10px;
                 padding: 5px 5px 0px;
                 background-color: $machine_color;
+                font-family: $interface_font;
+                vertical-align: middle;
+                .ditch{
+                    display:inline-block;
+                    width: 9px;
+                    height: 10px;
+                }
+                .spacer{
+                    height: $control_dimension+16px;
+                    padding-top: 6px;
+                    &.group{
+                        padding-top: 5px;
+                        border-top: 1px solid $case_color;
+                    }
+                }
+
+
+                .button_box{
+                    width: $control_dimension+6px;
+                    .label{
+                        width: $control_dimension+6px;
+                    }
+                }
+
+                .label{  
+                    color: white;
+                    font-size: 7px;
+                    line-height: 12px;
+                    text-align: center;
+                }
+                .control{
+                    min-height: $control_dimension;
+                    padding: 3px 2px 2px 2px;
+                    line-height: $control_dimension;
+                    box-shadow: inset 0 0 5px #999;
+                    margin: 0px auto;
+                    border: 1px solid #000;
+                    font-size: 14px;
+                    text-align: center;
+                    background-color: $note_color;
+                    &.button{
+                        width: $control_dimension;
+                        cursor: pointer;
+                        color: $circuit_text_color;
+                        &.kosher{
+                            background-color: $kosher_color;
+                            box-shadow: none;
+                        }
+                        &.active{
+                            background-color: $active_color;
+                            box-shadow: 0px 0px 7px #8af;
+                        }
+                        &.warning{
+                            background-color: $warning_color;
+                            box-shadow: none;
+                        }
+                    }
+                    &.field{
+                        padding: 2px;
+                        line-height: $control_dimension + 1px; /* inputs have some weirdness */
+                        width: 100px;
+                        &.twodigit{
+                            width: 36px;
+                        }
+                        &.threedigit{
+                            width: 48px;
+                        }
+                    }
+                    &.select{
+                        height: $control_dimension + 7px;
+                    }   
+                    &#bpm_box{
+                        //width: 42px;
+                    }
+                    &#advance_box{
+                        //width: 44px;
+                    }
+                }
             }
+
+
 
             #machines{
                 background-color: $machine_color;

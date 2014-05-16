@@ -1,0 +1,27 @@
+/*
+ * License is at ./license.txt
+ */
+
+@font-face {
+    font-family: 'gudea';
+    src: url('Gudea-Regular.woff') format('woff');
+    src: url('Gudea-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'gudea';
+    src: url('Gudea-Bold.woff') format('woff');
+    src: url('Gudea-Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'gudea';
+    src: url('Gudea-Italic.woff') format('woff');
+    src: url('Gudea-Italic.otf') format('opentype');
+    font-weight: normal;
+    font-style: italic;
+}

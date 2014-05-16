@@ -247,6 +247,7 @@ NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMach
 		self.machines[tabDefinition.ascii] = machine;
 		if(machine.ascii === NodeaStudio.defaultMachineCode){
 			self.selectMachine(NodeaStudio.defaultMachineCode);
+			machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
 		}
 		if(callback){
 			callback.call(this, machine);
@@ -803,6 +804,7 @@ NodeaStudio.prototype.keySets = {
 
 
 NodeaStudio.defaultMachineCode = 49;
+NodeaStudio.defaultCircuitCode = 113;
 
 
 NodeaStudio.prototype.eventControlMap = {
