@@ -51,7 +51,7 @@ Machine.prototype.extractSettings = function(settings){
 
 Machine.prototype.extractCircuits = function(marshaledCircuits){
 	var nodeRowClass = "sinistra";
-	this.studio.keyset.forEach(function(keySetRow){
+	this.studio.keyset.domOrder.forEach(function(keySetRow){
 		var keyRow = jQuery('<div/>',{class: 'circuitRow '+nodeRowClass}).appendTo(this.circuitsContainer);
 		keySetRow.forEach(function(keySetKey){
 			// Bad Hack: Fills out Containers so incoming containers can have proper placement.
@@ -59,13 +59,17 @@ Machine.prototype.extractCircuits = function(marshaledCircuits){
 			
 			var marshaledCircuit = marshaledCircuits[keySetKey];
 			if( !marshaledCircuit ){
-				marshaledCircuit = { id: null, ordinal: keySetKey, handle: "Circuit", notes: [] };
+				marshaledCircuit = this.defaultCircuit(keySetKey);
 			}
 			
 			this.initializeCircuit(marshaledCircuit);
 		}, this);
 		nodeRowClass = nodeRowClass === 'sinistra' ? 'dextra' : 'sinistra';
 	}, this);
+};
+
+Machine.prototype.defaultCircuit = function(ordinal){
+	return { id: null, ordinal: ordinal, handle: "Circuit", notes: [] };
 };
 
 
@@ -104,9 +108,10 @@ Machine.prototype.eagerInitializeCircuit = function(marshalledCircuit){
 	
 	var keyRowPosition = 0;
 	var keyPosition = 0;
-	for( idx in this.studio.keyset ){
+	var keyset = this.studio.keyset.domOrder;
+	for( idx in keyset ){
 		keyRowPosition = idx;
-		var keysetRow = this.studio.keyset[idx];
+		var keysetRow = keyset[idx];
 		keyPosition = keysetRow.indexOf(marshalledCircuit.ordinal);
 		if( keyPosition !== -1 ){
 			break;
@@ -131,11 +136,11 @@ Machine.prototype.eagerInitializeCircuit = function(marshalledCircuit){
 
 
 Machine.prototype.replaceCircuit = function( oldCircuit, newHandle ){
-	var persistedNoda = oldCircuit.persistedNoda;
-	persistedNoda.handle = newHandle;
+	var marshaledCircuit = oldCircuit.marshal();
+	marshaledCircuit.handle = newHandle;
 	
 	var self = this;
-	this.initializeCircuit( persistedNoda, function(newCircuit){
+	this.initializeCircuit( marshaledCircuit, function(newCircuit){
 		self.circuits[oldCircuit.ordinal] = newCircuit;
 		newCircuit.swytche.click();
 		self.studio.invalidateSavedStatus();
@@ -292,7 +297,10 @@ Machine.prototype.marshal = function(){
 	};
 	
 	for( key in this.circuits ){
-		ret.circuits[key] = this.circuits[key].marshal();
+		var circuit = this.circuits[key];
+		if(circuit.handle !== "Circuit"){
+			ret.circuits[key] = this.circuits[key].marshal();
+		}
 	}
 	
 	return ret;

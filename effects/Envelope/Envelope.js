@@ -70,7 +70,7 @@ Envelope.prototype.stop = function(when) {
 
 // marshal / load
 Envelope.prototype.marshal = function() {
-	var ret = {};
+	var ret = Effect.prototype.marshal.call(this);
 	for( envParam in Envelope.SLIDER_ATTRIBUTES ){
 		ret[envParam] = this[envParam];
 	}

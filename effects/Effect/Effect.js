@@ -44,6 +44,12 @@ Effect.prototype.stop = function(now) {
 	return 0;
 };
 
+Effect.prototype.marshal = function(){
+	return {
+		handle: "Effect"
+	};
+};
+
 
 
 // TODO: Mark that Envelope is exclusively for circuits

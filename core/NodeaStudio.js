@@ -88,15 +88,14 @@ function NodeaStudio(editorContainer, project) {
 	// === Setup Swytches & Tracks ===
 	this.nodas = [];
 	this.keyset = this.keySets[this.keysetName];
-	this.flatKeyset = this.keyset.reduce(function(a, b) {
-		return a.concat(b);
-	});
 	
 	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
 	this.swytchesContainer = $(this.instrumentationContainer).find("#swytches");	
 	this.tracks = {};
 	this.swytches = {};
-	this.flatKeyset.forEach(function(ordinal){
+	this.keyset.domOrder.reduce(function(a, b) {
+		return a.concat(b);
+	}).forEach(function(ordinal){
 		this.swytches[ordinal] = jQuery('<spiv/>',{class: 'trackSwitch', html: String.fromCharCode(ordinal)}).
 				appendTo(this.swytchesContainer).click(function(ev){
 					self.selectedMachine.swytcheSelected(ordinal);
@@ -110,17 +109,30 @@ function NodeaStudio(editorContainer, project) {
 	
 	// === Instantiate Machines ===
 	this.machineContainer = $(this.instrumentationContainer).find("#machines");
+	for( var i=0; i<10; i++){
+		$("<div class='placeholder machine'></div>").appendTo(self.machineContainer);
+	}
 	this.circuitsContainer = $(this.instrumentationContainer).find("#circuits");
 	this.machines = {};
-	this.machineSet.forEach(function(tabDefinition){
+	for( ascii in NodeaStudio.MACHINE_SET ) {
+		var tabDefinition = NodeaStudio.MACHINE_SET[ascii];
 		var marshaledMachine;
 		if( project.machines && tabDefinition.ascii in project.machines ){
 			marshaledMachine = project.machines[tabDefinition.ascii];
 		} else {
 			marshaledMachine = {handle: "Machine"}; //new Machine(this.ctx, tabDefinition, this, {});
 		}
-		this.initializeMachine(tabDefinition, marshaledMachine);
-	}, this);
+		this.initializeMachine(tabDefinition, marshaledMachine, function(machine){
+			var tabIndex = NodeaStudio.MACHINE_SET[machine.ascii].order;
+			var placeholder = self.machineContainer.find(".machine").get(tabIndex);
+			$(placeholder).replaceWith(machine.tab);
+			machine.circuitsContainer.appendTo(self.circuitsContainer);
+			if(machine.ascii === NodeaStudio.defaultMachineCode){
+				self.selectMachine(NodeaStudio.defaultMachineCode);
+				machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
+			}
+		});
+	}
 	
 	
 	
@@ -242,13 +254,7 @@ NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMach
 		var machine = new machineConstructor(self.ctx, tabDefinition, self, marshaledMachine, function(oldMachine, newHandle){
 			 self.replaceMachine(oldMachine, newHandle);
 		});
-		machine.tab.appendTo(self.machineContainer);
-		machine.circuitsContainer.appendTo(self.circuitsContainer);
 		self.machines[tabDefinition.ascii] = machine;
-		if(machine.ascii === NodeaStudio.defaultMachineCode){
-			self.selectMachine(NodeaStudio.defaultMachineCode);
-			machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
-		}
 		if(callback){
 			callback.call(this, machine);
 		}
@@ -262,12 +268,18 @@ NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMach
 // External Startup Functions
 
 NodeaStudio.prototype.replaceMachine = function( oldMachine, newHandle ){
-	var marshaledMachine = oldMachine.marshaledMachine;
-	var tabDefinition = NodeaStudio.machineSet[oldMachine.ascii];
+	var marshaledMachine = oldMachine.marshal();
+	var tabDefinition = NodeaStudio.MACHINE_SET[oldMachine.ascii];
 	marshaledMachine.handle = newHandle;
 	
 	var self = this;
-	this.initializeMachine( tabDefinition, marshaledMachine, function(newMachine){
+	this.initializeMachine( tabDefinition, marshaledMachine, function(machine){
+		oldMachine.tab.replaceWith(machine.tab);
+		oldMachine.circuitsContainer.replaceWith(machine.circuitsContainer);
+		if( self.selectedMachine === oldMachine ){
+			self.selectMachine(machine.ascii);
+			machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
+		}
 		self.invalidateSavedStatus();
 	});
 };
@@ -697,7 +709,7 @@ NodeaStudio.prototype.save = function(){
 			setTimeout(function(){ $('#save').removeClass('kosher'); }, 3000 );
 		} catch (ex) {
 			$('#save').removeClass('active').addClass('warning');
-			console.error(ex);
+			console.error(ex.stack);
 			alert("Save Failed. Please let me know about this.", ex);
 		}
 	}
@@ -773,33 +785,40 @@ NodeaStudio.prototype.keyCodeToAsciiMap = {
 	186: 59,	188: 44,	190: 46,	191: 47
 };
 
-NodeaStudio.prototype.machineSet = [
-	{ascii: 49, color: "#98C"},
-	{ascii: 50, color: "#89C"},
-	{ascii: 51, color: "#8BB"},
-	{ascii: 52, color: "#7B9"},
-	{ascii: 53, color: "#9B7"},
+NodeaStudio.MACHINE_SET = {
+	49: {ascii: 49, color: "#98C", order: 0},
+	50: {ascii: 50, color: "#89C", order: 1},
+	51: {ascii: 51, color: "#8BB", order: 2},
+	52: {ascii: 52, color: "#7B9", order: 3},
+	53: {ascii: 53, color: "#9B7", order: 4},
 
-	{ascii: 54, color: "#BC7"},
-	{ascii: 55, color: "#CB6"},
-	{ascii: 56, color: "#C96"},
-	{ascii: 57, color: "#C87"},
-	{ascii: 48, color: "#C78"}
-];
+	54: {ascii: 54, color: "#BC7", order: 5},
+	55: {ascii: 55, color: "#CB6", order: 6},
+	56: {ascii: 56, color: "#C96", order: 7},
+	57: {ascii: 57, color: "#C87", order: 8},
+	48: {ascii: 48, color: "#C78", order: 9}
+};
 
 
 NodeaStudio.prototype.keySets = {
-	desktop: [
-		// left letters
-		[113, 119, 101, 114, 116, 
-		 97,  115, 100, 102, 103, 
-		 122, 120, 99,  118, 98],
+	desktop: {
+		domOrder: [
+			// left letters
+			[113, 119, 101, 114, 116, 
+			 97,  115, 100, 102, 103, 
+			 122, 120, 99,  118, 98],
 
-		// right letters
-		[121, 117, 105, 111, 112, 
-		 104, 106, 107, 108, 59,  
-		 110, 109, 44,  46,  47]
-	]
+			// right letters
+			[121, 117, 105, 111, 112, 
+			 104, 106, 107, 108, 59,  
+			 110, 109, 44,  46,  47]
+		],
+		chromaticOrder: [
+			122, 120, 99,  118, 98,	 110, 109, 44,  46,  47, // bottom row
+			97,  115, 100, 102, 103, 104, 106, 107, 108, 59, // mid row
+			113, 119, 101, 114, 116, 121, 117, 105, 111, 112 // top row
+		]
+	}
 };
 
 
