@@ -127,6 +127,8 @@ Circuit.prototype.isDisplaying = function(){
 
 
 
+// Note Manipulation
+
 Circuit.prototype.addNoteNoUndo = function(note){
 	if( note !== null ){
 		this.notes.push(note);

@@ -119,7 +119,7 @@ EffectsChain.prototype.render = function(section){
 	var self = this;
 	DrawerUtils.makeSectionAddable(section, function(ev){
 		var effect = new Effect(self.ctx, self.replacementCallback());
-		self.chain.push(effect);
+		self.push(effect);
 		var effectIndex = self.chain.length - 1;
 		var division = DrawerUtils.createDivision(section,"Effect");
 		DrawerUtils.makeDivisionRemovable(division, function(ev){
@@ -167,7 +167,7 @@ EffectsChain.prototype.load = function(chainSettings){
 	chainSettings.forEach(function(effectSettings){
 		if( window[effectSettings.type] ){
 			var self = this;
-			DelayedLoad.load('effects', effectSettings.type, function(){
+			DelayedLoad.loadScript('effects', effectSettings.type, function(){
 				var newEffect = new window[effectSettings.type](self.ctx, self.replacementCallback());
 				newEffect.load(effectSettings);
 				self.push( newEffect );
@@ -182,29 +182,27 @@ EffectsChain.prototype.loadDefault = function(){
 
 
 EffectsChain.prototype.replaceEffect = function( oldEffect, newHandle ){
-	if( !window[newHandle] ){
-		console.error("Invalid Effect Handle "+newHandle);
-		return;
-	}
-	
-	var idx = this.chain.indexOf(oldEffect);
-	if( idx === -1 ){
-		console.error("Could not find old effect in chain");
-		return;
-	}
-	
-	oldEffect.output.disconnect(0);
-	
-	var newEffect = new window[newHandle](this.ctx, this.replacementCallback());
-	this.chain[idx] = newEffect;
-	
-	var prevEffect = this.get(idx-1);
-	prevEffect.output.disconnect(0);
-	prevEffect.output.connect(newEffect.input);
-	
-	var nextEffect = this.get(idx+1);
-	newEffect.output.connect(nextEffect.input);
-	
-	this.rerender();
-	studio.invalidateSavedStatus();
+	var self = this;
+	DelayedLoad.loadScript('effects', newHandle, function(){
+		var idx = self.chain.indexOf(oldEffect);
+		if( idx === -1 ){
+			console.error("Could not find old effect in chain");
+			return;
+		}
+
+		oldEffect.output.disconnect(0);
+
+		var newEffect = new window[newHandle](self.ctx, self.replacementCallback());
+		self.chain[idx] = newEffect;
+
+		var prevEffect = self.get(idx-1);
+		prevEffect.output.disconnect(0);
+		prevEffect.output.connect(newEffect.input);
+
+		var nextEffect = self.get(idx+1);
+		newEffect.output.connect(nextEffect.input);
+
+		self.rerender();
+		studio.invalidateSavedStatus();
+	});
 };

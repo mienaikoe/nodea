@@ -54,6 +54,6 @@ Effect.prototype.marshal = function(){
 
 // TODO: Mark that Envelope is exclusively for circuits
 Effect.effectsManifest = {
-	machines: [""],
-	circuits: ["","Envelope"]
+	machines: ["","Reverb"],
+	circuits: ["","Envelope","Reverb"]
 };

@@ -4,7 +4,9 @@ function Sampler(ctx, machine, marshaledCircuit, destination, circuitReplacement
 	this.dynamicNote = new Note({noda: this});
 	
 	var self = this;
-	this.resetBufferLocation(function(){
+	DelayedLoad.loadBuffer(this.bufferUrl, function(buffer){
+		self.buffer = buffer; 
+        self.resetSources();
 		self.bindBufferToNotes();
 	});
 };
@@ -37,43 +39,16 @@ Sampler.prototype.extractSettings = function(settings){
 };
 
 
-
-Sampler.prototype.resetBufferLocation = function(callback){
-	var self = this;
-    var request = new XMLHttpRequest();
-    request.open("GET", this.bufferUrl, true);
-    request.responseType = "arraybuffer";
-    request.onload = function() {
-        self.ctx.decodeAudioData(
-            request.response,
-            function(buffer) { 
-                console.log('Setting Buffer for '+self.key);
-                self.buffer = buffer; 
-                self.resetSources();
-				callback.call(self);
-            },
-            function() { 
-				console.log("Error decoding sample for "+this.bufferUrl); 
-			}
-        );
-    };
-	try{
-		request.send();
-	} catch(err) { // Not working...
-		console.error("Error when trying to fetch Buffer Source");
-		console.error(err);
-		callback.call(self);
-	}
-};
-
-
 Sampler.prototype.generateCircuitBody = function(circuitBody){
 	var self = this;
 	$(circuitBody).find("#Sampler-Source").
 		text(this.bufferUrl).
 		change(	function(ev){ 
 			self.bufferUrl = this.value; 
-			self.resetBufferLocation(); 
+			DelayedLoad.loadBuffer(self.bufferUrl, function(buffer){
+                self.buffer = buffer; 
+                self.resetSources();
+			}); 
 			studio.invalidateSavedStatus(); 
 		}); // TODO: Make this more foolproof.
 		

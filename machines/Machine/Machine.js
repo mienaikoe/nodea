@@ -79,7 +79,7 @@ Machine.prototype.initializeCircuit = function(marshaledCircuit, callback){
 	}
 	
 	var self = this;
-	DelayedLoad.load("circuits", marshaledCircuit.handle, function(){
+	DelayedLoad.loadScript("circuits", marshaledCircuit.handle, function(){
 		var newCircuit = self.eagerInitializeCircuit(marshaledCircuit);
 		callback.call(self, newCircuit);
 	});
@@ -168,8 +168,8 @@ Machine.prototype.circuitOn = function( ordinal ){
 	}
 	
 	if( this.studio.recording ){
-		circuit.on(this.pixelFor(Date.now()));
-		this.recordingNodas.push(circuit);
+		circuit.on(this.studio.pixelFor(Date.now()));
+		this.studio.recordingNodas.push(circuit);
 	} else {
 		circuit.on();
 	}
@@ -185,9 +185,10 @@ Machine.prototype.circuitOff = function( ordinal ){
 	}
 	
 	if( this.studio.recording ){
-		circuit.off(this.location);
+		circuit.off(this.studio.location);
 		this.invalidateSavedStatus();
-		this.recordingNodas.splice(this.recordingNodas.indexOf(circuit), 1);
+		var recordingNodas = this.studio.recordingNodas;
+		recordingNodas.splice(recordingNodas.indexOf(circuit), 1);
 	} else {
 		circuit.off();
 	}
@@ -291,6 +292,12 @@ Machine.prototype.swytcheSelected = function(ordinal){
 };
 
 
+
+
+
+Machine.prototype.invalidateSavedStatus = function(){
+	this.studio.invalidateSavedStatus();
+};
 
 Machine.prototype.marshal = function(){
 	var ret= {

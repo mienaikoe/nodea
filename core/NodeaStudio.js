@@ -29,8 +29,8 @@ navigator.vibrate =
 		navigator.msVibrate ||
 		function(duration){};
 
-DelayedLoad.loadeds["circuits:Circuit"] = [];
-DelayedLoad.loadeds["machines:Machine"] = [];
+DelayedLoad.loadedScripts["circuits:Circuit"] = [];
+DelayedLoad.loadedScripts["machines:Machine"] = [];
 
 
 
@@ -40,6 +40,7 @@ function NodeaStudio(editorContainer, project) {
 	
 	// TODO: Don't know if i should add some global filters or effects to this and have those be configurable as well.
 	this.ctx = new AudioContext(); 
+	DelayedLoad.ctx = this.ctx;
 	
 	// Create space for Circuit-Specific Styles
 	this.circuitStylesheet = document.createElement('style');
@@ -249,7 +250,7 @@ function NodeaStudio(editorContainer, project) {
 
 NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMachine, callback){
 	var self = this;
-	DelayedLoad.load('machines', marshaledMachine.handle, function(){
+	DelayedLoad.loadScript('machines', marshaledMachine.handle, function(){
 		machineConstructor = window[marshaledMachine.handle];
 		var machine = new machineConstructor(self.ctx, tabDefinition, self, marshaledMachine, function(oldMachine, newHandle){
 			 self.replaceMachine(oldMachine, newHandle);
@@ -630,7 +631,7 @@ NodeaStudio.prototype.startSelectBox = function(x, y){
 		var noteFinishBound = ideasHeight - newTop;
 		var noteStartBound = noteFinishBound - newHeight;
 		
-		self.flatKeyset.forEach(function(ascii, idx){
+		self.keyset.chromaticOrder.forEach(function(ascii, idx){
 			if(idx < firstTrackIndex || idx > lastTrackIndex){ 
 				for( key in self.machines ){
 					self.machines[key].circuits[ascii].notes.forEach(function(note){
@@ -746,9 +747,9 @@ NodeaStudio.prototype.notify = function(words, errorMessage){
 
 
 NodeaStudio.prototype.deleteNote = function(note){
-	if(note.noda){
+	if(note.circuit){
 		note.removeContainer();
-		note.noda.deleteNote(note);
+		note.circuit.deleteNote(note);
 		this.invalidateSavedStatus();
 	}
 };
