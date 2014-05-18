@@ -241,17 +241,21 @@ Machine.prototype.generateGeneralDivision = function(divisionBody){
 
 Machine.prototype.generateMachineDivision = function(divisionBody) {
 	var self = this;
-	$.get("circuits/"+this.handle+"/"+this.handle+".html",null,function(data){
-		var machineBody = $(data).appendTo(divisionBody);
-		$(machineBody).
+	$.get("machines/"+this.handle+"/"+this.handle+".html",null,function(data){
+		self.machineBody = $(data).appendTo(divisionBody);
+		self.machineBody.
 			keydown(    function(ev){ ev.stopPropagation(); }).
 			keyup(      function(ev){ ev.stopPropagation(); });
 	
-		self.generateMachineBody.call(self,machineBody);
+		self.generateMachineBody.call(self, self.machineBody);
 	});
 };
 
 Machine.prototype.generateMachineBody = function(machineBody){	
+};
+
+Machine.prototype.isDisplaying = function(){
+	return this.machineBody && this.machineBody.closest("html").length > 0;
 };
 
 
@@ -292,17 +296,21 @@ Machine.prototype.marshal = function(){
 	var ret= {
 		ascii: this.ascii,
 		handle: this.constructor.name,
-		circuits: {},
+		circuits: this.marshalCircuits(),
 		settings: this.marshalSettings()
 	};
 	
+	return ret;
+};
+
+Machine.prototype.marshalCircuits = function(){
+	ret = {};
 	for( key in this.circuits ){
 		var circuit = this.circuits[key];
 		if(circuit.handle !== "Circuit"){
-			ret.circuits[key] = this.circuits[key].marshal();
+			ret[key] = this.circuits[key].marshal();
 		}
 	}
-	
 	return ret;
 };
 

@@ -8,7 +8,7 @@ var Pitch = function(pitchName){
 	this.octave = parseInt(pitchName.substr(this.color.length, pitchName.length));
 	if( typeof this.octave !== "number" ){ throw "Invalid Note Name: " + pitchName; }
 	
-	this.frequency = Pitch.addOctaves( this.primary, this.octave+1 );
+	this.frequency = Pitch.addOctaves( this.primary, this.octave );
 };
 
 Pitch.pitchColor = function(pitchName){
@@ -43,7 +43,7 @@ Pitch.addWholeSteps = function( frequency, halfSteps ){
 };
 		
 Pitch.addOctaves = function( frequency, octaves ){
-	return frequency * 2 * octaves;
+	return frequency * Math.pow(2, octaves);
 };
 
 Pitch.A0 = 13.75;
@@ -64,7 +64,15 @@ Pitch.PRIMARIES = {
 };
 
 
-
+Pitch.pitchKeySelector = function(selectBox){
+	for( key in Pitch.PRIMARIES ){
+		var fullKey = key;
+		if( key.indexOf("#") !== -1 ){
+			fullKey += "/" + String.fromCharCode(key.charCodeAt(0)+1) + "♭";
+		}
+		$("<option></option>",{value: key, html: fullKey}).appendTo(selectBox);
+	}
+};
 
 
 
@@ -84,7 +92,7 @@ var Scales = {
 		var scaleSteps = Scales.SCALE_TYPES[scaleType];
 		if(!scaleSteps){ throw "Invalid Scale Type: "+scaleType }
 		
-		var ret = [pitch.primary];
+		var ret = [pitch.frequency];
 		var octaveIndex = pitch.octave;
 		var scaleIndex = 0;
 		while(pitchCount > 0){
@@ -104,7 +112,7 @@ var Scales = {
 
 
 Scales.SCALE_TYPES = {
-	mixed_western:	[2,3,4,5,7,8,9,11,12],
+	mixed_western:	[2,3,4,5,7,8,9,10,11,12],
 	major:			[2,4,5,7,9,11,12],
 	natural_minor:	[2,3,5,7,8,10,12],
 	harmonic_minor:	[2,3,5,7,8,11,12],
@@ -112,4 +120,9 @@ Scales.SCALE_TYPES = {
 	jazz:			[3,5,6,7,10,12]
 };
 
+Scales.scaleTypeSelector = function(selectBox){
+	for( type in Scales.SCALE_TYPES ){
+		$("<option></option>",{value: type, html: type}).appendTo(selectBox);
+	}
+};
 

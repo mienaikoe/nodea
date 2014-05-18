@@ -108,19 +108,21 @@ Circuit.prototype.generateGeneralDivision = function(divisionBody){
 Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 	var self = this;
 	$.get("circuits/"+this.handle+"/"+this.handle+".html",null,function(data){
-		var circuitBody = $(data).appendTo(divisionBody);
-		$(circuitBody).
+		self.circuitBody = $(data).appendTo(divisionBody);
+		self.circuitBody.
 			keydown(    function(ev){ ev.stopPropagation(); }).
 			keyup(      function(ev){ ev.stopPropagation(); });
 	
-		self.generateCircuitBody.call(self,circuitBody);
+		self.generateCircuitBody.call(self,self.circuitBody);
 	});
 };
 
 Circuit.prototype.generateCircuitBody = function(circuitBody){	
 };
 
-
+Circuit.prototype.isDisplaying = function(){
+	return this.circuitBody && this.circuitBody.closest("html").length > 0;
+};
 
 
 

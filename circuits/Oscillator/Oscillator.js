@@ -43,7 +43,14 @@ Oscillator.prototype.extractSettings = function(settings){
 	}
 };
 
-
+Oscillator.prototype.repitch = function(frequency){
+	if( this.isDisplaying() ){
+		this.circuitBody.find("#Oscillator-Frequency").val(frequency);
+	} else {
+		this.frequency = frequency;
+	}
+	this.resetOscillators();
+};
 
 
 

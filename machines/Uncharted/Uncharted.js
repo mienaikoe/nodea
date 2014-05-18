@@ -48,3 +48,43 @@ Uncharted.prototype.defaultCircuit = function(ordinal){
 
 
 
+Uncharted.prototype.generateMachineBody = function(machineBody){	
+	var self = this;
+	
+	var scaleKeySelector = machineBody.find("#Uncharted-Key");
+	Pitch.pitchKeySelector(scaleKeySelector);
+	scaleKeySelector.val(this.scaleKey).
+		change(	function(ev){ 
+			self.scaleKey = this.value;
+			self.rescale();
+			self.studio.invalidateSavedStatus(); 
+		});
+	machineBody.find("#Uncharted-Octave").
+		val(this.octave).
+		change(	function(ev){ 
+			self.octave = parseInt(this.value);
+			self.rescale();
+			self.studio.invalidateSavedStatus(); 
+		});
+		
+	var scaleType = machineBody.find("#Uncharted-ScaleType");
+	Scales.scaleTypeSelector(scaleType);
+	scaleType.val(this.scaleType).
+		change(	function(ev){ 
+			self.scaleType = this.value;
+			self.rescale();
+			self.studio.invalidateSavedStatus(); 
+		});	
+};
+
+
+
+Uncharted.prototype.rescale = function(){
+	this.scale = Scales.scaleFrequencies(this.scaleKey+this.octave.toString(), this.scaleType, 30 );
+	this.studio.keyset.chromaticOrder.forEach(function(key, idx){
+		var circuit = this.circuits[key];
+		if( circuit.constructor.name === "Oscillator" ){
+			circuit.repitch(this.scale[idx]);
+		}
+	}, this);
+};

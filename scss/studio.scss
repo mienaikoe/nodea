@@ -160,6 +160,9 @@ a{
             display: inline-block;
             vertical-align: top;
         }
+        input[type=number] {
+            width: 72px;
+        }
         input[type=range] {
             -webkit-appearance: none;
             background-color: #333;
