@@ -119,7 +119,7 @@ EffectsChain.prototype.render = function(section){
 	var self = this;
 	DrawerUtils.makeSectionAddable(section, function(ev){
 		var effect = new Effect(self.ctx, self.replacementCallback());
-		self.push(effect);
+		self.chain.push(effect);
 		var effectIndex = self.chain.length - 1;
 		var division = DrawerUtils.createDivision(section,"Effect");
 		DrawerUtils.makeDivisionRemovable(division, function(ev){
@@ -165,14 +165,13 @@ EffectsChain.prototype.replacementCallback = function(){
 
 EffectsChain.prototype.load = function(chainSettings){
 	chainSettings.forEach(function(effectSettings){
-		if( window[effectSettings.type] ){
-			var self = this;
-			DelayedLoad.loadScript('effects', effectSettings.type, function(){
-				var newEffect = new window[effectSettings.type](self.ctx, self.replacementCallback());
-				newEffect.load(effectSettings);
-				self.push( newEffect );
-			});
-		}
+		var self = this;
+		DelayedLoad.loadScript('effects', effectSettings.handle, function(){
+			var newEffect = new window[effectSettings.handle](self.ctx, self.replacementCallback());
+			newEffect.load(effectSettings);
+			self.push( newEffect );
+			self.rerender();
+		});
 	}, this);
 };
 

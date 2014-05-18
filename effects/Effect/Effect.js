@@ -46,7 +46,7 @@ Effect.prototype.stop = function(now) {
 
 Effect.prototype.marshal = function(){
 	return {
-		handle: "Effect"
+		handle: this.constructor.name
 	};
 };
 

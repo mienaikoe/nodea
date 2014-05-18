@@ -94,9 +94,7 @@ function NodeaStudio(editorContainer, project) {
 	this.swytchesContainer = $(this.instrumentationContainer).find("#swytches");	
 	this.tracks = {};
 	this.swytches = {};
-	this.keyset.domOrder.reduce(function(a, b) {
-		return a.concat(b);
-	}).forEach(function(ordinal){
+	this.keyset.domOrder.forEach(function(ordinal){
 		this.swytches[ordinal] = jQuery('<spiv/>',{class: 'trackSwitch', html: String.fromCharCode(ordinal)}).
 				appendTo(this.swytchesContainer).click(function(ev){
 					self.selectedMachine.swytcheSelected(ordinal);
@@ -631,23 +629,19 @@ NodeaStudio.prototype.startSelectBox = function(x, y){
 		var noteFinishBound = ideasHeight - newTop;
 		var noteStartBound = noteFinishBound - newHeight;
 		
-		self.keyset.chromaticOrder.forEach(function(ascii, idx){
+		self.keyset.domOrder.forEach(function(ascii, idx){
 			if(idx < firstTrackIndex || idx > lastTrackIndex){ 
-				for( key in self.machines ){
-					self.machines[key].circuits[ascii].notes.forEach(function(note){
-						note.unselect();
-					}, self);
-				}
+				self.selectedMachine.circuits[ascii].notes.forEach(function(note){
+					note.unselect();
+				}, self);
 			} else {
-				for( key in self.machines ){
-					self.machines[key].circuits[ascii].notes.forEach(function(note){
-						if(note.start >= noteStartBound && note.finish <= noteFinishBound){
-							note.select();
-						} else {
-							note.unselect();
-						}
-					}, self);
-				}
+				self.selectedMachine.circuits[ascii].notes.forEach(function(note){
+					if(note.start >= noteStartBound && note.finish <= noteFinishBound){
+						note.select();
+					} else {
+						note.unselect();
+					}
+				}, self);
 			}
 		}, self);
 	}).mouseup(function(ev_up){
@@ -762,7 +756,9 @@ NodeaStudio.prototype.deleteNote = function(note){
 
 
 
-NodeaStudio.TRACK_WIDTH = 19; //px
+
+
+NodeaStudio.TRACK_WIDTH = 20; //px
 
 
 NodeaStudio.prototype.asciiKeys = [
@@ -805,14 +801,9 @@ NodeaStudio.prototype.keySets = {
 	desktop: {
 		domOrder: [
 			// left letters
-			[113, 119, 101, 114, 116, 
-			 97,  115, 100, 102, 103, 
-			 122, 120, 99,  118, 98],
-
+			113, 119, 101, 114, 116, 97,  115, 100, 102, 103, 122, 120, 99,  118, 98,
 			// right letters
-			[121, 117, 105, 111, 112, 
-			 104, 106, 107, 108, 59,  
-			 110, 109, 44,  46,  47]
+			121, 117, 105, 111, 112, 104, 106, 107, 108, 59, 110, 109, 44,  46,  47
 		],
 		chromaticOrder: [
 			122, 120, 99,  118, 98,	 110, 109, 44,  46,  47, // bottom row
@@ -864,9 +855,9 @@ NodeaStudio.prototype.ctrlKeyControlMap = {
 	89: function(studio){ studio.undoList.redo(); },
 	
 	// ctrl-x
-	88: function(studio){ /*cut*/ },
+	88: function(studio){ Note.cutSelected(); },
 	// ctrl-c
-	67: function(studio){ /*copy*/ },
+	67: function(studio){ Note.copySelected(); },
 	// ctrl-v
-	86: function(studio){ /*paste*/ }
+	86: function(studio){ Note.pasteClipboard(studio.location); }
 };

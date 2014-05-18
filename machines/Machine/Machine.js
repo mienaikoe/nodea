@@ -51,19 +51,27 @@ Machine.prototype.extractSettings = function(settings){
 
 Machine.prototype.extractCircuits = function(marshaledCircuits){
 	var nodeRowClass = "sinistra";
-	this.studio.keyset.domOrder.forEach(function(keySetRow){
-		var keyRow = jQuery('<div/>',{class: 'circuitRow '+nodeRowClass}).appendTo(this.circuitsContainer);
-		keySetRow.forEach(function(keySetKey){
-			// Bad Hack: Fills out Containers so incoming containers can have proper placement.
-			$("<spiv/>").appendTo(keyRow);
-			
-			var marshaledCircuit = marshaledCircuits[keySetKey];
-			if( !marshaledCircuit ){
-				marshaledCircuit = this.defaultCircuit(keySetKey);
+	var keyRow;
+	this.studio.keyset.domOrder.forEach(function(keySetKey, idx){
+		var rowKeyIndex = idx%15;
+		if( rowKeyIndex === 0 ){
+			keyRow = jQuery('<div/>',{class: 'circuitRow '+nodeRowClass}).appendTo(this.circuitsContainer);
+		}
+		
+		var marshaledCircuit = marshaledCircuits[keySetKey];
+		if( !marshaledCircuit ){
+			marshaledCircuit = this.defaultCircuit(keySetKey);
+		}
+		marshaledCircuit.keyRow = keyRow;
+
+		this.initializeCircuit(marshaledCircuit, function(newCircuit){
+			var thisKeyRow = marshaledCircuit.keyRow;
+			if( rowKeyIndex >= thisKeyRow.children().length ){
+				newCircuit.container.appendTo(thisKeyRow);
+			} else {
+				newCircuit.container.insertBefore(thisKeyRow.find(".circuit").get(rowKeyIndex-1));
 			}
-			
-			this.initializeCircuit(marshaledCircuit);
-		}, this);
+		});
 		nodeRowClass = nodeRowClass === 'sinistra' ? 'dextra' : 'sinistra';
 	}, this);
 };
@@ -105,19 +113,6 @@ Machine.prototype.eagerInitializeCircuit = function(marshalledCircuit){
 	});
 	
 	this.circuits[marshalledCircuit.ordinal] = circuit;
-	
-	var keyRowPosition = 0;
-	var keyPosition = 0;
-	var keyset = this.studio.keyset.domOrder;
-	for( idx in keyset ){
-		keyRowPosition = idx;
-		var keysetRow = keyset[idx];
-		keyPosition = keysetRow.indexOf(marshalledCircuit.ordinal);
-		if( keyPosition !== -1 ){
-			break;
-		}
-	}	
-	this.circuitsContainer.children().eq(keyRowPosition).children().eq(keyPosition).replaceWith(circuit.container);
 		
 	var self = this;
 	circuit.container.
@@ -141,8 +136,8 @@ Machine.prototype.replaceCircuit = function( oldCircuit, newHandle ){
 	
 	var self = this;
 	this.initializeCircuit( marshaledCircuit, function(newCircuit){
-		self.circuits[oldCircuit.ordinal] = newCircuit;
 		newCircuit.swytche.click();
+		oldCircuit.container.replaceWith(newCircuit.container);
 		self.studio.invalidateSavedStatus();
 	});
 };

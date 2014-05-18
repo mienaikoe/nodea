@@ -156,8 +156,8 @@ Circuit.prototype.deleteNoteNoUndo = function(note){
 	if( idx !== -1 ){
 		this.notes.splice(idx, 1);
 		if(note.container){ 
-			note.container.remove(); 
-			note.container = null; 
+			note.container.remove();
+			note.container = null;
 		}
 	}
 };
