@@ -38,7 +38,7 @@ Oscillator.prototype.extractSettings = function(settings){
 
 Oscillator.prototype.repitch = function(frequency){
 	if( this.isDisplaying() ){
-		this.circuitBody.find("#Oscillator-Frequency").val(frequency);
+		this.circuitBody.find("#Oscillator-Frequency").val(frequency).change();
 	} else {
 		this.frequency = frequency;
 	}

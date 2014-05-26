@@ -71,6 +71,7 @@ Uncharted.prototype.generateMachineBody = function(machineBody){
 		self.scaleType = this.value;
 		self.rescale();
 		self.studio.invalidateSavedStatus(); 
+		$(this).blur();
 	});	
 };
 
