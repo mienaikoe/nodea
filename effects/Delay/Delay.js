@@ -23,7 +23,7 @@ function Delay(ctx, effectReplacementCallback) {
 	this.delay.connect(this.wetGain);
 	this.wetGain.connect(this.output);
 	
-	this.delay.delayTime = Delay.INPUT_ATTRIBUTES["Delay Time"].attributes.default;
+	this.delay.delayTime = Delay.INPUT_ATTRIBUTES["delay time"].attributes.default;
 	this.dryGain.gain.value = 0.7;
 	this.wetGain.gain.value = 0.3;
 }
@@ -35,7 +35,7 @@ Delay.extends(Effect);
 
 
 Delay.INPUT_ATTRIBUTES = {
-	"Delay Time":	{
+	"delay time":	{
 		attributes: {min: 0.00, max: 1.00, step: 0.05, default: 0.05},
 		changer: function(key, value){
 			this.delay.delayTime.value = value;
@@ -46,7 +46,7 @@ Delay.INPUT_ATTRIBUTES = {
 		}
 	},
 		
-	"Wet/Dry":	{
+	"wet / dry":	{
 		attributes: {min: 0.00, max: 1.00, step: 0.05,	default: 0.70}, 
 		changer: function(key, value){
 			this.wetGain.gain.value = value;
@@ -73,12 +73,16 @@ Delay.prototype.render = function(division) {
 // marshal / load
 Delay.prototype.marshal = function() {
 	var ret = Effect.prototype.marshal.call(this);
-	ret.delayTime = this.input.delayTime.value;
+	ret.delayTime = this.delay.delayTime.value;
+	ret.wetGain = this.wetGain.gain.value;
 	return ret;
 };
 
 Delay.prototype.load = function(settings) {
 	if( settings ){
 		this.delay.delayTime.value = settings.delayTime;
+		this.wetGain.gain.value = settings.wetGain;
+		this.dryGain.gain.value = 1.00 - settings.wetGain;
+		
 	}
 };
