@@ -3,9 +3,7 @@ function Uncharted( ctx, tabDefinition, studio, marshaledMachine, machineReplace
 	
 };
 
-Uncharted.prototype = Object.create(Machine.prototype, {
-	constructor: { value: Uncharted, enumerable: false }
-});
+Uncharted.extends(Machine);
 
 
 Uncharted.prototype.extractSettings = function(settings){
@@ -68,13 +66,12 @@ Uncharted.prototype.generateMachineBody = function(machineBody){
 		});
 		
 	var scaleType = machineBody.find("#Uncharted-ScaleType");
-	Scales.scaleTypeSelector(scaleType);
-	scaleType.val(this.scaleType).
-		change(	function(ev){ 
-			self.scaleType = this.value;
-			self.rescale();
-			self.studio.invalidateSavedStatus(); 
-		});	
+	Scales.scaleTypeSelector(scaleType, this.scaleType);
+	scaleType.change( function(ev){ 
+		self.scaleType = this.value;
+		self.rescale();
+		self.studio.invalidateSavedStatus(); 
+	});	
 };
 
 
@@ -87,4 +84,13 @@ Uncharted.prototype.rescale = function(){
 			circuit.repitch(this.scale[idx]);
 		}
 	}, this);
+};
+
+
+Uncharted.prototype.marshalSettings = function(){
+	var ret = Machine.prototype.marshalSettings.call(this);
+	ret.scaleKey = this.scaleKey;
+	ret.scaleType = this.scaleType;
+	ret.octave = this.octave;
+	return ret;
 };

@@ -10,14 +10,7 @@ function Oscillator(ctx, machine, marshaledCircuit, destination, circuitReplacem
 	 */
 };
 
-
-// This Inherits the prototype of Circuit
-Oscillator.prototype = Object.create(Circuit.prototype, {
-	constructor: { 
-		value: Oscillator, // Change This to your Circuit Handle
-		enumerable: false 
-	}
-});
+Oscillator.extends(Circuit);
 
 
 Oscillator.prototype.extractSettings = function(settings){

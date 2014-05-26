@@ -1,33 +1,4 @@
-//= require_tree .
 
-var assert = function(obj){
-	return (typeof(obj) !== 'undefined' && obj !== null);
-};
-
-window.requestAnimationFrame = 
-		window.requestAnimationFrame || 
-		window.webkitRequestAnimationFrame || 
-		window.mozRequestAnimationFrame ||
-		window.msRequestAnimationFrame;
-		
-window.AudioContext = 
-		window.AudioContext || 
-		window.webkitAudioContext;
-
-window.AudioContext.prototype.createGainNode =
-		window.AudioContext.prototype.createGainNode || 
-		window.AudioContext.prototype.createGain;
-
-if( !window.requestAnimationFrame || !window.AudioContext ){
-	alert("It looks like your browser doesn't support this application. Please try a more modern Browser.");
-}
-
-navigator.vibrate = 
-		navigator.vibrate || 
-		navigator.webkitVibrate || 
-		navigator.mozVibrate || 
-		navigator.msVibrate ||
-		function(duration){};
 
 DelayedLoad.loadedScripts["circuits:Circuit"] = [];
 DelayedLoad.loadedScripts["machines:Machine"] = [];
@@ -248,6 +219,11 @@ function NodeaStudio(editorContainer, project) {
 
 NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMachine, callback){
 	var self = this;
+	if(marshaledMachine.handle === 'Function'){
+		marshaledMachine.handle = "Machine";
+	} else if(marshaledMachine.handle === ''){
+		marshaledMachine.handle = 'Machine';
+	}
 	DelayedLoad.loadScript('machines', marshaledMachine.handle, function(){
 		machineConstructor = window[marshaledMachine.handle];
 		var machine = new machineConstructor(self.ctx, tabDefinition, self, marshaledMachine, function(oldMachine, newHandle){

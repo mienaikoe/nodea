@@ -11,19 +11,25 @@ function Reverb(ctx, effectReplacementCallback) {
 	this.input = ctx.createConvolver();
 	this.output = this.input;
 	
-	this.convolution = Reverb.DEFAULT_CONVOLUTION;
-	this.resetBuffer();
+	this.setConvolution(Reverb.DEFAULT_CONVOLUTION);
 }
+
+Reverb.extends(Effect);
+
+
 
 
 Reverb.CONVOLUTIONS = ["room","hall"];
 Reverb.DEFAULT_CONVOLUTION = "room";
 
-Reverb.prototype.resetBuffer = function(){
-	var self = this;
-	DelayedLoad.loadBuffer( "effects/Reverb/convolutions/"+this.convolution+".wav", function(buffer){
-		self.input.buffer = buffer;
-	});
+Reverb.prototype.setConvolution = function(convolution){
+	if( convolution && this.convolution !== convolution ){
+		this.convolution = convolution;
+		var self = this;
+		DelayedLoad.loadBuffer( "effects/Reverb/convolutions/"+convolution+".wav", function(buffer){
+			self.input.buffer = buffer;
+		});
+	}
 };
 
 
@@ -32,13 +38,12 @@ Reverb.prototype.resetBuffer = function(){
 Reverb.prototype.render = function(division) {
 	var self = this;
 	var convoChooser = $("<select></select>",{id: "convolution_chooser"}).appendTo(division).change(function(){
-		self.convolution = this.value;
-		self.resetBuffer();
+		self.setConvolution(this.value);
 		studio.invalidateSavedStatus();
 	});
 	
 	Reverb.CONVOLUTIONS.forEach( function(convo){
-		$("<option></option>",{html: convo}).appendTo(convoChooser);
+		$("<option></option>",{html: convo, selected: (convo === self.convolution)}).appendTo(convoChooser);
 	}, this);
 };
 
@@ -51,6 +56,8 @@ Reverb.prototype.marshal = function() {
 	return ret;
 };
 
-Reverb.prototype.load = function(settings){
-	this.convolution = settings.convolution;
+Reverb.prototype.load = function(settings) {
+	if( settings ){
+		this.setConvolution(settings.convolution);
+	}
 };

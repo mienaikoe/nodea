@@ -13,9 +13,7 @@ function Sampler(ctx, machine, marshaledCircuit, destination, circuitReplacement
 
 
 // vital to Noda Creation. This Inherits the static values from Circuit
-Sampler.prototype = Object.create(Circuit.prototype, {
-	constructor: { value: Sampler, enumerable: false }
-});
+Sampler.extends(Circuit);
 
 
 

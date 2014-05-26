@@ -63,6 +63,10 @@ Machine.prototype.extractCircuits = function(marshaledCircuits){
 			marshaledCircuit = this.defaultCircuit(keySetKey);
 		}
 		marshaledCircuit.keyRow = keyRow;
+		if(marshaledCircuit.handle === 'Function'){
+			marshaledCircuit.handle = "Circuit";
+		}
+		
 
 		this.initializeCircuit(marshaledCircuit, function(newCircuit){
 			var thisKeyRow = marshaledCircuit.keyRow;

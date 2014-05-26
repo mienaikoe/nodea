@@ -165,7 +165,7 @@ EffectsChain.prototype.replacementCallback = function(){
 
 EffectsChain.prototype.load = function(chainSettings){
 	chainSettings.forEach(function(effectSettings){
-		var self = this;
+		var self = this;			
 		DelayedLoad.loadScript('effects', effectSettings.handle, function(){
 			var newEffect = new window[effectSettings.handle](self.ctx, self.replacementCallback());
 			newEffect.load(effectSettings);
