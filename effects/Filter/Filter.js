@@ -53,7 +53,11 @@ Filter.ENVELOPE_ATTRIBUTES = {
 Filter.FILTER_TYPES = {
 	lowpass: "Low Pass",
 	highpass: "High Pass",
-	bandpass: "Band Pass"
+	bandpass: "Band Pass",
+	lowshelf: "Low Shelf",
+	highshelf: "High Shelf",
+	peaking: "Peaking",
+	notch: "Notch"
 };
 
 

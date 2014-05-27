@@ -59,11 +59,9 @@ EffectsChain.prototype.insert = function(effect, idx){
 		return this.push(effect);
 	}
 
-	if( idx !== 0 ){
-		var prevEffect = this.get(idx-1);
-		prevEffect.output.disconnect();
-		prevEffect.output.connect(effect.input);
-	}
+	var prevEffect = this.get(idx-1);
+	prevEffect.output.disconnect();
+	prevEffect.output.connect(effect.input);
 	
 	var nextEffect = this.get(idx+1);
 	effect.output.connect(nextEffect.input);
@@ -79,11 +77,9 @@ EffectsChain.prototype.remove = function(idx){
 	}
 	
 	var nextEffect = this.get(idx+1);
-	if( idx !== 0 ){
-		var prevEffect = this.get(idx-1);
-		prevEffect.output.disconnect();
-		prevEffect.output.connect(nextEffect.input);
-	}
+	var prevEffect = this.get(idx-1);
+	prevEffect.output.disconnect();
+	prevEffect.output.connect(nextEffect.input);
 	
 	this.chain.splice(idx, 1);
 };
