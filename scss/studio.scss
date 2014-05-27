@@ -7,6 +7,7 @@ $drawer_font: "kiroregular, sans-serif";
 $interface_font: "kiroregular, sans-serif";
 
 $drawer_width: 300px;
+$ds_element_padding: 7px;
 
 $track_width: 19px;
 $circuit_padding: 10px;
@@ -196,14 +197,14 @@ a{
                 border-bottom: 1px solid white;
                 .ds_heading{
                     background-color: #333;
-                    padding: 7px;
                     font-size: 14px;
+                    overflow: hidden;
                 }
                 .ds_body{
                     .drawer_division{
                         border-top: 1px solid #aaa;
                         .dd_heading{
-                            padding:7px;
+                            overflow: hidden;
                             background-color: #333;
                             font-size: 11px;
                         }
@@ -215,6 +216,16 @@ a{
                         }
                     }
                 }
+            }
+            .heading_text{
+                padding: $ds_element_padding;
+                cursor: pointer;
+            }
+            .heading_button{
+                padding: $ds_element_padding;
+                min-width: 10px;
+                text-align: center;
+                cursor: pointer;
             }
         }
     }
