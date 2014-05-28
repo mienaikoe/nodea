@@ -2,31 +2,39 @@ var DrawerUtils = {
 	createSection: function(container, title, className){
 		className = className ? className : '';
 		var drawerSection = $("<div/>", {class: "drawer_section toggle"}).appendTo(container);
-		$("<div/>", {class: "ds_heading toggler", text: '>> '+title}).appendTo(drawerSection);
+		var sectionHeader = $("<div/>", {class: "ds_heading"}).appendTo(drawerSection);
+		$("<div/>", {class: "heading_text sinistra toggler", text: '>> '+title}).appendTo(sectionHeader);
 		return $("<div/>", {class: "ds_body togglee "+className}).appendTo(drawerSection);
 	},
 	
 	makeSectionAddable: function(sectionBody, adderCallback){
 		var heading = $(sectionBody).siblings(".ds_heading").first();
-		$("<span/>",{class: 'dextra', text: '+'}).appendTo(heading).click(function(ev){
-			ev.stopPropagation();
-			adderCallback();
-		});
+		var hoverFunc = function(){ $(this).toggleClass("hover"); };
+		$("<div/>",{class: 'heading_button dextra', text: '+'}).appendTo(heading)
+			.hover(hoverFunc, hoverFunc)
+			.click(function(ev){
+				ev.stopPropagation();
+				adderCallback();
+			});
 	},
 
 	createDivision: function(section, title, className){
 		className = className ? className : '';
 		var drawerDivision = $("<div/>", {class: "drawer_division toggle"}).appendTo(section);
-		$("<div/>", {class: "dd_heading toggler", text: '>> '+title}).appendTo(drawerDivision);
+		var divisionHeader = $("<div/>", {class: "dd_heading"}).appendTo(drawerDivision);
+		$("<div/>", {class: "heading_text sinistra toggler", text: '>> '+title}).appendTo(divisionHeader);
 		return $("<div/>", {class: "dd_body togglee "+className}).appendTo(drawerDivision);
 	},
 	
 	makeDivisionRemovable: function(sectionBody, removerCallback){
 		var heading = $(sectionBody).siblings(".dd_heading").first();
-		$("<span/>",{class: 'dextra', text: '\u00d7'}).appendTo(heading).click(function(ev){
-			ev.stopPropagation();
-			removerCallback();
-		});
+		var hoverFunc = function(){ $(this).toggleClass("hover"); };
+		$("<div/>",{class: 'heading_button dextra', text: '\u00d7'}).appendTo(heading)
+			.hover(hoverFunc, hoverFunc)
+			.click(function(ev){
+				ev.stopPropagation();
+				removerCallback();
+			});
 	},
 
 	activateDrawerToggles: function(drawer){

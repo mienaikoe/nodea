@@ -64,7 +64,8 @@ body, html{
 
 .toggler{
     cursor: pointer;
-    &.hover{
-        color: #fea;
-    }
+}
+
+.hover{
+    color: #fea;
 }

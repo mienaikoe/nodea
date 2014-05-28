@@ -108,22 +108,26 @@ Circuit.prototype.generateGeneralDivision = function(divisionBody){
 Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 	var self = this;
 	$.get("circuits/"+this.handle+"/"+this.handle+".html",null,function(data){
-		var circuitBody = $(data).appendTo(divisionBody);
-		$(circuitBody).
+		self.circuitBody = $(data).appendTo(divisionBody);
+		self.circuitBody.
 			keydown(    function(ev){ ev.stopPropagation(); }).
 			keyup(      function(ev){ ev.stopPropagation(); });
 	
-		self.generateCircuitBody.call(self,circuitBody);
+		self.generateCircuitBody.call(self,self.circuitBody);
 	});
 };
 
 Circuit.prototype.generateCircuitBody = function(circuitBody){	
 };
 
+Circuit.prototype.isDisplaying = function(){
+	return this.circuitBody && this.circuitBody.closest("html").length > 0;
+};
 
 
 
 
+// Note Manipulation
 
 Circuit.prototype.addNoteNoUndo = function(note){
 	if( note !== null ){
@@ -152,8 +156,8 @@ Circuit.prototype.deleteNoteNoUndo = function(note){
 	if( idx !== -1 ){
 		this.notes.splice(idx, 1);
 		if(note.container){ 
-			note.container.remove(); 
-			note.container = null; 
+			note.container.remove();
+			note.container = null;
 		}
 	}
 };

@@ -59,11 +59,9 @@ EffectsChain.prototype.insert = function(effect, idx){
 		return this.push(effect);
 	}
 
-	if( idx !== 0 ){
-		var prevEffect = this.get(idx-1);
-		prevEffect.output.disconnect();
-		prevEffect.output.connect(effect.input);
-	}
+	var prevEffect = this.get(idx-1);
+	prevEffect.output.disconnect();
+	prevEffect.output.connect(effect.input);
 	
 	var nextEffect = this.get(idx+1);
 	effect.output.connect(nextEffect.input);
@@ -79,11 +77,9 @@ EffectsChain.prototype.remove = function(idx){
 	}
 	
 	var nextEffect = this.get(idx+1);
-	if( idx !== 0 ){
-		var prevEffect = this.get(idx-1);
-		prevEffect.output.disconnect();
-		prevEffect.output.connect(nextEffect.input);
-	}
+	var prevEffect = this.get(idx-1);
+	prevEffect.output.disconnect();
+	prevEffect.output.connect(nextEffect.input);
 	
 	this.chain.splice(idx, 1);
 };
@@ -165,14 +161,13 @@ EffectsChain.prototype.replacementCallback = function(){
 
 EffectsChain.prototype.load = function(chainSettings){
 	chainSettings.forEach(function(effectSettings){
-		if( window[effectSettings.type] ){
-			var self = this;
-			DelayedLoad.load('effects', effectSettings.type, function(){
-				var newEffect = new window[effectSettings.type](self.ctx, self.replacementCallback());
-				newEffect.load(effectSettings);
-				self.push( newEffect );
-			});
-		}
+		var self = this;			
+		DelayedLoad.loadScript('effects', effectSettings.handle, function(){
+			var newEffect = new window[effectSettings.handle](self.ctx, self.replacementCallback());
+			newEffect.load(effectSettings);
+			self.push( newEffect );
+			self.rerender();
+		});
 	}, this);
 };
 
@@ -182,29 +177,27 @@ EffectsChain.prototype.loadDefault = function(){
 
 
 EffectsChain.prototype.replaceEffect = function( oldEffect, newHandle ){
-	if( !window[newHandle] ){
-		console.error("Invalid Effect Handle "+newHandle);
-		return;
-	}
-	
-	var idx = this.chain.indexOf(oldEffect);
-	if( idx === -1 ){
-		console.error("Could not find old effect in chain");
-		return;
-	}
-	
-	oldEffect.output.disconnect(0);
-	
-	var newEffect = new window[newHandle](this.ctx, this.replacementCallback());
-	this.chain[idx] = newEffect;
-	
-	var prevEffect = this.get(idx-1);
-	prevEffect.output.disconnect(0);
-	prevEffect.output.connect(newEffect.input);
-	
-	var nextEffect = this.get(idx+1);
-	newEffect.output.connect(nextEffect.input);
-	
-	this.rerender();
-	studio.invalidateSavedStatus();
+	var self = this;
+	DelayedLoad.loadScript('effects', newHandle, function(){
+		var idx = self.chain.indexOf(oldEffect);
+		if( idx === -1 ){
+			console.error("Could not find old effect in chain");
+			return;
+		}
+
+		oldEffect.output.disconnect(0);
+
+		var newEffect = new window[newHandle](self.ctx, self.replacementCallback());
+		self.chain[idx] = newEffect;
+
+		var prevEffect = self.get(idx-1);
+		prevEffect.output.disconnect(0);
+		prevEffect.output.connect(newEffect.input);
+
+		var nextEffect = self.get(idx+1);
+		newEffect.output.connect(nextEffect.input);
+
+		self.rerender();
+		studio.invalidateSavedStatus();
+	});
 };

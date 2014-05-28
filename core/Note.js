@@ -214,3 +214,53 @@ Note.prototype.newFinish = function( newFinish ){
 		function(){self.newFinishNoUndo(newFinish);}
 	);
 };
+
+
+
+// Cut-Copy-Paste
+Note.clipboard = [];
+
+Note.cutSelected = function(){
+	Note.clipboard = [];
+	var earliestStart = null;
+	Note.selecteds.forEach(function(note){
+		if( earliestStart === null ){
+			earliestStart = note.start;
+		} else if(note.start < earliestStart ) {
+			earliestStart = note.start;
+		}
+		note.circuit.deleteNote(note);
+		Note.clipboard.push(note);
+	});
+	Note.clipboardStart = earliestStart;
+};
+
+Note.copySelected = function(){
+	Note.clipboard = [];
+	var earliestStart = null;
+	Note.selecteds.forEach(function(note){
+		if( earliestStart === null ){
+			earliestStart = note.start;
+		} else if(note.start < earliestStart ) {
+			earliestStart = note.start;
+		}
+		Note.clipboard.push(note.clone());
+	});
+	Note.clipboardStart = earliestStart;
+};
+
+Note.prototype.clone = function(){
+	return new Note(this);
+};
+
+Note.pasteClipboard = function(location){
+	var offset = location - Note.clipboardStart;
+	var newClipboard = [];
+	Note.clipboard.forEach(function(note){
+		newClipboard.push(note.clone());
+		note.start += offset;
+		note.finish += offset;
+		note.circuit.addNote(note);
+	}, this);
+	Note.clipboard = newClipboard;
+};

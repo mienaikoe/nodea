@@ -16,6 +16,18 @@ function Effect(ctx, effectReplacementCallback) {
 
 
 
+Effect.prototype.createSlider = function(key, attributes, value, changer, division){
+	var self = this;
+	var sliderBox = $("<div>",{class:"envelope_slider"}).appendTo(division);
+	$("<label>"+key+"</label>").appendTo(sliderBox);
+	$("<input/>", $.extend({type:'range', value: value, id: 'slider_'+key}, attributes)).
+		appendTo(sliderBox).
+		change(function(){
+			changer.call(self, key, parseFloat(this.value));
+		});
+};
+
+
 
 Effect.prototype.render = function(divisionBody, type) {
 	var selector = $("<select/>").appendTo(divisionBody);
@@ -44,10 +56,22 @@ Effect.prototype.stop = function(now) {
 	return 0;
 };
 
+Effect.prototype.marshal = function(){
+	return {
+		handle: this.constructor.name
+	};
+};
+
+Effect.prototype.load = function(settings){
+	for( envParam in settings ){
+		this[envParam] = settings[envParam];
+	}
+};
+
 
 
 // TODO: Mark that Envelope is exclusively for circuits
 Effect.effectsManifest = {
-	machines: [""],
-	circuits: ["","Envelope"]
+	machines: ["","Compressor","Reverb","Delay"],
+	circuits: ["","Compressor","Reverb","Delay","Leveler","Filter"]
 };

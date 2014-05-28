@@ -10,14 +10,7 @@ function Oscillator(ctx, machine, marshaledCircuit, destination, circuitReplacem
 	 */
 };
 
-
-// This Inherits the prototype of Circuit
-Oscillator.prototype = Object.create(Circuit.prototype, {
-	constructor: { 
-		value: Oscillator, // Change This to your Circuit Handle
-		enumerable: false 
-	}
-});
+Oscillator.extends(Circuit);
 
 
 Oscillator.prototype.extractSettings = function(settings){
@@ -43,7 +36,14 @@ Oscillator.prototype.extractSettings = function(settings){
 	}
 };
 
-
+Oscillator.prototype.repitch = function(frequency){
+	if( this.isDisplaying() ){
+		this.circuitBody.find("#Oscillator-Frequency").val(frequency).change();
+	} else {
+		this.frequency = frequency;
+	}
+	this.resetOscillators();
+};
 
 
 

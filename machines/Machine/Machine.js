@@ -51,21 +51,37 @@ Machine.prototype.extractSettings = function(settings){
 
 Machine.prototype.extractCircuits = function(marshaledCircuits){
 	var nodeRowClass = "sinistra";
-	this.studio.keyset.forEach(function(keySetRow){
-		var keyRow = jQuery('<div/>',{class: 'circuitRow '+nodeRowClass}).appendTo(this.circuitsContainer);
-		keySetRow.forEach(function(keySetKey){
-			// Bad Hack: Fills out Containers so incoming containers can have proper placement.
-			$("<spiv/>").appendTo(keyRow);
-			
-			var marshaledCircuit = marshaledCircuits[keySetKey];
-			if( !marshaledCircuit ){
-				marshaledCircuit = { id: null, ordinal: keySetKey, handle: "Circuit", notes: [] };
+	var keyRow;
+	this.studio.keyset.domOrder.forEach(function(keySetKey, idx){
+		var rowKeyIndex = idx%15;
+		if( rowKeyIndex === 0 ){
+			keyRow = jQuery('<div/>',{class: 'circuitRow '+nodeRowClass}).appendTo(this.circuitsContainer);
+		}
+		
+		var marshaledCircuit = marshaledCircuits[keySetKey];
+		if( !marshaledCircuit ){
+			marshaledCircuit = this.defaultCircuit(keySetKey);
+		}
+		marshaledCircuit.keyRow = keyRow;
+		if(marshaledCircuit.handle === 'Function'){
+			marshaledCircuit.handle = "Circuit";
+		}
+		
+
+		this.initializeCircuit(marshaledCircuit, function(newCircuit){
+			var thisKeyRow = marshaledCircuit.keyRow;
+			if( rowKeyIndex >= thisKeyRow.children().length ){
+				newCircuit.container.appendTo(thisKeyRow);
+			} else {
+				newCircuit.container.insertBefore(thisKeyRow.find(".circuit").get(rowKeyIndex-1));
 			}
-			
-			this.initializeCircuit(marshaledCircuit);
-		}, this);
+		});
 		nodeRowClass = nodeRowClass === 'sinistra' ? 'dextra' : 'sinistra';
 	}, this);
+};
+
+Machine.prototype.defaultCircuit = function(ordinal){
+	return { id: null, ordinal: ordinal, handle: "Circuit", notes: [] };
 };
 
 
@@ -75,7 +91,7 @@ Machine.prototype.initializeCircuit = function(marshaledCircuit, callback){
 	}
 	
 	var self = this;
-	DelayedLoad.load("circuits", marshaledCircuit.handle, function(){
+	DelayedLoad.loadScript("circuits", marshaledCircuit.handle, function(){
 		var newCircuit = self.eagerInitializeCircuit(marshaledCircuit);
 		callback.call(self, newCircuit);
 	});
@@ -101,18 +117,6 @@ Machine.prototype.eagerInitializeCircuit = function(marshalledCircuit){
 	});
 	
 	this.circuits[marshalledCircuit.ordinal] = circuit;
-	
-	var keyRowPosition = 0;
-	var keyPosition = 0;
-	for( idx in this.studio.keyset ){
-		keyRowPosition = idx;
-		var keysetRow = this.studio.keyset[idx];
-		keyPosition = keysetRow.indexOf(marshalledCircuit.ordinal);
-		if( keyPosition !== -1 ){
-			break;
-		}
-	}	
-	this.circuitsContainer.children().eq(keyRowPosition).children().eq(keyPosition).replaceWith(circuit.container);
 		
 	var self = this;
 	circuit.container.
@@ -131,13 +135,13 @@ Machine.prototype.eagerInitializeCircuit = function(marshalledCircuit){
 
 
 Machine.prototype.replaceCircuit = function( oldCircuit, newHandle ){
-	var persistedNoda = oldCircuit.persistedNoda;
-	persistedNoda.handle = newHandle;
+	var marshaledCircuit = oldCircuit.marshal();
+	marshaledCircuit.handle = newHandle;
 	
 	var self = this;
-	this.initializeCircuit( persistedNoda, function(newCircuit){
-		self.circuits[oldCircuit.ordinal] = newCircuit;
+	this.initializeCircuit( marshaledCircuit, function(newCircuit){
 		newCircuit.swytche.click();
+		oldCircuit.container.replaceWith(newCircuit.container);
 		self.studio.invalidateSavedStatus();
 	});
 };
@@ -163,8 +167,8 @@ Machine.prototype.circuitOn = function( ordinal ){
 	}
 	
 	if( this.studio.recording ){
-		circuit.on(this.pixelFor(Date.now()));
-		this.recordingNodas.push(circuit);
+		circuit.on(this.studio.pixelFor(Date.now()));
+		this.studio.recordingNodas.push(circuit);
 	} else {
 		circuit.on();
 	}
@@ -180,9 +184,10 @@ Machine.prototype.circuitOff = function( ordinal ){
 	}
 	
 	if( this.studio.recording ){
-		circuit.off(this.location);
+		circuit.off(this.studio.location);
 		this.invalidateSavedStatus();
-		this.recordingNodas.splice(this.recordingNodas.indexOf(circuit), 1);
+		var recordingNodas = this.studio.recordingNodas;
+		recordingNodas.splice(recordingNodas.indexOf(circuit), 1);
 	} else {
 		circuit.off();
 	}
@@ -236,17 +241,21 @@ Machine.prototype.generateGeneralDivision = function(divisionBody){
 
 Machine.prototype.generateMachineDivision = function(divisionBody) {
 	var self = this;
-	$.get("circuits/"+this.handle+"/"+this.handle+".html",null,function(data){
-		var machineBody = $(data).appendTo(divisionBody);
-		$(machineBody).
+	$.get("machines/"+this.handle+"/"+this.handle+".html",null,function(data){
+		self.machineBody = $(data).appendTo(divisionBody);
+		self.machineBody.
 			keydown(    function(ev){ ev.stopPropagation(); }).
 			keyup(      function(ev){ ev.stopPropagation(); });
 	
-		self.generateMachineBody.call(self,machineBody);
+		self.generateMachineBody.call(self, self.machineBody);
 	});
 };
 
 Machine.prototype.generateMachineBody = function(machineBody){	
+};
+
+Machine.prototype.isDisplaying = function(){
+	return this.machineBody && this.machineBody.closest("html").length > 0;
 };
 
 
@@ -283,18 +292,31 @@ Machine.prototype.swytcheSelected = function(ordinal){
 
 
 
+
+
+Machine.prototype.invalidateSavedStatus = function(){
+	this.studio.invalidateSavedStatus();
+};
+
 Machine.prototype.marshal = function(){
 	var ret= {
 		ascii: this.ascii,
 		handle: this.constructor.name,
-		circuits: {},
+		circuits: this.marshalCircuits(),
 		settings: this.marshalSettings()
 	};
 	
+	return ret;
+};
+
+Machine.prototype.marshalCircuits = function(){
+	ret = {};
 	for( key in this.circuits ){
-		ret.circuits[key] = this.circuits[key].marshal();
+		var circuit = this.circuits[key];
+		if(circuit.handle !== "Circuit"){
+			ret[key] = this.circuits[key].marshal();
+		}
 	}
-	
 	return ret;
 };
 

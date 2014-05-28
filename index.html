@@ -5,36 +5,36 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         
-        <!--  <link href="css/application.css" media="all" rel="stylesheet" /> -->
-        <link href="css/basics.css" media="all" rel="stylesheet" />
+        <!-- Third Party Assets -->
+        <link href="fonts/kiroregular/stylesheet.css" media="all" rel="stylesheet" />
+        <link href="fonts/gudea/stylesheet.css" media="all" rel="stylesheet" />
+	<script src="lib/jquery-2.1.0.min.js"></script>
+		
+        <!-- Poly Fill That -->
+        <script src="core/NodeaPolyfill.js"></script>
+        
+        <!-- CSS -->
+	<link href="css/basics.css" media="all" rel="stylesheet" />
         <link href="css/studio.css" media="all" rel="stylesheet" />
+        <link href="effects/Effects.css" media="all" rel="stylesheet" /> 
 
-        <script src="lib/jquery-2.1.0.min.js"></script>
+        <!-- Effect Assets -->
+        <script src="effects/EffectsChain.js"></script>
+        <script src="effects/Effect/Effect.js"></script>
+        <script src="effects/Leveler/Leveler.js"></script>
+	<!-- TODO: Delayed Load These -->
 
         <!-- Core Scripts -->
-        <script src="core/DrawerUtils.js"></script>
+        <script src="circuits/Circuit/Circuit.js"></script>
+        <script src="machines/Machine/Machine.js"></script>
+	<script src="core/DrawerUtils.js"></script>
         <script src="core/Metronome.js"></script>
         <script src="core/Note.js"></script>
         <script src="core/UndoList.js"></script>
         <script src="core/DelayedLoad.js"></script>
-
-        <!-- Effect Scripts -->
-        
-        <script src="effects/EffectsChain.js"></script>
-        <script src="effects/Effect/Effect.js"></script>
-        <script src="effects/Envelope/Envelope.js"></script>
-        <link href="effects/Envelope/Envelope.css" media="all" rel="stylesheet" /> 
-
-        <!-- Is Base of All Circuits, so Needs to Be Loaded beforehand -->
-        <script src="circuits/Circuit/Circuit.js"></script>
-
-        <!-- Is Base of All Machines, so Needs to Be Loaded beforehand -->
-        <script src="machines/Machine/Machine.js"></script>
-
-        <!-- Main Script -->
+        <script src="core/Scales.js"></script>
         <script src="core/NodeaStudio.js"></script>
         
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     </head>
     <body>
 
@@ -274,6 +274,22 @@
             $(function() {
                 studio = new NodeaStudio(document.getElementById("editor"), project);
             });</script>
+        
+        
+        <!-- Nota.io tie -->
+        <script type="text/javascript">
+            var _NOTA = {
+                project: "92243eed-e45c-461f-b642-42810381df45",
+                projectProtocol: "http",
+                appDomain: "beta.nota.io"
+            };
+
+            (function() {;
+                var n = document.createElement("script"); n.type = "text/javascript"; n.async = true;
+                n.src = ("https:" === document.location.protocol ? "https://" : "http://") + "beta.nota.io/scripts/build/client/client.bootstrap.js";
+                var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(n, s);
+            })();
+         </script>
 
     </body>
 </html>

@@ -1,36 +1,7 @@
-//= require_tree .
 
-var assert = function(obj){
-	return (typeof(obj) !== 'undefined' && obj !== null);
-};
 
-window.requestAnimationFrame = 
-		window.requestAnimationFrame || 
-		window.webkitRequestAnimationFrame || 
-		window.mozRequestAnimationFrame ||
-		window.msRequestAnimationFrame;
-		
-window.AudioContext = 
-		window.AudioContext || 
-		window.webkitAudioContext;
-
-window.AudioContext.prototype.createGainNode =
-		window.AudioContext.prototype.createGainNode || 
-		window.AudioContext.prototype.createGain;
-
-if( !window.requestAnimationFrame || !window.AudioContext ){
-	alert("It looks like your browser doesn't support this application. Please try a more modern Browser.");
-}
-
-navigator.vibrate = 
-		navigator.vibrate || 
-		navigator.webkitVibrate || 
-		navigator.mozVibrate || 
-		navigator.msVibrate ||
-		function(duration){};
-
-DelayedLoad.loadeds["circuits:Circuit"] = [];
-DelayedLoad.loadeds["machines:Machine"] = [];
+DelayedLoad.loadedScripts["circuits:Circuit"] = [];
+DelayedLoad.loadedScripts["machines:Machine"] = [];
 
 
 
@@ -40,6 +11,7 @@ function NodeaStudio(editorContainer, project) {
 	
 	// TODO: Don't know if i should add some global filters or effects to this and have those be configurable as well.
 	this.ctx = new AudioContext(); 
+	DelayedLoad.ctx = this.ctx;
 	
 	// Create space for Circuit-Specific Styles
 	this.circuitStylesheet = document.createElement('style');
@@ -88,15 +60,12 @@ function NodeaStudio(editorContainer, project) {
 	// === Setup Swytches & Tracks ===
 	this.nodas = [];
 	this.keyset = this.keySets[this.keysetName];
-	this.flatKeyset = this.keyset.reduce(function(a, b) {
-		return a.concat(b);
-	});
 	
 	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
 	this.swytchesContainer = $(this.instrumentationContainer).find("#swytches");	
 	this.tracks = {};
 	this.swytches = {};
-	this.flatKeyset.forEach(function(ordinal){
+	this.keyset.domOrder.forEach(function(ordinal){
 		this.swytches[ordinal] = jQuery('<spiv/>',{class: 'trackSwitch', html: String.fromCharCode(ordinal)}).
 				appendTo(this.swytchesContainer).click(function(ev){
 					self.selectedMachine.swytcheSelected(ordinal);
@@ -110,17 +79,30 @@ function NodeaStudio(editorContainer, project) {
 	
 	// === Instantiate Machines ===
 	this.machineContainer = $(this.instrumentationContainer).find("#machines");
+	for( var i=0; i<10; i++){
+		$("<div class='placeholder machine'></div>").appendTo(self.machineContainer);
+	}
 	this.circuitsContainer = $(this.instrumentationContainer).find("#circuits");
 	this.machines = {};
-	this.machineSet.forEach(function(tabDefinition){
+	for( ascii in NodeaStudio.MACHINE_SET ) {
+		var tabDefinition = NodeaStudio.MACHINE_SET[ascii];
 		var marshaledMachine;
 		if( project.machines && tabDefinition.ascii in project.machines ){
 			marshaledMachine = project.machines[tabDefinition.ascii];
 		} else {
 			marshaledMachine = {handle: "Machine"}; //new Machine(this.ctx, tabDefinition, this, {});
 		}
-		this.initializeMachine(tabDefinition, marshaledMachine);
-	}, this);
+		this.initializeMachine(tabDefinition, marshaledMachine, function(machine){
+			var tabIndex = NodeaStudio.MACHINE_SET[machine.ascii].order;
+			var placeholder = self.machineContainer.find(".machine").get(tabIndex);
+			$(placeholder).replaceWith(machine.tab);
+			machine.circuitsContainer.appendTo(self.circuitsContainer);
+			if(machine.ascii === NodeaStudio.defaultMachineCode){
+				self.selectMachine(NodeaStudio.defaultMachineCode);
+				machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
+			}
+		});
+	}
 	
 	
 	
@@ -237,17 +219,17 @@ function NodeaStudio(editorContainer, project) {
 
 NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMachine, callback){
 	var self = this;
-	DelayedLoad.load('machines', marshaledMachine.handle, function(){
+	if(marshaledMachine.handle === 'Function'){
+		marshaledMachine.handle = "Machine";
+	} else if(marshaledMachine.handle === ''){
+		marshaledMachine.handle = 'Machine';
+	}
+	DelayedLoad.loadScript('machines', marshaledMachine.handle, function(){
 		machineConstructor = window[marshaledMachine.handle];
 		var machine = new machineConstructor(self.ctx, tabDefinition, self, marshaledMachine, function(oldMachine, newHandle){
 			 self.replaceMachine(oldMachine, newHandle);
 		});
-		machine.tab.appendTo(self.machineContainer);
-		machine.circuitsContainer.appendTo(self.circuitsContainer);
 		self.machines[tabDefinition.ascii] = machine;
-		if(machine.ascii === NodeaStudio.defaultMachineCode){
-			self.selectMachine(NodeaStudio.defaultMachineCode);
-		}
 		if(callback){
 			callback.call(this, machine);
 		}
@@ -261,12 +243,18 @@ NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMach
 // External Startup Functions
 
 NodeaStudio.prototype.replaceMachine = function( oldMachine, newHandle ){
-	var marshaledMachine = oldMachine.marshaledMachine;
-	var tabDefinition = NodeaStudio.machineSet[oldMachine.ascii];
+	var marshaledMachine = oldMachine.marshal();
+	var tabDefinition = NodeaStudio.MACHINE_SET[oldMachine.ascii];
 	marshaledMachine.handle = newHandle;
 	
 	var self = this;
-	this.initializeMachine( tabDefinition, marshaledMachine, function(newMachine){
+	this.initializeMachine( tabDefinition, marshaledMachine, function(machine){
+		oldMachine.tab.replaceWith(machine.tab);
+		oldMachine.circuitsContainer.replaceWith(machine.circuitsContainer);
+		if( self.selectedMachine === oldMachine ){
+			self.selectMachine(machine.ascii);
+			machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
+		}
 		self.invalidateSavedStatus();
 	});
 };
@@ -617,23 +605,19 @@ NodeaStudio.prototype.startSelectBox = function(x, y){
 		var noteFinishBound = ideasHeight - newTop;
 		var noteStartBound = noteFinishBound - newHeight;
 		
-		self.flatKeyset.forEach(function(ascii, idx){
+		self.keyset.domOrder.forEach(function(ascii, idx){
 			if(idx < firstTrackIndex || idx > lastTrackIndex){ 
-				for( key in self.machines ){
-					self.machines[key].circuits[ascii].notes.forEach(function(note){
-						note.unselect();
-					}, self);
-				}
+				self.selectedMachine.circuits[ascii].notes.forEach(function(note){
+					note.unselect();
+				}, self);
 			} else {
-				for( key in self.machines ){
-					self.machines[key].circuits[ascii].notes.forEach(function(note){
-						if(note.start >= noteStartBound && note.finish <= noteFinishBound){
-							note.select();
-						} else {
-							note.unselect();
-						}
-					}, self);
-				}
+				self.selectedMachine.circuits[ascii].notes.forEach(function(note){
+					if(note.start >= noteStartBound && note.finish <= noteFinishBound){
+						note.select();
+					} else {
+						note.unselect();
+					}
+				}, self);
 			}
 		}, self);
 	}).mouseup(function(ev_up){
@@ -696,7 +680,7 @@ NodeaStudio.prototype.save = function(){
 			setTimeout(function(){ $('#save').removeClass('kosher'); }, 3000 );
 		} catch (ex) {
 			$('#save').removeClass('active').addClass('warning');
-			console.error(ex);
+			console.error(ex.stack);
 			alert("Save Failed. Please let me know about this.", ex);
 		}
 	}
@@ -733,9 +717,9 @@ NodeaStudio.prototype.notify = function(words, errorMessage){
 
 
 NodeaStudio.prototype.deleteNote = function(note){
-	if(note.noda){
+	if(note.circuit){
 		note.removeContainer();
-		note.noda.deleteNote(note);
+		note.circuit.deleteNote(note);
 		this.invalidateSavedStatus();
 	}
 };
@@ -748,7 +732,9 @@ NodeaStudio.prototype.deleteNote = function(note){
 
 
 
-NodeaStudio.TRACK_WIDTH = 19; //px
+
+
+NodeaStudio.TRACK_WIDTH = 20; //px
 
 
 NodeaStudio.prototype.asciiKeys = [
@@ -772,37 +758,40 @@ NodeaStudio.prototype.keyCodeToAsciiMap = {
 	186: 59,	188: 44,	190: 46,	191: 47
 };
 
-NodeaStudio.prototype.machineSet = [
-	{ascii: 49, color: "#98C"},
-	{ascii: 50, color: "#89C"},
-	{ascii: 51, color: "#8BB"},
-	{ascii: 52, color: "#7B9"},
-	{ascii: 53, color: "#9B7"},
+NodeaStudio.MACHINE_SET = {
+	49: {ascii: 49, color: "#98C", order: 0},
+	50: {ascii: 50, color: "#89C", order: 1},
+	51: {ascii: 51, color: "#8BB", order: 2},
+	52: {ascii: 52, color: "#7B9", order: 3},
+	53: {ascii: 53, color: "#9B7", order: 4},
 
-	{ascii: 54, color: "#BC7"},
-	{ascii: 55, color: "#CB6"},
-	{ascii: 56, color: "#C96"},
-	{ascii: 57, color: "#C87"},
-	{ascii: 48, color: "#C78"}
-];
+	54: {ascii: 54, color: "#BC7", order: 5},
+	55: {ascii: 55, color: "#CB6", order: 6},
+	56: {ascii: 56, color: "#C96", order: 7},
+	57: {ascii: 57, color: "#C87", order: 8},
+	48: {ascii: 48, color: "#C78", order: 9}
+};
 
 
 NodeaStudio.prototype.keySets = {
-	desktop: [
-		// left letters
-		[113, 119, 101, 114, 116, 
-		 97,  115, 100, 102, 103, 
-		 122, 120, 99,  118, 98],
-
-		// right letters
-		[121, 117, 105, 111, 112, 
-		 104, 106, 107, 108, 59,  
-		 110, 109, 44,  46,  47]
-	]
+	desktop: {
+		domOrder: [
+			// left letters
+			113, 119, 101, 114, 116, 97,  115, 100, 102, 103, 122, 120, 99,  118, 98,
+			// right letters
+			121, 117, 105, 111, 112, 104, 106, 107, 108, 59, 110, 109, 44,  46,  47
+		],
+		chromaticOrder: [
+			122, 120, 99,  118, 98,	 110, 109, 44,  46,  47, // bottom row
+			97,  115, 100, 102, 103, 104, 106, 107, 108, 59, // mid row
+			113, 119, 101, 114, 116, 121, 117, 105, 111, 112 // top row
+		]
+	}
 };
 
 
 NodeaStudio.defaultMachineCode = 49;
+NodeaStudio.defaultCircuitCode = 113;
 
 
 NodeaStudio.prototype.eventControlMap = {
@@ -842,9 +831,9 @@ NodeaStudio.prototype.ctrlKeyControlMap = {
 	89: function(studio){ studio.undoList.redo(); },
 	
 	// ctrl-x
-	88: function(studio){ /*cut*/ },
+	88: function(studio){ Note.cutSelected(); },
 	// ctrl-c
-	67: function(studio){ /*copy*/ },
+	67: function(studio){ Note.copySelected(); },
 	// ctrl-v
-	86: function(studio){ /*paste*/ }
+	86: function(studio){ Note.pasteClipboard(studio.location); }
 };

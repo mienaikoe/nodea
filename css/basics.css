@@ -72,6 +72,7 @@ body, html {
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000365}}
 .toggler {
   cursor: pointer; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000367}}
-  .toggler.hover {
-    color: #fea; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000369}}
+.hover {
+  color: #fea; }
