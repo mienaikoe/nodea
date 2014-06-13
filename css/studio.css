@@ -44,7 +44,7 @@ a {
   right: 0px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003120}}
   #studio .drawer {
-    font-family: "kiroregular, sans-serif";
+    font-family: "kiroregular", "sans-serif";
     color: white;
     width: 300px;
     height: 100%;
@@ -146,7 +146,7 @@ a {
       cursor: pointer; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003239}}
   #studio #editor {
-    font-family: "kiroregular, sans-serif";
+    font-family: "kiroregular", "sans-serif";
     width: 601px;
     position: absolute;
     left: 310px;
@@ -276,12 +276,12 @@ a {
         width: 591px;
         padding: 5px 5px 0px;
         background-color: #222222;
-        font-family: "kiroregular, sans-serif";
+        font-family: "kiroregular", "sans-serif";
         vertical-align: middle; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003367}}
         #studio #editor #instrumentation #edit_controls .ditch {
           display: inline-block;
-          width: 9px;
+          width: 7px;
           height: 10px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003372}}
         #studio #editor #instrumentation #edit_controls .spacer {
