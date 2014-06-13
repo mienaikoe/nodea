@@ -39,3 +39,30 @@ Object.defineProperty(Object.prototype, 'extends', {
     },
     enumerable: false
 });
+
+
+// TODO: Make Audio Params for each vol, and the general vol
+AudioContext.prototype.createStereoGain = function(bufferSize) {
+	if (!bufferSize) {
+		bufferSize = 2048;
+	}
+
+	var node = this.createScriptProcessor(bufferSize);
+	node.channelVolumes = [0.8, 0.8];
+	node.setGain = function(value){
+		node.channelVolumes = [value,value];
+	};
+	node.onaudioprocess = function(ev) {
+		var inBuff = ev.inputBuffer;
+		var outBuff = ev.outputBuffer;
+		for (var channel = 0; channel < 2; channel++) {
+			var outData = outBuff.getChannelData(channel);
+			var inData = inBuff.getChannelData(channel);
+			for (var sample = 0; sample < inBuff.length; sample++) {
+				outData[sample] = channelVolumes[channel] * inData[sample];
+			}
+		}
+	};
+	
+	return node;
+};
