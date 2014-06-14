@@ -167,10 +167,9 @@ Oscillator.prototype.off = function(location) {
 	Circuit.prototype.off.call(this, location);
 	if( this.oscillator ){
 		var targetOsc = this.oscillator;
-		var curTime = this.ctx.currentTime;
-		var delayTime = this.chain.stop(curTime);
+		var delayTime = this.chain.stop(this.ctx.currentTime);
 		
-		this.scheduleCircuitStop(this.chain.start(this.ctx.currentTime), {oscillator: targetOsc});
+		this.scheduleCircuitStop(delayTime, {oscillator: targetOsc});
 		
 		var self = this;
 		window.setTimeout(function(){

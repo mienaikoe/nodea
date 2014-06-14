@@ -62,19 +62,14 @@ Machine.prototype.extractCircuits = function(marshaledCircuits){
 		if( !marshaledCircuit ){
 			marshaledCircuit = this.defaultCircuit(keySetKey);
 		}
-		marshaledCircuit.keyRow = keyRow;
+		marshaledCircuit.tempContainer = jQuery('<div/>',{class: 'circuit'}).appendTo(keyRow);
 		if(marshaledCircuit.handle === 'Function'){
 			marshaledCircuit.handle = "Circuit";
 		}
-		
 
-		this.initializeCircuit(marshaledCircuit, function(newCircuit){
-			var thisKeyRow = marshaledCircuit.keyRow;
-			if( rowKeyIndex >= thisKeyRow.children().length ){
-				newCircuit.container.appendTo(thisKeyRow);
-			} else {
-				newCircuit.container.insertBefore(thisKeyRow.find(".circuit").get(rowKeyIndex-1));
-			}
+		this.initializeCircuit(marshaledCircuit, function(newCircuit, marshaledCircuit){
+			marshaledCircuit.tempContainer.replaceWith(newCircuit.container);
+			delete marshaledCircuit.tempContainer;
 		});
 		nodeRowClass = nodeRowClass === 'sinistra' ? 'dextra' : 'sinistra';
 	}, this);
@@ -93,7 +88,7 @@ Machine.prototype.initializeCircuit = function(marshaledCircuit, callback){
 	var self = this;
 	DelayedLoad.loadScript("circuits", marshaledCircuit.handle, function(){
 		var newCircuit = self.eagerInitializeCircuit(marshaledCircuit);
-		callback.call(self, newCircuit);
+		callback.call(self, newCircuit, marshaledCircuit);
 	});
 };
 
@@ -139,7 +134,7 @@ Machine.prototype.replaceCircuit = function( oldCircuit, newHandle ){
 	marshaledCircuit.handle = newHandle;
 	
 	var self = this;
-	this.initializeCircuit( marshaledCircuit, function(newCircuit){
+	this.initializeCircuit( marshaledCircuit, function(newCircuit, marshaledCircuit){
 		newCircuit.swytche.click();
 		oldCircuit.container.replaceWith(newCircuit.container);
 		self.studio.invalidateSavedStatus();
