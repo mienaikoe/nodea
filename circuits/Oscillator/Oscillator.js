@@ -85,6 +85,7 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 Oscillator.prototype.addNote = function(note){
 	Circuit.prototype.addNote.call(this, note);
 	note.oscillator = this.allocateOscillator();
+	note.oscillator.connect(note.envelope);
 };
 Oscillator.prototype.deleteNote = function(note){
 	this.deallocateOscillator(note.oscillator);
@@ -95,7 +96,6 @@ Oscillator.prototype.allocateOscillator = function(){
 	var oscillator = this.ctx.createOscillator();
 	oscillator.type = this.signalType;
 	oscillator.frequency.value = this.frequency;
-	oscillator.connect(this.destination);
 	return oscillator;
 };
 
@@ -117,11 +117,15 @@ Oscillator.prototype.deallocateOscillator = function(osc){
  *			on this parameter.
  */
 Oscillator.prototype.scheduleCircuitStart = function(startWhen, note){
-	note.oscillator.start(startWhen + Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note));
+	var delayTime = Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note);
+	note.oscillator.start(startWhen + delayTime);
+	return delayTime;
 };
 
 Oscillator.prototype.scheduleCircuitStop = function(endWhen, note){
-	note.oscillator.stop(endWhen + Circuit.prototype.scheduleCircuitStop.call(this, endWhen, note));
+	var delayTime = Circuit.prototype.scheduleCircuitStop.call(this, endWhen, note);
+	note.oscillator.stop(endWhen + delayTime);
+	return delayTime;
 };
 
 Oscillator.prototype.pause = function(){
@@ -159,17 +163,20 @@ Oscillator.prototype.resetOscillators = function(){
 Oscillator.prototype.on = function(location) {
 	Circuit.prototype.on.call(this, location);
 	this.oscillator = this.allocateOscillator();
-	this.scheduleCircuitStart(this.chain.start(this.ctx.currentTime), {oscillator: this.oscillator});
+	this.envelope = this.allocateEnvelope();
+	this.oscillator.connect(this.envelope);
+	this.scheduleCircuitStart(this.ctx.currentTime, {oscillator: this.oscillator, envelope: this.envelope});
 };
 
 
 Oscillator.prototype.off = function(location) {
 	Circuit.prototype.off.call(this, location);
-	if( this.oscillator ){
+	if( this.oscillator && this.envelope ){
 		var targetOsc = this.oscillator;
-		var delayTime = this.chain.stop(this.ctx.currentTime);
+		var targetEnv = this.envelope;
 		
-		this.scheduleCircuitStop(delayTime, {oscillator: targetOsc});
+		//var delayTime = this.envelopeAttributes.release;
+		delayTime = this.scheduleCircuitStop(this.ctx.currentTime, {oscillator: targetOsc, envelope: targetEnv});
 		
 		var self = this;
 		window.setTimeout(function(){

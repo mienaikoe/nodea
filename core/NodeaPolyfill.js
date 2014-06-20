@@ -66,3 +66,10 @@ AudioContext.prototype.createStereoGain = function(bufferSize) {
 	
 	return node;
 };
+
+
+AudioNode.prototype.connectSuper = AudioNode.prototype.connect;
+AudioNode.prototype.connect = function(target){
+   console.log("Connecting "+this.toString()+" to "+target.toString());
+   AudioNode.prototype.connectSuper.call(this, target);
+};

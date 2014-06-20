@@ -29,12 +29,30 @@ function Circuit(ctx, machine, marshaledCircuit, destination, circuitReplacement
 	
 	this.notes = [];
 	this.recordingNote = null;
+			
+	this.envelopeAttributes = {};
+	for( key in Circuit.ENVELOPE_ATTRIBUTES){
+		this.envelopeAttributes[key] = Circuit.ENVELOPE_ATTRIBUTES[key].default;
+	}
+	this.envelopeAttributes.volume = Circuit.GAIN_ATTRIBUTES.volume.default;
 	
 	this.chain = new EffectsChain(this.ctx, destination, "circuits");
 	this.destination = this.chain.input;
 	
 	this.extractSettings(marshaledCircuit.settings);
 	this.extractNotes(marshaledCircuit.notes);	
+};
+
+
+Circuit.GAIN_ATTRIBUTES = {
+	volume:		{min: 0.00, max: 1.00, step: 0.05,	default: 0.80}
+};
+
+Circuit.ENVELOPE_ATTRIBUTES = {	
+	attack:		{min: 0.00, max: 2.00, step: 0.05,	default: 0.05},
+	decay:		{min: 0.00, max: 2.00, step: 0.05,	default: 0.05},
+	sustain:	{min: 0.00, max: 1.00, step: 0.05,	default: 0.20},
+	release:	{min: 0.00, max: 2.00, step: 0.05,	default: 0.10}
 };
 
 
@@ -56,6 +74,7 @@ Circuit.prototype.extractSettings = function(settings){
 Circuit.prototype.extractNotes = function(notes){
 	notes.forEach( function(persistedNote){ 
 		var studioNote = new Note(persistedNote);
+		studioNote.envelope = this.allocateEnvelope();
 		studioNote.circuit = this;
 		studioNote.createContainer().prependTo(this.trackline);
 		this.addNote(studioNote);
@@ -108,6 +127,7 @@ Circuit.prototype.generateGeneralDivision = function(divisionBody){
 Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 	var self = this;
 	$.get("circuits/"+this.handle+"/"+this.handle+".html",null,function(data){
+		self.generateEnvelopeBody(divisionBody);
 		self.circuitBody = $(data).appendTo(divisionBody);
 		self.circuitBody.
 			keydown(    function(ev){ ev.stopPropagation(); }).
@@ -116,6 +136,42 @@ Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 		self.generateCircuitBody.call(self,self.circuitBody);
 	});
 };
+
+Circuit.prototype.generateCircuitDivision = function(divisionBody){
+	for(key in Circuit.GAIN_ATTRIBUTES){
+		var attributes = Circuit.GAIN_ATTRIBUTES[key];
+		var changer = function(key, value){
+			this[key] = value;
+			studio.invalidateSavedStatus();
+		};
+		this.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
+	}
+	
+	$("<br>").appendTo(divisionBody);
+	
+	for(key in Circuit.ENVELOPE_ATTRIBUTES){
+		var attributes = Circuit.ENVELOPE_ATTRIBUTES[key];
+		var changer = function(key, value){
+			this[key] = value;
+			studio.invalidateSavedStatus();
+		};
+		this.createSlider(key, attributes, this[key], changer, divisionBody);
+	}
+};
+
+Circuit.prototype.createSlider = function(key, attributes, value, changer, division){
+	var self = this;
+	var sliderBox = $("<div>",{class:"envelope_slider"}).appendTo(division);
+	$("<label>"+key+"</label>").appendTo(sliderBox);
+	$("<input/>", $.extend({type:'range', value: value, id: this.id+'_slider_'+key}, attributes)).
+		appendTo(sliderBox).
+		change(function(){
+			changer.call(self, key, parseFloat(this.value));
+		});
+};
+
+
+
 
 Circuit.prototype.generateCircuitBody = function(circuitBody){	
 };
@@ -126,6 +182,12 @@ Circuit.prototype.isDisplaying = function(){
 
 
 
+Circuit.prototype.allocateEnvelope = function(){
+	var envelope = this.ctx.createGainNode();
+	envelope.gain.value = 0;
+	envelope.connect(this.destination); //Change this back before commit
+	return envelope;
+};
 
 // Note Manipulation
 
@@ -152,6 +214,7 @@ Circuit.prototype.addNote = function(note){
 
 
 Circuit.prototype.deleteNoteNoUndo = function(note){
+	note.envelope.disconnect(0);
 	var idx = this.notes.indexOf(note);
 	if( idx !== -1 ){
 		this.notes.splice(idx, 1);
@@ -193,11 +256,17 @@ Circuit.prototype.play = function(pixelsPerSecond, startingAt){
 
 
 Circuit.prototype.scheduleCircuitStart = function(startWhen, note){
+	var gain = note.envelope.gain;
+	var attributes = this.envelopeAttributes;
+	gain.setValueAtTime(gain.value, startWhen);
+	gain.linearRampToValueAtTime(attributes.volume, startWhen + attributes.attack);
+	gain.linearRampToValueAtTime(attributes.sustain*attributes.volume, startWhen + attributes.attack + attributes.decay);
 	return this.chain.start(startWhen);
 };
 
 Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
-	return this.chain.stop(endWhen);
+	note.envelope.gain.linearRampToValueAtTime(0.0, endWhen + this.envelopeAttributes.release);
+	return this.envelopeAttributes.release + this.chain.stop(endWhen);
 };
 
 
@@ -212,6 +281,7 @@ Circuit.prototype.pause = function(){
 Circuit.prototype.on = function(location) {
 	if(location){
 		this.recordingNote = new Note({start: location, circuit: this});
+		this.recordingNote.envelope = this.allocateEnvelope();
 		this.recordingNote.createContainer();
 		this.lightOn('recording');
 	} else {
