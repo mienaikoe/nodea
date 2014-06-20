@@ -29,17 +29,12 @@ function Circuit(ctx, machine, marshaledCircuit, destination, circuitReplacement
 	
 	this.notes = [];
 	this.recordingNote = null;
-			
-	this.envelopeAttributes = {};
-	for( key in Circuit.ENVELOPE_ATTRIBUTES){
-		this.envelopeAttributes[key] = Circuit.ENVELOPE_ATTRIBUTES[key].default;
-	}
-	this.envelopeAttributes.volume = Circuit.GAIN_ATTRIBUTES.volume.default;
-	
+				
 	this.chain = new EffectsChain(this.ctx, destination, "circuits");
 	this.destination = this.chain.input;
 	
 	this.extractSettings(marshaledCircuit.settings);
+	this.extractEnvelopeAttributes(marshaledCircuit.envelopeAttributes);
 	this.extractNotes(marshaledCircuit.notes);	
 };
 
@@ -70,6 +65,19 @@ Circuit.prototype.extractSettings = function(settings){
 		this.extractChain(settings);
 	}
 };
+
+Circuit.prototype.extractEnvelopeAttributes = function(envelopeAttributes){
+	if( envelopeAttributes === undefined || envelopeAttributes === null ){
+		this.envelopeAttributes = {};
+		for( key in Circuit.ENVELOPE_ATTRIBUTES){
+			this.envelopeAttributes[key] = Circuit.ENVELOPE_ATTRIBUTES[key].default;
+		}
+		this.envelopeAttributes.volume = Circuit.GAIN_ATTRIBUTES.volume.default;
+	} else {
+		this.envelopeAttributes = envelopeAttributes;
+	}
+};
+
 
 Circuit.prototype.extractNotes = function(notes){
 	notes.forEach( function(persistedNote){ 
@@ -358,6 +366,7 @@ Circuit.prototype.marshal = function(){
 		handle: this.handle,
 		ordinal: this.asciiCode,
 		notes: this.notes.map( function(note){return {start: note.start, finish: note.finish};} ),
+		envelopeAttributes: this.envelopeAttributes,
 		settings: this.marshalSettings()
 	};
 };
