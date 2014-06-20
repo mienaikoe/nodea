@@ -95,6 +95,7 @@ Circuit.prototype.generateDrawer = function(){
 	if( this.constructor !== Circuit ){
 		this.generateCircuitDivision(DrawerUtils.createDivision(circuitSection, this.handle));
 	}
+	this.generateEnvelopeDivision(DrawerUtils.createDivision(circuitSection, "Envelope"));
 	
 	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects") );
 	
@@ -127,7 +128,6 @@ Circuit.prototype.generateGeneralDivision = function(divisionBody){
 Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 	var self = this;
 	$.get("circuits/"+this.handle+"/"+this.handle+".html",null,function(data){
-		self.generateEnvelopeBody(divisionBody);
 		self.circuitBody = $(data).appendTo(divisionBody);
 		self.circuitBody.
 			keydown(    function(ev){ ev.stopPropagation(); }).
@@ -137,25 +137,23 @@ Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 	});
 };
 
-Circuit.prototype.generateCircuitDivision = function(divisionBody){
+Circuit.prototype.generateEnvelopeDivision = function(divisionBody){
 	for(key in Circuit.GAIN_ATTRIBUTES){
 		var attributes = Circuit.GAIN_ATTRIBUTES[key];
 		var changer = function(key, value){
-			this[key] = value;
+			this.envelopeAttributes[key] = value;
 			studio.invalidateSavedStatus();
 		};
 		this.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
 	}
 	
-	$("<br>").appendTo(divisionBody);
-	
 	for(key in Circuit.ENVELOPE_ATTRIBUTES){
 		var attributes = Circuit.ENVELOPE_ATTRIBUTES[key];
 		var changer = function(key, value){
-			this[key] = value;
+			this.envelopeAttributes[key] = value;
 			studio.invalidateSavedStatus();
 		};
-		this.createSlider(key, attributes, this[key], changer, divisionBody);
+		this.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
 	}
 };
 
@@ -185,7 +183,7 @@ Circuit.prototype.isDisplaying = function(){
 Circuit.prototype.allocateEnvelope = function(){
 	var envelope = this.ctx.createGainNode();
 	envelope.gain.value = 0;
-	envelope.connect(this.destination); //Change this back before commit
+	envelope.connect(this.destination);
 	return envelope;
 };
 
@@ -265,8 +263,9 @@ Circuit.prototype.scheduleCircuitStart = function(startWhen, note){
 };
 
 Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
-	note.envelope.gain.linearRampToValueAtTime(0.0, endWhen + this.envelopeAttributes.release);
-	return this.envelopeAttributes.release + this.chain.stop(endWhen);
+	var release = this.envelopeAttributes.release;
+	note.envelope.gain.linearRampToValueAtTime(0.0, endWhen + release);
+	return release + this.chain.stop(endWhen);
 };
 
 

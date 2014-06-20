@@ -1,8 +1,6 @@
 function Sampler(ctx, machine, marshaledCircuit, destination, circuitReplacementCallback) {
 	Circuit.call(this, ctx, machine, marshaledCircuit, destination, circuitReplacementCallback);
-	
-	this.dynamicNote = new Note({noda: this});
-	
+		
 	var self = this;
 	DelayedLoad.loadBuffer(this.bufferUrl, function(buffer){
 		self.buffer = buffer; 
@@ -65,6 +63,7 @@ Sampler.prototype.bindBufferToNotes = function(){
 	try{ 
 		this.notes.forEach(function(note){
 			note.source = this.allocateSource(); 
+			note.source.connect(note.envelope);
 		}, this);
 	} catch (exception) {
 		console.error("Error Allocating Source: ");
@@ -80,7 +79,6 @@ Sampler.prototype.deleteNote = function(note){ // not sure if needed
 Sampler.prototype.allocateSource = function(){
     var src = this.ctx.createBufferSource();
     src.buffer = this.buffer;
-    src.connect(this.destination);
     return src;
 };
 
@@ -96,25 +94,24 @@ Sampler.prototype.deallocateSource = function(src){
 
 
 Sampler.prototype.scheduleCircuitStart = function(startWhen, note){
-	startWhen += this.chain.start(startWhen);
-	note.source.start(startWhen);
-	note.started = startWhen; 	
+	var delayTime = Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note);
+	note.source.started = startWhen + delayTime; 	
+	note.source.start(note.source.started);
+	return delayTime;
 };
 
 Sampler.prototype.scheduleCircuitStop = function(endWhen, note){
+	var delayTime;
 	if(this.playEntire){
-		endWhen = note.started + this.buffer.duration;
-	} 
-	endWhen += this.chain.stop(endWhen);
-	
-	
-	var targetSrc = note.source;
-	targetSrc.stop(endWhen);
-			
-	var self = this;
-	window.setTimeout(function(){
-		self.deallocateSource(targetSrc);
-	}, endWhen*1000);
+		wholeEnd = note.source.started + this.buffer.duration;
+		Circuit.prototype.scheduleCircuitStop.call(this, wholeEnd - this.envelopeAttributes.release, note);
+		note.source.stop(wholeEnd);
+		delayTime = wholeEnd - endWhen;
+	} else {
+		delayTime = Circuit.prototype.scheduleCircuitStop.call(this, endWhen, note);
+		note.source.stop(endWhen + delayTime);
+	}
+	return delayTime;
 };
 
 Sampler.prototype.pause = function(){
@@ -131,6 +128,7 @@ Sampler.prototype.resetSources = function(){
 	this.notes.forEach(function(note){ 
 		this.deallocateSource(note.source); 
 		note.source = this.allocateSource(); 
+		note.source.connect(note.envelope);
 	}, this);
 };
 
@@ -142,16 +140,24 @@ Sampler.prototype.resetSources = function(){
 
 Sampler.prototype.on = function(location) {
 	Circuit.prototype.on.call(this, location);
-	this.dynamicNote.source = this.allocateSource();
-	this.scheduleCircuitStart(this.ctx.currentTime, this.dynamicNote);
+	this.source = this.allocateSource();
+	this.envelope = this.allocateEnvelope();
+	this.source.connect(this.envelope);
+	this.scheduleCircuitStart(this.ctx.currentTime, {source: this.source, envelope: this.envelope});
 };
 
 
 Sampler.prototype.off = function(location) {
 	Circuit.prototype.off.call(this, location);
-    if (this.dynamicNote.source) {
-		this.scheduleCircuitStop(this.ctx.currentTime, this.dynamicNote);
-    }
+	if (this.source && this.envelope) {
+		var targetSource = this.source;
+		var targetEnvelope = this.envelope;
+		delayTime = this.scheduleCircuitStop(this.ctx.currentTime, {source: targetSource, envelope: targetEnvelope});
+		var self = this;
+		window.setTimeout(function(){
+			self.deallocateSource(targetSource);
+		}, delayTime*1000);
+	}
 };
 
 

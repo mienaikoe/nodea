@@ -139,6 +139,7 @@ Oscillator.prototype.resetOscillators = function(){
 	this.notes.forEach(function(note){ 
 		this.deallocateOscillator(note.oscillator); 
 		note.oscillator = this.allocateOscillator(); 
+		note.oscillator.connect(note.envelope);
 	}, this);
 };
 
@@ -175,7 +176,6 @@ Oscillator.prototype.off = function(location) {
 		var targetOsc = this.oscillator;
 		var targetEnv = this.envelope;
 		
-		//var delayTime = this.envelopeAttributes.release;
 		delayTime = this.scheduleCircuitStop(this.ctx.currentTime, {oscillator: targetOsc, envelope: targetEnv});
 		
 		var self = this;

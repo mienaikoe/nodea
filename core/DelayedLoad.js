@@ -3,6 +3,11 @@ var DelayedLoad = {
 	loadedScripts: {},
 	
 	loadScript: function(type, handle, onload) {
+		if(type===undefined || handle===undefined){
+			console.warn("loadScript called with undefined type or handle");
+			return;
+		}
+		
 		var label = type + ":" + handle;
 
 		var callbacks = DelayedLoad.loadedScripts[label];
