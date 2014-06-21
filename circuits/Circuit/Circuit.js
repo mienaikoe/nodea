@@ -98,23 +98,27 @@ Circuit.prototype.generateDrawer = function(){
 	var detailsElement = $("#circuit_controls");
 	detailsElement.empty();
 	
-	var circuitSection = DrawerUtils.createSection(detailsElement, this.handle);
-	this.generateGeneralDivision(DrawerUtils.createDivision(circuitSection, "General"));
+	var circuitSection = DrawerUtils.createSection(detailsElement, "Circuit");
+	DrawerUtils.addSelectorToHead(circuitSection.head, Circuit.circuitsManifest, this.handle, this.replaceSelf.bind(this));
 	if( this.constructor !== Circuit ){
-		this.generateCircuitDivision(DrawerUtils.createDivision(circuitSection, this.handle));
+		this.generateCircuitDivision(DrawerUtils.createDivision(circuitSection.body, this.handle));
 	}
-	this.generateEnvelopeDivision(DrawerUtils.createDivision(circuitSection, "Envelope"));
+	this.generateEnvelopeDivision(DrawerUtils.createDivision(circuitSection.body, "Envelope"));
 	
-	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects") );
+	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects").body );
 	
 	DrawerUtils.activateDrawerToggles($("#circuit_drawer"));
 };
 
-Circuit.prototype.generateGeneralDivision = function(divisionBody){		
+Circuit.prototype.replaceSelf = function(newHandle){
+	this.circuitReplacementCallback(this, newHandle);
+};
+
+Circuit.prototype.addSelectorToHead = function(sectionHead){		
 	// TODO: Add Key Code
 	// TODO: Other useful data
 	
-	var selector = $("<select/>").appendTo(divisionBody);
+	var selector = $("<select/>",{class:"heading_select dextra"}).appendTo(sectionHead);
 	Circuit.circuitsManifest.forEach(function(circuitName){
 		$("<option/>",{
 			html: circuitName, 
@@ -123,11 +127,11 @@ Circuit.prototype.generateGeneralDivision = function(divisionBody){
 		}).appendTo(selector);
 	}, this);
 	
-	var commiter = $("<button>Change</button>").appendTo(divisionBody);
 	var self = this;
-	$(commiter).click(function(){
-		if( $(selector).val()){
-			self.circuitReplacementCallback(self, $(selector).val());
+	$(selector).change(function(){
+		var selected = $(this).val();
+		if( selected ){
+			self.circuitReplacementCallback(self, selected);
 		}
 	});
 };

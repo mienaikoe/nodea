@@ -200,37 +200,19 @@ Machine.prototype.generateDrawer = function(){
 	var detailsElement = $("#machine_controls");
 	detailsElement.empty();
 	
-	var machineSection = DrawerUtils.createSection(detailsElement, this.handle);
-	this.generateGeneralDivision(DrawerUtils.createDivision(machineSection, "General"));
+	var machineSection = DrawerUtils.createSection(detailsElement, "Machine");
+	DrawerUtils.addSelectorToHead(machineSection.head, Machine.machinesManifest, this.handle, this.replaceSelf.bind(this));
 	if( this.constructor !== Machine ){
-		this.generateMachineDivision(DrawerUtils.createDivision(machineSection, this.handle));
+		this.generateMachineDivision(DrawerUtils.createDivision(machineSection.body, this.handle));
 	}
 	
-	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects"), "machines" );
+	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects").body, "machines" );
 	
 	DrawerUtils.activateDrawerToggles($("#machine_drawer"));
 };
 
-Machine.prototype.generateGeneralDivision = function(divisionBody){		
-	// TODO: Add Key Code
-	// TODO: Other useful data
-	
-	var selector = $("<select/>").appendTo(divisionBody);
-	Machine.machinesManifest.forEach(function(machineName){
-		$("<option/>",{
-			html: machineName, 
-			value: machineName,
-			selected: (this.handle === machineName)
-		}).appendTo(selector);
-	}, this);
-	
-	var commiter = $("<button>Change</button>").appendTo(divisionBody);
-	var self = this;
-	$(commiter).click(function(){
-		if( $(selector).val()){
-			self.machineReplacementCallback(self, $(selector).val());
-		}
-	});
+Machine.prototype.replaceSelf = function(newHandle){
+	this.machineReplacementCallback(this, newHandle);
 };
 
 

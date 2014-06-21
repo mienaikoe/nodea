@@ -2,9 +2,10 @@ var DrawerUtils = {
 	createSection: function(container, title, className){
 		className = className ? className : '';
 		var drawerSection = $("<div/>", {class: "drawer_section toggle"}).appendTo(container);
-		var sectionHeader = $("<div/>", {class: "ds_heading"}).appendTo(drawerSection);
-		$("<div/>", {class: "heading_text sinistra toggler", text: '>> '+title}).appendTo(sectionHeader);
-		return $("<div/>", {class: "ds_body togglee "+className}).appendTo(drawerSection);
+		drawerSection.head = $("<div/>", {class: "ds_heading"}).appendTo(drawerSection);
+		$("<div/>", {class: "heading_text sinistra toggler", text: '>> '+title}).appendTo(drawerSection.head);
+		drawerSection.body = $("<div/>", {class: "ds_body togglee "+className}).appendTo(drawerSection);
+		return drawerSection;
 	},
 	
 	makeSectionAddable: function(sectionBody, adderCallback){
@@ -16,6 +17,27 @@ var DrawerUtils = {
 				ev.stopPropagation();
 				adderCallback();
 			});
+	},
+	
+	addSelectorToHead: function(sectionHead, options, selected, callback){		
+		// TODO: Add Key Code
+		// TODO: Other useful data
+
+		var selector = $("<select/>",{class:"heading_select dextra"}).appendTo(sectionHead);
+		options.forEach(function(machineName){
+			$("<option/>",{
+				html: machineName, 
+				value: machineName,
+				selected: (selected === machineName)
+			}).appendTo(selector);
+		}, this);
+
+		$(selector).change(function(){
+			var value = $(selector).val();
+			if( value ){
+				callback(value);
+			}
+		});
 	},
 
 	createDivision: function(section, title, className){
