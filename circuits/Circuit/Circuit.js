@@ -46,8 +46,8 @@ Circuit.GAIN_ATTRIBUTES = {
 Circuit.ENVELOPE_ATTRIBUTES = {	
 	attack:		{min: 0.00, max: 2.00, step: 0.05,	default: 0.05},
 	decay:		{min: 0.00, max: 2.00, step: 0.05,	default: 0.05},
-	sustain:	{min: 0.00, max: 1.00, step: 0.05,	default: 0.20},
-	release:	{min: 0.00, max: 2.00, step: 0.05,	default: 0.10}
+	sustain:	{min: 0.00, max: 1.00, step: 0.05,	default: 0.40},
+	release:	{min: 0.00, max: 2.00, step: 0.05,	default: 0.15}
 };
 
 
@@ -277,6 +277,15 @@ Circuit.prototype.scheduleCircuitStart = function(startWhen, note){
 Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
 	var release = this.envelopeAttributes.release;
 	note.envelope.gain.linearRampToValueAtTime(0.0, endWhen + release);
+	/* Todo: This linear ramp works well except I'd like to stop other linear ramps 
+	 *       if they've already been started (attack, decay). Ordinarially, this 
+	 *       wouldn't be an issue because i could just use gain.setValueAtTime() 
+	 *       to override any previous settings. However, since this function
+	 *       is also used to set things in the future, the value could be pretty 
+	 *       much anything when this function is called, and I couldn't determine
+	 *       reliably what the value would be at the endWhen time specified. For
+	 *       now, just forgoing the cancel of all previous linear ramp calls.
+	 */
 	return release + this.chain.stop(endWhen);
 };
 
