@@ -8,23 +8,24 @@ Uncharted.extends(Machine);
 
 Uncharted.prototype.extractSettings = function(settings){
 	Machine.prototype.extractSettings.call(this, settings);
-	this.scaleKey = "C";
-	this.octave = 4;
-	this.scaleType = "pentatonic";
 	
 	if( settings ){
-		if( settings.scaleKey ){
-			this.scaleKey = settings.scaleKey;
-		}
-		if( typeof settings.octave === "number" ){
-			this.octave = settings.octave;
+		if( settings.scalePitch ){
+			this.scalePitch = new Pitch(settings.scalePitch.color, settings.scalePitch.octave);
 		}
 		if( settings.scaleType ){
 			this.scaleType = settings.scaleType;
 		}
-	} 
+	}
 	
-	this.scale = Scales.scaleFrequencies(this.scaleKey+this.octave.toString(), this.scaleType, 30 );
+	if(!this.scalePitch){
+		this.scalePitch = new Pitch("C",4);
+	}
+	if(!this.scaleType){
+		this.scaleType = "pentatonic";
+	}
+	
+	this.scale = Scales.scalePitches(this.scalePitch, this.scaleType, 30 );
 };
 
 
@@ -38,8 +39,12 @@ Uncharted.prototype.defaultCircuit = function(ordinal){
 		handle: "Oscillator", 
 		notes: [], 
 		settings: {
-			signalType: "square",
-			frequency: this.scale[idx]
+			pitch: this.scale[idx],
+			oscillators: [
+				{	signalType: "sine",
+					offset: {semitones: 0, cents: 0}
+				}
+			]
 		}
 	};
 };
@@ -51,16 +56,16 @@ Uncharted.prototype.generateMachineBody = function(machineBody){
 	
 	var scaleKeySelector = machineBody.find("#Uncharted-Key");
 	Pitch.pitchKeySelector(scaleKeySelector);
-	scaleKeySelector.val(this.scaleKey).
+	scaleKeySelector.val(this.scalePitch.color).
 		change(	function(ev){ 
-			self.scaleKey = this.value;
+			self.scalePitch = new Pitch(self.value, self.scalePitch.octave);
 			self.rescale();
 			self.studio.invalidateSavedStatus(); 
 		});
 	machineBody.find("#Uncharted-Octave").
-		val(this.octave).
+		val(this.scalePitch.octave).
 		change(	function(ev){ 
-			self.octave = parseInt(this.value);
+			self.scalePitch = new Pitch( self.scalePitch.octave, parseInt(this.value) );
 			self.rescale();
 			self.studio.invalidateSavedStatus(); 
 		});
@@ -78,7 +83,7 @@ Uncharted.prototype.generateMachineBody = function(machineBody){
 
 
 Uncharted.prototype.rescale = function(){
-	this.scale = Scales.scaleFrequencies(this.scaleKey+this.octave.toString(), this.scaleType, 30 );
+	this.scale = Scales.scalePitches(this.scalePitch, this.scaleType, 30 );
 	this.studio.keyset.chromaticOrder.forEach(function(key, idx){
 		var circuit = this.circuits[key];
 		if( circuit.constructor.name === "Oscillator" ){
@@ -90,8 +95,7 @@ Uncharted.prototype.rescale = function(){
 
 Uncharted.prototype.marshalSettings = function(){
 	var ret = Machine.prototype.marshalSettings.call(this);
-	ret.scaleKey = this.scaleKey;
+	ret.scalePitch = this.scalePitch.marshal();
 	ret.scaleType = this.scaleType;
-	ret.octave = this.octave;
 	return ret;
 };

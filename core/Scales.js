@@ -1,14 +1,26 @@
-var Pitch = function(pitchName){
-	this.color = Pitch.pitchColor(pitchName);
-	if(!this.color){ throw "Invalid Note Name: "+pitchName; }
-
-	this.primary = Pitch.PRIMARIES[this.color];
-	if( !this.primary ){ throw "Invalid Note Name: "+pitchName; }
-
-	this.octave = parseInt(pitchName.substr(this.color.length, pitchName.length));
-	if( typeof this.octave !== "number" ){ throw "Invalid Note Name: " + pitchName; }
+var Pitch = function(color, octave){
+	if(!color){ throw "Invalid Note Color: "+color};
+	this.color = color;
 	
-	this.frequency = Pitch.addOctaves( this.primary, this.octave );
+	this.primary = Pitch.PRIMARIES.FREQUENCIES[this.color];
+	if( !this.primary ){ throw "Invalid Note Color: "+color; }
+	
+	if( typeof octave !== "number" ){ throw "Invalid Octave: " + octave; }
+	this.octave = octave;
+	
+	this.frequency = Pitch.addOctaves( this.primary, octave );
+};
+
+Pitch.prototype.marshal = function(){
+	return {
+		color: this.color,
+		octave: this.octave
+	};
+};
+
+Pitch.fromName = function(pitchName){
+	var color = Pitch.pitchColor(pitchName);
+	return new Pitch(color, parseInt(pitchName.substr(color.length, pitchName.length)));
 };
 
 Pitch.pitchColor = function(pitchName){
@@ -30,12 +42,12 @@ Pitch.pitchColor = function(pitchName){
 	return String.fromCharCode(pitchColor) + modifier;
 };
 
-Pitch.addHalfStepsName = function( pitchName, halfSteps ){
-	
-};
-
 Pitch.addHalfSteps = function( frequency, halfSteps ){
 	return frequency * Math.pow(2, (halfSteps/12.0));
+};
+
+Pitch.addCents = function( frequency, cents ){
+	return frequency * Math.pow(2, (cents/1200.0));
 };
 
 Pitch.addWholeSteps = function( frequency, halfSteps ){
@@ -49,23 +61,28 @@ Pitch.addOctaves = function( frequency, octaves ){
 Pitch.A0 = 13.75;
 
 Pitch.PRIMARIES = {
-	"C":	Pitch.addHalfSteps(Pitch.A0, -9),
-	"C#":	Pitch.addHalfSteps(Pitch.A0, -8),
-	"D":	Pitch.addHalfSteps(Pitch.A0, -7),
-	"D#":	Pitch.addHalfSteps(Pitch.A0, -6),
-	"E":	Pitch.addHalfSteps(Pitch.A0, -5),
-	"F":	Pitch.addHalfSteps(Pitch.A0, -4),
-	"F#":	Pitch.addHalfSteps(Pitch.A0, -3),
-	"G":	Pitch.addHalfSteps(Pitch.A0, -2),
-	"G#":	Pitch.addHalfSteps(Pitch.A0, -1),
-	"A":	Pitch.A0,
-	"A#":	Pitch.addHalfSteps(Pitch.A0, 1),
-	"B":	Pitch.addHalfSteps(Pitch.A0, 2)
+	FREQUENCIES: {
+		"C":	Pitch.addHalfSteps(Pitch.A0, -9),
+		"C#":	Pitch.addHalfSteps(Pitch.A0, -8),
+		"D":	Pitch.addHalfSteps(Pitch.A0, -7),
+		"D#":	Pitch.addHalfSteps(Pitch.A0, -6),
+		"E":	Pitch.addHalfSteps(Pitch.A0, -5),
+		"F":	Pitch.addHalfSteps(Pitch.A0, -4),
+		"F#":	Pitch.addHalfSteps(Pitch.A0, -3),
+		"G":	Pitch.addHalfSteps(Pitch.A0, -2),
+		"G#":	Pitch.addHalfSteps(Pitch.A0, -1),
+		"A":	Pitch.A0,
+		"A#":	Pitch.addHalfSteps(Pitch.A0, 1),
+		"B":	Pitch.addHalfSteps(Pitch.A0, 2)
+	},
+	ORDER: [
+		"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"
+	]
 };
 
 
 Pitch.pitchKeySelector = function(selectBox){
-	for( key in Pitch.PRIMARIES ){
+	for( key in Pitch.PRIMARIES.FREQUENCIES ){
 		var fullKey = key;
 		if( key.indexOf("#") !== -1 ){
 			fullKey += "/" + String.fromCharCode(key.charCodeAt(0)+1) + "♭";
@@ -86,28 +103,48 @@ Pitch.pitchKeySelector = function(selectBox){
 
 var Scales = {	
 
-	scaleFrequencies: function( startingNote, scaleType, pitchCount ){
-		var pitch = new Pitch(startingNote);
-		
+	scaleFrequencies: function( startingPitch, scaleType, pitchCount ){		
 		var scaleSteps = Scales.SCALE_TYPES[scaleType];
 		if(!scaleSteps){ throw "Invalid Scale Type: "+scaleType }
 		
-		var ret = [pitch.frequency];
-		var octaveIndex = pitch.octave;
+		var ret = [startingPitch.frequency];
+		var octaveIndex = startingPitch.octave;
 		var scaleIndex = 0;
+		while(startingPitchCount > 0){
+			if( scaleIndex > scaleSteps.length-1 ) {
+				scaleIndex = 0;
+				octaveIndex++;
+			}
+			ret.push( Pitch.addHalfSteps(startingPitch.primary, (octaveIndex*12) + scaleSteps[scaleIndex]) );
+			scaleIndex++;
+			startingPitchCount--;
+		}
+		
+		return ret;
+	},
+	scalePitches: function( startingPitch, scaleType, pitchCount ){
+		var scaleSteps = Scales.SCALE_TYPES[scaleType];
+		if(!scaleSteps){ throw "Invalid Scale Type: "+scaleType }
+		
+		var ret = [startingPitch];
+		var octaveIndex = startingPitch.octave;
+		var scaleIndex = 0;
+		var semitones = Pitch.PRIMARIES.ORDER.indexOf(startingPitch.color);
 		while(pitchCount > 0){
 			if( scaleIndex > scaleSteps.length-1 ) {
 				scaleIndex = 0;
 				octaveIndex++;
 			}
-			ret.push( Pitch.addHalfSteps(pitch.primary, (octaveIndex*12) + scaleSteps[scaleIndex]) );
+			
+			var color = Pitch.PRIMARIES.ORDER[(scaleSteps[scaleIndex] % Pitch.PRIMARIES.ORDER.length)];
+			var octave = Math.floor(((octaveIndex*12) + scaleSteps[scaleIndex]) / Pitch.PRIMARIES.ORDER.length);
+			ret.push(new Pitch(color, octave));
 			scaleIndex++;
 			pitchCount--;
 		}
 		
 		return ret;
 	}
-
 };
 
 

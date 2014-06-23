@@ -15,32 +15,69 @@ Oscillator.extends(Circuit);
 
 Oscillator.prototype.extractSettings = function(settings){
 	Circuit.prototype.extractSettings.call(this, settings);
-	
-	if( settings){
-		/* Any necessary settings that you add in the marshalSettings function 
-		 * will be in settings
-		 */		
-		if(settings.frequency){
-			this.frequency = settings.frequency;
+	if(settings){
+		if(settings.pitch){
+			this.pitch = new Pitch(settings.pitch.color, settings.pitch.octave);
 		}
-		if(settings.type){
-			this.signalType = settings.signalType;
+		
+		this.oscillatorAttributes = [];
+		if(settings.oscillators){
+			settings.oscillators.forEach(function(oscSettings){
+				this.oscillatorAttributes.push(this.extractOscillatorSettings(oscSettings));
+			}, this);
+		}
+		if(this.oscillatorAttributes.length === 0){
+			this.oscillatorAttributes.push(Oscillator.DEFAULT_OSCILLATOR);
 		}
 	}
 	
-	if(!this.frequency){
-		this.frequency = 440; // Concert A ?
-	}
-	if(!this.signalType){
-		this.signalType = "sine";
+	if(!this.pitch){
+		this.pitch = Oscillator.DEFAULT_PITCH;
 	}
 };
 
-Oscillator.prototype.repitch = function(frequency){
+Oscillator.DEFAULT_PITCH = new Pitch("A",4);
+
+Oscillator.DEFAULT_OSCILLATOR = {
+	signalType: "sine",
+	offset: {semitones: 0, cents: 0}
+};
+
+Oscillator.SIGNAL_TYPES = [
+	"sine","square","sawtooth"
+];
+
+
+Oscillator.prototype.extractOscillatorSettings = function(settings){
+	var osc = {};
+	if( settings){
+		/* Any necessary settings that you add in the marshalSettings function 
+		 * will be in settings
+		 */
+		if(settings.offset){
+			osc.offset = settings.offset;
+		}
+		if(settings.type){
+			osc.signalType = settings.signalType;
+		}
+	}
+	
+	if(!osc.offset){
+		osc.offset = {semitones: 0, cents: 0};
+	}
+	if(!osc.signalType){
+		osc.signalType = "sine";
+	}
+	return osc;
+};
+
+
+
+Oscillator.prototype.repitch = function(pitch){
+	this.pitch = pitch;
 	if( this.isDisplaying() ){
-		this.circuitBody.find("#Oscillator-Frequency").val(frequency).change();
-	} else {
-		this.frequency = frequency;
+		this.circuitBody.find("#Oscillator-Color").val(pitch.color).change();
+		this.circuitBody.find("#Oscillator-Octave").val(pitch.octave).change();
 	}
 	this.resetOscillators();
 };
@@ -58,21 +95,49 @@ Oscillator.prototype.repitch = function(frequency){
 
 Oscillator.prototype.generateCircuitBody = function(circuitBody){
 	var self = this;
-	$(circuitBody).find("#Oscillator-Frequency").
-		val(this.frequency).
+	var colorSelector = $(circuitBody).find("#Oscillator-Color");
+	Pitch.pitchKeySelector(colorSelector);
+	colorSelector.val(this.pitch.color).
 		change(	function(ev){ 
-			self.frequency = parseInt(this.value);
+			self.color = this.value;
+			studio.invalidateSavedStatus(); 
+		});
+	
+		
+	$(circuitBody).find("#Oscillator-Octave").
+		val(this.pitch.octave).
+		change(	function(ev){ 
+			self.octave = this.value;
 			studio.invalidateSavedStatus(); 
 		});
 		
-	var signalSelector = $(circuitBody).find("#Oscillator-SignalType");
-	signalSelector.find("option[value='"+self.signalType+"']").attr("selected","selected");
-	signalSelector.change( function(ev){ 
-		self.signalType = this.value;
-		self.resetOscillators();
-		studio.invalidateSavedStatus(); 
-	});	
+	var oscillatorList = $(circuitBody).find("#Oscillator-List");
+	this.oscillatorAttributes.forEach( function(oscillator, idx){
+		var oscillatorDiv = $("<div/>",{id:"oscillator_"+idx, class:"listed"}).appendTo(oscillatorList);
+		
+		var signalSelector = $("<select/>").appendTo(oscillatorDiv);
+		Oscillator.SIGNAL_TYPES.forEach(function(signalType){
+			$("<option/>",{text: signalType, value: signalType, selected: (signalType===oscillator.signalType)}).appendTo(signalSelector);
+		});
+		signalSelector.change( function(ev){ 
+			oscillator.signalType = this.value;
+			self.resetOscillators();
+			studio.invalidateSavedStatus(); 
+		});
+		
+		$("<input/>",{type:"number",value:oscillator.offset.semitones}).appendTo(oscillatorDiv).change(function(ev){
+			oscillator.offset.semitones = parseInt(this.value);
+		});
+		
+		$("<input/>",{type:"number",value:oscillator.offset.cents}).appendTo(oscillatorDiv).change(function(ev){
+			oscillator.offset.cents = parseInt(this.value);
+		});
+		
+	});
 };
+
+
+
 
 
 /*
@@ -84,19 +149,27 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
  */
 Oscillator.prototype.addNote = function(note){
 	Circuit.prototype.addNote.call(this, note);
-	note.oscillator = this.allocateOscillator();
-	note.oscillator.connect(note.envelope);
+	note.oscillators = this.allocateOscillators();
+	note.oscillators.forEach(function(oscillator){
+		oscillator.connect(note.envelope);
+	});
 };
-Oscillator.prototype.deleteNote = function(note){
-	this.deallocateOscillator(note.oscillator);
+Oscillator.prototype.deleteNote = function(note){	
+	note.oscillators.forEach(function(oscillator){
+		this.deallocateOscillator(oscillator);
+	}, this);
 	Circuit.prototype.deleteNote.call(this, note);
 };
 
-Oscillator.prototype.allocateOscillator = function(){
-	var oscillator = this.ctx.createOscillator();
-	oscillator.type = this.signalType;
-	oscillator.frequency.value = this.frequency;
-	return oscillator;
+Oscillator.prototype.allocateOscillators = function(){
+	var oscillators = [];
+	this.oscillatorAttributes.forEach(function(oscillator){
+		var oscNode = this.ctx.createOscillator();
+		oscNode.type = oscillator.signalType;
+		oscNode.frequency.value = Pitch.addCents(this.pitch.frequency, (oscillator.offset.semitones*100)+oscillator.offset.cents);
+		oscillators.push(oscNode);
+	}, this);
+	return oscillators;
 };
 
 Oscillator.prototype.deallocateOscillator = function(osc){
@@ -118,13 +191,17 @@ Oscillator.prototype.deallocateOscillator = function(osc){
  */
 Oscillator.prototype.scheduleCircuitStart = function(startWhen, note){
 	var delayTime = Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note);
-	note.oscillator.start(startWhen + delayTime);
+	note.oscillators.forEach(function(oscillator){
+		oscillator.start(startWhen + delayTime);
+	});
 	return delayTime;
 };
 
 Oscillator.prototype.scheduleCircuitStop = function(endWhen, note){
 	var delayTime = Circuit.prototype.scheduleCircuitStop.call(this, endWhen, note);
-	note.oscillator.stop(endWhen + delayTime);
+	note.oscillators.forEach(function(oscillator){
+		oscillator.stop(endWhen + delayTime);
+	});
 	return delayTime;
 };
 
@@ -137,9 +214,13 @@ Oscillator.prototype.pause = function(){
 
 Oscillator.prototype.resetOscillators = function(){
 	this.notes.forEach(function(note){ 
-		this.deallocateOscillator(note.oscillator); 
-		note.oscillator = this.allocateOscillator(); 
-		note.oscillator.connect(note.envelope);
+		note.oscillators.forEach(function(osc){
+			this.deallocateOscillator(osc);
+		}, this);
+		note.oscillators = this.allocateOscillators();
+		note.oscillators.forEach(function(oscillator){
+			oscillator.connect(note.envelope);
+		});
 	}, this);
 };
 
@@ -163,24 +244,26 @@ Oscillator.prototype.resetOscillators = function(){
 
 Oscillator.prototype.on = function(location) {
 	Circuit.prototype.on.call(this, location);
-	this.oscillator = this.allocateOscillator();
+	this.oscillatorNodes = this.allocateOscillators();
 	this.envelope = this.allocateEnvelope();
-	this.oscillator.connect(this.envelope);
-	this.scheduleCircuitStart(this.ctx.currentTime, {oscillator: this.oscillator, envelope: this.envelope});
+	this.oscillatorNodes.forEach(function(oscNode){
+		oscNode.connect(this.envelope);
+	}, this);
+	this.scheduleCircuitStart(this.ctx.currentTime, {oscillators: this.oscillatorNodes, envelope: this.envelope});
 };
 
 
 Oscillator.prototype.off = function(location) {
 	Circuit.prototype.off.call(this, location);
-	if( this.oscillator && this.envelope ){
-		var targetOsc = this.oscillator;
+	if( this.oscillatorNodes && this.envelope ){
+		var targetOscs = this.oscillatorNodes;
 		var targetEnv = this.envelope;
-		
-		delayTime = this.scheduleCircuitStop(this.ctx.currentTime, {oscillator: targetOsc, envelope: targetEnv});
-		
+		delayTime = this.scheduleCircuitStop(this.ctx.currentTime, {oscillators: targetOscs, envelope: targetEnv});
 		var self = this;
 		window.setTimeout(function(){
-			self.deallocateOscillator(targetOsc);
+			targetOscs.forEach(function(osc){
+				self.deallocateOscillator(osc);
+			});
 		}, delayTime*1000);
 	}
 };
@@ -200,8 +283,18 @@ Oscillator.prototype.off = function(location) {
  */
 
 Oscillator.prototype.marshalSettings = function(){
-	return $.extend(Circuit.prototype.marshalSettings.call(this), 
-		{	frequency: this.frequency,
-			signalType: this.signalType
-		} );
+	ret = Circuit.prototype.marshalSettings.call(this);
+	if( this.pitch ){
+		ret.pitch = this.pitch.marshal();
+	}
+	if( this.oscillators ){
+		ret.oscillators = [];
+		this.oscillators.forEach(function(osc){
+			ret.oscillators.push({
+				signalType: osc.signalType,
+				offset: osc.offset
+			});
+		});
+	}
+	return ret;
 };
