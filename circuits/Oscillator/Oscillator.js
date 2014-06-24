@@ -21,8 +21,8 @@ Oscillator.prototype.extractSettings = function(settings){
 		}
 		
 		this.oscillatorAttributes = [];
-		if(settings.oscillators){
-			settings.oscillators.forEach(function(oscSettings){
+		if(settings.oscillatorAttributes){
+			settings.oscillatorAttributes.forEach(function(oscSettings){
 				this.oscillatorAttributes.push(this.extractOscillatorSettings(oscSettings));
 			}, this);
 		}
@@ -72,6 +72,19 @@ Oscillator.prototype.extractOscillatorSettings = function(settings){
 };
 
 
+Oscillator.prototype.addOscillator = function(){
+	this.oscillatorAttributes.push(Oscillator.DEFAULT_OSCILLATOR);
+	this.generateDrawer();
+};
+
+Oscillator.prototype.removeOscillator = function(oscillator){
+	var idx = this.oscillatorAttributes.indexOf(oscillator);
+	if(idx > -1){
+		this.oscillatorAttributes.splice(idx,1);
+	}
+	this.generateDrawer();
+};
+
 
 Oscillator.prototype.repitch = function(pitch){
 	this.pitch = pitch;
@@ -103,7 +116,6 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 			studio.invalidateSavedStatus(); 
 		});
 	
-		
 	$(circuitBody).find("#Oscillator-Octave").
 		val(this.pitch.octave).
 		change(	function(ev){ 
@@ -111,11 +123,20 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 			studio.invalidateSavedStatus(); 
 		});
 		
+	$(circuitBody).find("#Oscillator-Add").
+		click(	function(ev){ 
+			self.addOscillator();
+			studio.invalidateSavedStatus(); 
+		});
+		
 	var oscillatorList = $(circuitBody).find("#Oscillator-List");
 	this.oscillatorAttributes.forEach( function(oscillator, idx){
 		var oscillatorDiv = $("<div/>",{id:"oscillator_"+idx, class:"listed"}).appendTo(oscillatorList);
 		
-		var signalSelector = $("<select/>").appendTo(oscillatorDiv);
+		$("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(oscillatorDiv);
+		
+		var signalDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
+		var signalSelector = $("<select/>").appendTo(signalDiv);
 		Oscillator.SIGNAL_TYPES.forEach(function(signalType){
 			$("<option/>",{text: signalType, value: signalType, selected: (signalType===oscillator.signalType)}).appendTo(signalSelector);
 		});
@@ -124,15 +145,23 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 			self.resetOscillators();
 			studio.invalidateSavedStatus(); 
 		});
+		$("<div class='thicket'>SIGNAL TYPE</div>").appendTo(signalDiv);
 		
-		$("<input/>",{type:"number",value:oscillator.offset.semitones}).appendTo(oscillatorDiv).change(function(ev){
+		var semitoneDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
+		$("<input/>",{type:"number",value:oscillator.offset.semitones, class:"short"}).appendTo(semitoneDiv).change(function(ev){
 			oscillator.offset.semitones = parseInt(this.value);
 		});
+		$("<div class='thicket'>SEMITONES</div>").appendTo(semitoneDiv);
 		
-		$("<input/>",{type:"number",value:oscillator.offset.cents}).appendTo(oscillatorDiv).change(function(ev){
+		var centsDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
+		$("<input/>",{type:"number",value:oscillator.offset.cents, class:"short"}).appendTo(centsDiv).change(function(ev){
 			oscillator.offset.cents = parseInt(this.value);
 		});
+		$("<div class='thicket'>CENTS</div>").appendTo(centsDiv);
 		
+		$("<button></button>",{text:"remove"}).appendTo(oscillatorDiv).click(function(ev){
+			self.removeOscillator(oscillator);
+		});
 	});
 };
 
@@ -287,10 +316,10 @@ Oscillator.prototype.marshalSettings = function(){
 	if( this.pitch ){
 		ret.pitch = this.pitch.marshal();
 	}
-	if( this.oscillators ){
-		ret.oscillators = [];
-		this.oscillators.forEach(function(osc){
-			ret.oscillators.push({
+	if( this.oscillatorAttributes ){
+		ret.oscillatorAttributes = [];
+		this.oscillatorAttributes.forEach(function(osc){
+			ret.oscillatorAttributes.push({
 				signalType: osc.signalType,
 				offset: osc.offset
 			});

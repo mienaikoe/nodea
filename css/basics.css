@@ -76,3 +76,10 @@ body, html {
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000369}}
 .hover {
   color: #fea; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/basics\.scss}line{font-family:\0000373}}
+.thicket {
+  color: white;
+  font-size: 7px;
+  line-height: 12px;
+  text-align: center; }

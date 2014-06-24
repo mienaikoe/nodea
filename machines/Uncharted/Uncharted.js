@@ -40,7 +40,7 @@ Uncharted.prototype.defaultCircuit = function(ordinal){
 		notes: [], 
 		settings: {
 			pitch: this.scale[idx],
-			oscillators: [
+			oscillatorAttributes: [
 				{	signalType: "sine",
 					offset: {semitones: 0, cents: 0}
 				}

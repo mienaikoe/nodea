@@ -287,11 +287,11 @@ Machine.prototype.marshal = function(){
 };
 
 Machine.prototype.marshalCircuits = function(){
-	ret = {};
+	var ret = {};
 	for( key in this.circuits ){
 		var circuit = this.circuits[key];
 		if(circuit.handle !== "Circuit"){
-			ret[key] = this.circuits[key].marshal();
+			ret[key] = circuit.marshal();
 		}
 	}
 	return ret;
