@@ -81,14 +81,18 @@ Pitch.PRIMARIES = {
 };
 
 
-Pitch.pitchKeySelector = function(selectBox){
+Pitch.pitchKeySelector = function(selectBox, value, changer){
 	for( key in Pitch.PRIMARIES.FREQUENCIES ){
 		var fullKey = key;
 		if( key.indexOf("#") !== -1 ){
 			fullKey += "/" + String.fromCharCode(key.charCodeAt(0)+1) + "♭";
 		}
-		$("<option></option>",{value: key, html: fullKey}).appendTo(selectBox);
+		$("<option></option>",{value: key, html: fullKey, selected: (value === key)}).appendTo(selectBox);
 	}
+	selectBox.change(function(ev){
+		if(changer){changer.call(this,ev);}
+		$(this).blur();
+	});
 };
 
 
@@ -157,9 +161,13 @@ Scales.SCALE_TYPES = {
 	jazz:			[3,5,6,7,10,12]
 };
 
-Scales.scaleTypeSelector = function(selectBox, value){
+Scales.scaleTypeSelector = function(selectBox, value, changer){
 	for( type in Scales.SCALE_TYPES ){
 		$("<option></option>",{value: type, html: type, selected: (value === type)}).appendTo(selectBox);
 	}
+	selectBox.change( function(ev){
+		if(changer){changer.call(this,ev);}
+		$(this).blur();
+	});
 };
 

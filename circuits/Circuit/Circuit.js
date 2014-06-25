@@ -103,7 +103,7 @@ Circuit.prototype.generateDrawer = function(){
 	if( this.constructor !== Circuit ){
 		this.generateCircuitDivision(DrawerUtils.createDivision(circuitSection.body, this.handle));
 	}
-	this.generateEnvelopeDivision(DrawerUtils.createDivision(circuitSection.body, "Envelope"));
+	this.generateEnvelopeDivision(DrawerUtils.createDivision(circuitSection.body, "Amp Envelope"));
 	
 	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects").body );
 	
@@ -176,6 +176,7 @@ Circuit.prototype.createSlider = function(key, attributes, value, changer, divis
 	$("<input/>", $.extend({type:'range', value: value, id: this.id+'_slider_'+key}, attributes)).
 		appendTo(sliderBox).
 		change(function(){
+			$(this).blur();
 			changer.call(self, key, parseFloat(this.value));
 		});
 };

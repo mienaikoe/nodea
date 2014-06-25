@@ -55,13 +55,12 @@ Uncharted.prototype.generateMachineBody = function(machineBody){
 	var self = this;
 	
 	var scaleKeySelector = machineBody.find("#Uncharted-Key");
-	Pitch.pitchKeySelector(scaleKeySelector);
-	scaleKeySelector.val(this.scalePitch.color).
-		change(	function(ev){ 
-			self.scalePitch = new Pitch(this.value, self.scalePitch.octave);
-			self.rescale();
-			self.studio.invalidateSavedStatus(); 
-		});
+	Pitch.pitchKeySelector(scaleKeySelector, this.scalePitch.color, function(ev){ 
+		self.scalePitch = new Pitch(this.value, self.scalePitch.octave);
+		self.rescale();
+		self.studio.invalidateSavedStatus(); 
+	});
+	
 	machineBody.find("#Uncharted-Octave").
 		val(this.scalePitch.octave).
 		change(	function(ev){ 
@@ -71,13 +70,11 @@ Uncharted.prototype.generateMachineBody = function(machineBody){
 		});
 		
 	var scaleType = machineBody.find("#Uncharted-ScaleType");
-	Scales.scaleTypeSelector(scaleType, this.scaleType);
-	scaleType.change( function(ev){ 
+	Scales.scaleTypeSelector(scaleType, this.scaleType, function(ev){ 
 		self.scaleType = this.value;
 		self.rescale();
-		self.studio.invalidateSavedStatus(); 
-		$(this).blur();
-	});	
+		self.studio.invalidateSavedStatus();
+	}); 
 };
 
 
