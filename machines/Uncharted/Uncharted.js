@@ -58,14 +58,14 @@ Uncharted.prototype.generateMachineBody = function(machineBody){
 	Pitch.pitchKeySelector(scaleKeySelector);
 	scaleKeySelector.val(this.scalePitch.color).
 		change(	function(ev){ 
-			self.scalePitch = new Pitch(self.value, self.scalePitch.octave);
+			self.scalePitch = new Pitch(this.value, self.scalePitch.octave);
 			self.rescale();
 			self.studio.invalidateSavedStatus(); 
 		});
 	machineBody.find("#Uncharted-Octave").
 		val(this.scalePitch.octave).
 		change(	function(ev){ 
-			self.scalePitch = new Pitch( self.scalePitch.octave, parseInt(this.value) );
+			self.scalePitch = new Pitch( self.scalePitch.color, parseInt(this.value) );
 			self.rescale();
 			self.studio.invalidateSavedStatus(); 
 		});

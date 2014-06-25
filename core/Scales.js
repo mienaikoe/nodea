@@ -136,8 +136,8 @@ var Scales = {
 				octaveIndex++;
 			}
 			
-			var color = Pitch.PRIMARIES.ORDER[(scaleSteps[scaleIndex] % Pitch.PRIMARIES.ORDER.length)];
-			var octave = Math.floor(((octaveIndex*12) + scaleSteps[scaleIndex]) / Pitch.PRIMARIES.ORDER.length);
+			var color = Pitch.PRIMARIES.ORDER[((semitones+scaleSteps[scaleIndex]) % Pitch.PRIMARIES.ORDER.length)];
+			var octave = Math.floor(((octaveIndex*12) + semitones + scaleSteps[scaleIndex]) / Pitch.PRIMARIES.ORDER.length);
 			ret.push(new Pitch(color, octave));
 			scaleIndex++;
 			pitchCount--;
