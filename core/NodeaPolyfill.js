@@ -71,6 +71,16 @@ AudioContext.prototype.createStereoGain = function(bufferSize) {
 AudioNode.prototype.connectSuper = AudioNode.prototype.connect;
 AudioNode.prototype.connect = function(target){
    console.log("Connecting "+this.toString()+" to "+target.toString());
+   if( this.forwardConnections ){
+	   this.forwardConnections.push(target);
+   } else {
+	   this.forwardConnections = [target];
+   }
+   if( target.backwardConnections ){
+	   target.backwardConnections.push(this);
+   } else {
+	   target.backwardConnections = [this];
+   }
    AudioNode.prototype.connectSuper.call(this, target);
 };
 */

@@ -152,15 +152,17 @@ a{
             }
         }
         .fieldLabel{
+            margin-top: 8px;
+            padding-top: 4px;
+            border-top: 1px solid #888;
             font-size: 12px;
-            margin-top: 4px;
-            margin-bottom: 2px;
+            text-align: right;
         }
         label{
-            font-size: 12px;
-            line-height: 18px;
+            font-size: 10px;
+            line-height: 16px;
             display: inline-block;
-            vertical-align: top;
+            vertical-align: middle;
         }
         input[type=number] {
             width: 72px;
@@ -169,6 +171,9 @@ a{
                 width:36px;
                 margin: 2px;
             }
+        }
+        .envelope_slider{
+            margin-bottom: 2px;
         }
         input[type=range] {
             -webkit-appearance: none;

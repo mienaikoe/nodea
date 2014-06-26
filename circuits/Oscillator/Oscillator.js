@@ -8,6 +8,7 @@ function Oscillator(ctx, machine, marshaledCircuit, destination, circuitReplacem
 	/* Build out any further initialization you need 
 	 * to do here. 
 	 */
+	this.oscillatorNodes = [];
 };
 
 Oscillator.extends(Circuit);
@@ -294,8 +295,11 @@ Oscillator.prototype.resetOscillators = function(){
 
 Oscillator.prototype.on = function(location) {
 	Circuit.prototype.on.call(this, location);
-	this.oscillatorNodes = this.allocateOscillators();
 	this.envelope = this.allocateEnvelope();
+	this.oscillatorNodes.forEach(function(osc){
+		this.deallocateOscillator(osc);
+	}, this);
+	this.oscillatorNodes = this.allocateOscillators();
 	this.oscillatorNodes.forEach(function(oscNode){
 		oscNode.gainer.connect(this.envelope);
 	}, this);
@@ -306,15 +310,7 @@ Oscillator.prototype.on = function(location) {
 Oscillator.prototype.off = function(location) {
 	Circuit.prototype.off.call(this, location);
 	if( this.oscillatorNodes && this.envelope ){
-		var targetOscs = this.oscillatorNodes;
-		var targetEnv = this.envelope;
-		delayTime = this.scheduleCircuitStop(this.ctx.currentTime, {oscillators: targetOscs, envelope: targetEnv});
-		var self = this;
-		window.setTimeout(function(){
-			targetOscs.forEach(function(osc){
-				self.deallocateOscillator(osc);
-			});
-		}, delayTime*1000);
+		this.scheduleCircuitStop(this.ctx.currentTime, {oscillators: this.oscillatorNodes, envelope: this.envelope});
 	}
 };
 
