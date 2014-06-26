@@ -137,9 +137,17 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 		
 	var oscillatorList = $(circuitBody).find("#Oscillator-List");
 	this.oscillatorAttributes.forEach( function(oscillator, idx){
+		var self = this;
 		var oscillatorDiv = $("<div/>",{id:"oscillator_"+idx, class:"listed"}).appendTo(oscillatorList);
 		
-		$("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(oscillatorDiv);
+		var fieldLabel = $("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(oscillatorDiv);
+		$("<div/>",{class:"toggler dextra",text:"\u00d7"}).appendTo(fieldLabel).mouseover(function(ev){
+			$(this).addClass("hover");
+		}).click(function(ev){
+			delete self.oscillatorAttributes[idx];
+			self.resetOscillators();
+			oscillatorDiv.remove();
+		});
 		
 		// Volume
 		this.createSlider("volume", Circuit.GAIN_ATTRIBUTES.volume, oscillator.volume, 

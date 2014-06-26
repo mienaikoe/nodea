@@ -156,7 +156,7 @@ a{
             padding-top: 4px;
             border-top: 1px solid #888;
             font-size: 12px;
-            text-align: right;
+            margin-bottom: 4px;
         }
         label{
             font-size: 10px;
@@ -174,20 +174,32 @@ a{
         }
         .envelope_slider{
             margin-bottom: 2px;
-        }
-        input[type=range] {
-            -webkit-appearance: none;
-            background-color: #333;
-            height:12px;
-            cursor: ew-resize;
+            label{
+                line-height: 12px;
+                width: 48px;
+                //background-color: #333;
+            }
+            input{
+                vertical-align: middle;
+            }
+            input[type=range] {
+                -webkit-appearance: none;
+                background-color: #333;
+                height:12px;
+                cursor: ew-resize;
+                width: 188px;
+                margin: 0px;
+            }
+            input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                background-color: #DA3;
+                width: 4px;
+                height: 10px;
+           }
         }
 
-        input[type="range"]::-webkit-slider-thumb {
-             -webkit-appearance: none;
-            background-color: #DA3;
-            width: 4px;
-            height: 10px;
-        }
+
+
         
         button{
             margin-top: 2px;
