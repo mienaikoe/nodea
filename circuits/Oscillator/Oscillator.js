@@ -38,6 +38,7 @@ Oscillator.prototype.extractSettings = function(settings){
 };
 
 Oscillator.DEFAULT_PITCH = new Pitch("A",4);
+Oscillator.DEFAULT_LFO = {frequency: 20, destination: "volume"};
 
 Oscillator.DEFAULT_OSCILLATOR = {
 	signalType: "sine",
@@ -46,8 +47,12 @@ Oscillator.DEFAULT_OSCILLATOR = {
 };
 
 Oscillator.SIGNAL_TYPES = [
-	"sine","square","sawtooth"
+	"sine","square","sawtooth","triangle"
 ];
+
+Oscillator.LFO_ATTRIBUTES = {
+	frequency: {}
+};
 
 
 Oscillator.prototype.extractOscillatorSettings = function(settings){
@@ -65,6 +70,9 @@ Oscillator.prototype.extractOscillatorSettings = function(settings){
 		if(settings.volume){
 			osc.volume = settings.volume;
 		}
+		if(settings.lfo){
+			osc.lfo = settings.lfo;
+		}
 	}
 	
 	if(!osc.offset){
@@ -76,7 +84,25 @@ Oscillator.prototype.extractOscillatorSettings = function(settings){
 	if(!osc.volume){
 		osc.volume = 1;
 	}
+	if(!osc.lfo){
+		osc.lfo = Oscillator.DEFAULT_LFO;
+	}
+	
+	osc.lfo.oscillator = this.ctx.createOscillator();
+	osc.lfo.oscillator.frequency.value = osc.lfo.frequency;
+	
+	
 	return osc;
+};
+
+
+Oscillator.prototype.connectLFO = function(lfo, oscillator){
+	switch(lfo.destination){
+		case "volume":
+			lfo.oscillator.connect(oscillator.gainer.gain);
+		case "frequency":
+			lfo.oscillator.connect(oscillator.frequency);
+	}
 };
 
 
@@ -116,80 +142,86 @@ Oscillator.prototype.repitch = function(pitch){
 
 Oscillator.prototype.generateCircuitBody = function(circuitBody){
 	var self = this;
+	
+	// Pitch
 	var colorSelector = $(circuitBody).find("#Oscillator-Color");
 	Pitch.pitchKeySelector(colorSelector, this.pitch.color,	function(ev){ 
 		self.color = this.value;
 		studio.invalidateSavedStatus(); 
 	});
-	
 	$(circuitBody).find("#Oscillator-Octave").
 		val(this.pitch.octave).
 		change(	function(ev){ 
 			self.octave = this.value;
 			studio.invalidateSavedStatus(); 
 		});
-		
 	$(circuitBody).find("#Oscillator-Add").
 		click(	function(ev){ 
 			self.addOscillator();
 			studio.invalidateSavedStatus(); 
 		});
-		
+				
 	var oscillatorList = $(circuitBody).find("#Oscillator-List");
 	this.oscillatorAttributes.forEach( function(oscillator, idx){
-		var self = this;
-		var oscillatorDiv = $("<div/>",{id:"oscillator_"+idx, class:"listed"}).appendTo(oscillatorList);
-		
-		var fieldLabel = $("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(oscillatorDiv);
-		$("<div/>",{class:"toggler dextra",text:"\u00d7"}).appendTo(fieldLabel).mouseover(function(ev){
-			$(this).addClass("hover");
-		}).click(function(ev){
-			delete self.oscillatorAttributes[idx];
-			self.resetOscillators();
-			oscillatorDiv.remove();
-		});
-		
-		// Volume
-		this.createSlider("volume", Circuit.GAIN_ATTRIBUTES.volume, oscillator.volume, 
-			function(key, value){
-				oscillator.volume = value;
-				self.resetOscillators();
-				studio.invalidateSavedStatus();
-			}, oscillatorDiv);
-		
-		// Signal Type
-		var signalDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-		var signalSelector = $("<select/>").appendTo(signalDiv);
-		Oscillator.SIGNAL_TYPES.forEach(function(signalType){
-			$("<option/>",{text: signalType, value: signalType, selected: (signalType===oscillator.signalType)}).appendTo(signalSelector);
-		});
-		signalSelector.change( function(ev){ 
-			$(this).blur();
-			oscillator.signalType = this.value;
-			self.resetOscillators();
-			studio.invalidateSavedStatus(); 
-		});
-		$("<div class='thicket'>SIGNAL TYPE</div>").appendTo(signalDiv);
-		
-		// Semitones
-		var semitoneDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-		$("<input/>",{type:"number",value:oscillator.offset.semitones, class:"short"}).appendTo(semitoneDiv).change(function(ev){
-			oscillator.offset.semitones = parseInt(this.value);
-		});
-		$("<div class='thicket'>SEMITONES</div>").appendTo(semitoneDiv);
-		
-		// Cents
-		var centsDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-		$("<input/>",{type:"number",value:oscillator.offset.cents, class:"short"}).appendTo(centsDiv).change(function(ev){
-			oscillator.offset.cents = parseInt(this.value);
-		});
-		$("<div class='thicket'>CENTS</div>").appendTo(centsDiv);
-		
-		// Removal
-		$("<button></button>",{text:"remove"}).appendTo(oscillatorDiv).click(function(ev){
-			self.removeOscillator(oscillator);
-		});
+		this.generateOscillatorBody(oscillator, oscillatorList, idx);
 	}, this);
+};
+
+
+
+Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorList, idx){
+	var self = this;
+	var oscillatorDiv = $("<div/>",{id:"oscillator_"+idx, class:"listed"}).appendTo(oscillatorList);
+
+	var fieldLabel = $("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(oscillatorDiv);
+	$("<div/>",{class:"toggler dextra",text:"\u00d7"}).appendTo(fieldLabel).mouseover(function(ev){
+		$(this).addClass("hover");
+	}).click(function(ev){
+		self.oscillatorAttributes.splice(idx,1);
+		self.resetOscillators();
+		oscillatorDiv.remove();
+	});
+
+	// Volume
+	this.createSlider("volume", Circuit.GAIN_ATTRIBUTES.volume, oscillator.volume, 
+		function(key, value){
+			oscillator.volume = value;
+			self.resetOscillators();
+			studio.invalidateSavedStatus();
+		}, oscillatorDiv);
+
+	// Signal Type
+	var signalDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
+	var signalSelector = $("<select/>").appendTo(signalDiv);
+	Oscillator.SIGNAL_TYPES.forEach(function(signalType){
+		$("<option/>",{text: signalType, value: signalType, selected: (signalType===oscillator.signalType)}).appendTo(signalSelector);
+	});
+	signalSelector.change( function(ev){ 
+		$(this).blur();
+		oscillator.signalType = this.value;
+		self.resetOscillators();
+		studio.invalidateSavedStatus(); 
+	});
+	$("<div class='thicket'>SIGNAL TYPE</div>").appendTo(signalDiv);
+
+	// Semitones
+	var semitoneDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
+	$("<input/>",{type:"number",value:oscillator.offset.semitones, class:"short"}).appendTo(semitoneDiv).change(function(ev){
+		oscillator.offset.semitones = parseInt(this.value);
+	});
+	$("<div class='thicket'>SEMITONES</div>").appendTo(semitoneDiv);
+
+	// Cents
+	var centsDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
+	$("<input/>",{type:"number",value:oscillator.offset.cents, class:"short"}).appendTo(centsDiv).change(function(ev){
+		oscillator.offset.cents = parseInt(this.value);
+	});
+	$("<div class='thicket'>CENTS</div>").appendTo(centsDiv);
+	
+	// LFO
+	this.createSlider("LFO frequency", Oscillator.LFO_ATTRIBUTES.frequency, oscillator.lfo.frequency, function(key, value){
+		oscillator.lfo.frequency = parseInt(value);
+	}, oscillatorDiv);	
 };
 
 
@@ -222,10 +254,12 @@ Oscillator.prototype.allocateOscillators = function(){
 	this.oscillatorAttributes.forEach(function(oscillator){
 		var oscNode = this.ctx.createOscillator();
 		oscNode.type = oscillator.signalType;
-		oscNode.frequency.value = Pitch.addCents(this.pitch.frequency, (oscillator.offset.semitones*100)+oscillator.offset.cents);
+		oscNode.frequency.value =this.pitch.frequency;
+		oscNode.detune.value = (oscillator.offset.semitones*100) + oscillator.offset.cents;
 		oscNode.gainer = this.ctx.createGainNode();
 		oscNode.gainer.gain.value = oscillator.volume;
 		oscNode.connect(oscNode.gainer);
+		this.connectLFO(oscillator.lfo, oscNode);
 		oscillators.push(oscNode);
 	}, this);
 	return oscillators;

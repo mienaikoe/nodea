@@ -158,7 +158,8 @@ Scales.SCALE_TYPES = {
 	natural_minor:	[2,3,5,7,8,10,12],
 	harmonic_minor:	[2,3,5,7,8,11,12],
 	pentatonic:		[2,4,7,9,12],
-	jazz:			[3,5,6,7,10,12]
+	jazz:			[3,5,6,7,10,12],
+	chromatic:		[1,2,3,4,5,6,7,8,9,10,11,12]
 };
 
 Scales.scaleTypeSelector = function(selectBox, value, changer){

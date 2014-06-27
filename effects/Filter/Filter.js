@@ -65,15 +65,15 @@ Filter.FILTER_TYPES = {
 Filter.prototype.render = function(division) {
 	var self = this;
 	
-	var typeChooser = $("<select></select>",{id: "type_chooser"}).appendTo(division).change(function(){
+	var typeContainer = $("<spiv></spiv>").appendTo(division);
+	var typeChooser = $("<select></select>",{id: "type_chooser"}).appendTo(typeContainer).change(function(){
 		self.input.type = this.value;
 		studio.invalidateSavedStatus();
 	});
-	
 	for( key in Filter.FILTER_TYPES ){
 		$("<option></option>",{value: key, html: Filter.FILTER_TYPES[key], selected: (key===this.input.type)}).appendTo(typeChooser);
 	}
-	
+	$("<div class='thicket'>FILTER TYPE</div>").appendTo(typeContainer);
 	
 	for( key in Filter.FILTER_ATTRIBUTES ){
 		var attributes = Filter.FILTER_ATTRIBUTES[key];
@@ -83,8 +83,6 @@ Filter.prototype.render = function(division) {
 		};
 		this.createSlider(key, attributes, this.input[key].value, changer, division);
 	}
-	
-	$("<br>").appendTo(division);
 	
 	for(key in Filter.ENVELOPE_ATTRIBUTES){
 		var attributes = Filter.ENVELOPE_ATTRIBUTES[key];
