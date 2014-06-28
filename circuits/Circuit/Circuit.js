@@ -155,8 +155,8 @@ Circuit.prototype.generateEnvelopeDivision = function(divisionBody){
 		var changer = function(key, value){
 			this.envelopeAttributes[key] = value;
 			studio.invalidateSavedStatus();
-		};
-		this.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
+		}.bind(this);
+		DrawerUtils.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
 	}
 	
 	for(key in Circuit.ENVELOPE_ATTRIBUTES){
@@ -164,22 +164,12 @@ Circuit.prototype.generateEnvelopeDivision = function(divisionBody){
 		var changer = function(key, value){
 			this.envelopeAttributes[key] = value;
 			studio.invalidateSavedStatus();
-		};
-		this.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
+		}.bind(this);
+		DrawerUtils.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
 	}
 };
 
-Circuit.prototype.createSlider = function(key, attributes, value, changer, division){
-	var self = this;
-	var sliderBox = $("<div>",{class:"envelope_slider"}).appendTo(division);
-	$("<label>"+key+"</label>").appendTo(sliderBox);
-	$("<input/>", $.extend({type:'range', value: value, id: this.id+'_slider_'+key}, attributes)).
-		appendTo(sliderBox).
-		change(function(){
-			$(this).blur();
-			changer.call(self, key, parseFloat(this.value));
-		});
-};
+
 
 
 
@@ -278,7 +268,7 @@ Circuit.prototype.scheduleCircuitStart = function(startWhen, note){
 Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
 	var release = this.envelopeAttributes.release;
 	if( endWhen <= this.ctx.currentTime ){
-		// MEGA HACK: If this line is on, realtime playback is great, but Recorded playback suffers.
+		// If this line is on, realtime playback is great, but Recorded playback suffers.
 		note.envelope.gain.setValueAtTime(note.envelope.gain.value, endWhen); 
 	}
 	note.envelope.gain.linearRampToValueAtTime(0.0, endWhen + release);

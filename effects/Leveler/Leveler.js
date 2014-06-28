@@ -41,8 +41,8 @@ Leveler.prototype.render = function(division) {
 		var changer = function(key, value){
 			this[key] = value;
 			studio.invalidateSavedStatus();
-		};
-		this.createSlider(key, attributes, this[key], changer, division);
+		}.bind(this);
+		DrawerUtils.createSlider(key, attributes, this[key], changer, division);
 	}
 	
 	$("<br>").appendTo(division);
@@ -52,8 +52,8 @@ Leveler.prototype.render = function(division) {
 		var changer = function(key, value){
 			this[key] = value;
 			studio.invalidateSavedStatus();
-		};
-		this.createSlider(key, attributes, this[key], changer, division);
+		}.bind(this);
+		DrawerUtils.createSlider(key, attributes, this[key], changer, division);
 	}
 };
 

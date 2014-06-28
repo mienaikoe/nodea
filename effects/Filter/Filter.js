@@ -80,8 +80,8 @@ Filter.prototype.render = function(division) {
 		var changer = function(key, value){
 			this.input[key].value = value;
 			studio.invalidateSavedStatus();
-		};
-		this.createSlider(key, attributes, this.input[key].value, changer, division);
+		}.bind(this);
+		DrawerUtils.createSlider(key, attributes, this.input[key].value, changer, division);
 	}
 	
 	for(key in Filter.ENVELOPE_ATTRIBUTES){
@@ -89,8 +89,8 @@ Filter.prototype.render = function(division) {
 		var changer = function(key, value){
 			this[key] = value;
 			studio.invalidateSavedStatus();
-		};
-		this.createSlider(key, attributes, this[key], changer, division);
+		}.bind(this);
+		DrawerUtils.createSlider(key, attributes, this[key], changer, division);
 	}
 };
 

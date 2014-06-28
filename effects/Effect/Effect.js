@@ -16,16 +16,7 @@ function Effect(ctx, effectReplacementCallback) {
 
 
 
-Effect.prototype.createSlider = function(key, attributes, value, changer, division){
-	var self = this;
-	var sliderBox = $("<div>",{class:"envelope_slider"}).appendTo(division);
-	$("<label>"+key+"</label>").appendTo(sliderBox);
-	$("<input/>", $.extend({type:'range', value: value, id: 'slider_'+key}, attributes)).
-		appendTo(sliderBox).
-		change(function(){
-			changer.call(self, key, parseFloat(this.value));
-		});
-};
+
 
 
 

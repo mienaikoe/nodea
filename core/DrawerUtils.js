@@ -67,8 +67,19 @@ var DrawerUtils = {
 					hover( hoverFunc, hoverFunc ).
 					click(function(){ togglee.toggle(); });
 		});
+	},
+	
+	createSlider: function(key, attributes, value, changer, division){
+		var sliderBox = $("<div>",{class:"envelope_slider"}).appendTo(division);
+		$("<label>"+key+"</label>").appendTo(sliderBox);
+		$("<input/>", $.extend({type:'range', value: value, id: this.id+'_slider_'+key}, attributes)).
+			appendTo(sliderBox).
+			change(function(){
+				$(this).blur();
+				changer(key, parseFloat(this.value));
+			});
 	}
 	
-	
 };
+
 

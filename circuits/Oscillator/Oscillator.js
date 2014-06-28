@@ -38,7 +38,6 @@ Oscillator.prototype.extractSettings = function(settings){
 };
 
 Oscillator.DEFAULT_PITCH = new Pitch("A",4);
-Oscillator.DEFAULT_LFO = {frequency: 20, destination: "volume"};
 
 Oscillator.DEFAULT_OSCILLATOR = {
 	signalType: "sine",
@@ -50,10 +49,6 @@ Oscillator.SIGNAL_TYPES = [
 	"sine","square","sawtooth","triangle"
 ];
 
-Oscillator.LFO_ATTRIBUTES = {
-	frequency: {}
-};
-
 
 Oscillator.prototype.extractOscillatorSettings = function(settings){
 	var osc = {};
@@ -64,14 +59,14 @@ Oscillator.prototype.extractOscillatorSettings = function(settings){
 		if(settings.offset){
 			osc.offset = settings.offset;
 		}
-		if(settings.type){
+		if(settings.signalType){
 			osc.signalType = settings.signalType;
 		}
 		if(settings.volume){
 			osc.volume = settings.volume;
 		}
 		if(settings.lfo){
-			osc.lfo = settings.lfo;
+			osc.lfo = new LFO(this.ctx,settings.lfo);
 		}
 	}
 	
@@ -85,28 +80,19 @@ Oscillator.prototype.extractOscillatorSettings = function(settings){
 		osc.volume = 1;
 	}
 	if(!osc.lfo){
-		osc.lfo = Oscillator.DEFAULT_LFO;
+		osc.lfo = LFO.default(this.ctx);
 	}
-	
-	osc.lfo.oscillator = this.ctx.createOscillator();
-	osc.lfo.oscillator.frequency.value = osc.lfo.frequency;
-	
 	
 	return osc;
 };
 
 
-Oscillator.prototype.connectLFO = function(lfo, oscillator){
-	switch(lfo.destination){
-		case "volume":
-			lfo.oscillator.connect(oscillator.gainer.gain);
-		case "frequency":
-			lfo.oscillator.connect(oscillator.frequency);
-	}
-};
 
 
 Oscillator.prototype.addOscillator = function(){
+	var defaultOsc = Oscillator.DEFAULT_OSCILLATOR;
+	defaultOsc.lfo = LFO.default(this.ctx);
+	
 	this.oscillatorAttributes.push(Oscillator.DEFAULT_OSCILLATOR);
 	this.generateDrawer();
 };
@@ -115,6 +101,7 @@ Oscillator.prototype.removeOscillator = function(oscillator){
 	var idx = this.oscillatorAttributes.indexOf(oscillator);
 	if(idx > -1){
 		this.oscillatorAttributes.splice(idx,1);
+		oscillator.lfo.destroy();
 	}
 	this.generateDrawer();
 };
@@ -183,12 +170,12 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 	});
 
 	// Volume
-	this.createSlider("volume", Circuit.GAIN_ATTRIBUTES.volume, oscillator.volume, 
+	DrawerUtils.createSlider("volume", Circuit.GAIN_ATTRIBUTES.volume, oscillator.volume, 
 		function(key, value){
 			oscillator.volume = value;
 			self.resetOscillators();
 			studio.invalidateSavedStatus();
-		}, oscillatorDiv);
+		}.bind(this), oscillatorDiv);
 
 	// Signal Type
 	var signalDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
@@ -219,9 +206,7 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 	$("<div class='thicket'>CENTS</div>").appendTo(centsDiv);
 	
 	// LFO
-	this.createSlider("LFO frequency", Oscillator.LFO_ATTRIBUTES.frequency, oscillator.lfo.frequency, function(key, value){
-		oscillator.lfo.frequency = parseInt(value);
-	}, oscillatorDiv);	
+	oscillator.lfo.render(oscillatorDiv);
 };
 
 
@@ -259,7 +244,7 @@ Oscillator.prototype.allocateOscillators = function(){
 		oscNode.gainer = this.ctx.createGainNode();
 		oscNode.gainer.gain.value = oscillator.volume;
 		oscNode.connect(oscNode.gainer);
-		this.connectLFO(oscillator.lfo, oscNode);
+		oscillator.lfo.connect(oscNode);
 		oscillators.push(oscNode);
 	}, this);
 	return oscillators;
@@ -380,7 +365,9 @@ Oscillator.prototype.marshalSettings = function(){
 		this.oscillatorAttributes.forEach(function(osc){
 			ret.oscillatorAttributes.push({
 				signalType: osc.signalType,
-				offset: osc.offset
+				offset: osc.offset,
+				volume: osc.volume,
+				lfo: osc.lfo.marshal()
 			});
 		});
 	}
