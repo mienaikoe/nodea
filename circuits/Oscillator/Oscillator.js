@@ -243,8 +243,12 @@ Oscillator.prototype.allocateOscillators = function(){
 		oscNode.detune.value = (oscillator.offset.semitones*100) + oscillator.offset.cents;
 		oscNode.gainer = this.ctx.createGainNode();
 		oscNode.gainer.gain.value = oscillator.volume;
-		oscNode.connect(oscNode.gainer);
+		oscNode.lfoIn = this.ctx.createGainNode();
+		
 		oscillator.lfo.connect(oscNode);
+		oscNode.connect(oscNode.lfoIn);
+		oscNode.lfoIn.connect(oscNode.gainer);
+		
 		oscillators.push(oscNode);
 	}, this);
 	return oscillators;

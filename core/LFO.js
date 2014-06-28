@@ -30,7 +30,7 @@ LFO.ATTRIBUTES = {
 LFO.prototype.connect = function(oscillator){
 	switch(this.destination){
 		case "volume":
-			this.gainer.connect(oscillator.gainer.gain);
+			this.gainer.connect(oscillator.lfoIn.gain);
 			break;
 		case "frequency":
 			this.gainer.gain.value = this.amplitude*1000;
