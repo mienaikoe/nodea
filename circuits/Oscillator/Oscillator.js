@@ -179,16 +179,11 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 
 	// Signal Type
 	var signalDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-	var signalSelector = $("<select/>").appendTo(signalDiv);
-	Oscillator.SIGNAL_TYPES.forEach(function(signalType){
-		$("<option/>",{text: signalType, value: signalType, selected: (signalType===oscillator.signalType)}).appendTo(signalSelector);
-	});
-	signalSelector.change( function(ev){ 
-		$(this).blur();
-		oscillator.signalType = this.value;
-		self.resetOscillators();
+	DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, oscillator.signalType, function(value){ 
+		oscillator.signalType = value;
+		this.resetOscillators();
 		studio.invalidateSavedStatus(); 
-	});
+	}.bind(this), signalDiv);
 	$("<div class='thicket'>SIGNAL TYPE</div>").appendTo(signalDiv);
 
 	// Semitones
@@ -206,6 +201,7 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 	$("<div class='thicket'>CENTS</div>").appendTo(centsDiv);
 	
 	// LFO
+	$("<div/>",{class:"fieldLabel sub", text: "LFO"}).appendTo(oscillatorDiv);
 	oscillator.lfo.render(oscillatorDiv);
 };
 
@@ -239,8 +235,7 @@ Oscillator.prototype.allocateOscillators = function(){
 	this.oscillatorAttributes.forEach(function(oscillator){
 		var oscNode = this.ctx.createOscillator();
 		oscNode.type = oscillator.signalType;
-		oscNode.frequency.value =this.pitch.frequency;
-		oscNode.detune.value = (oscillator.offset.semitones*100) + oscillator.offset.cents;
+		oscNode.frequency.value = Pitch.addCents(this.pitch.frequency, (oscillator.offset.semitones*100)+oscillator.offset.cents); // detune is reserved for LFO
 		oscNode.gainer = this.ctx.createGainNode();
 		oscNode.gainer.gain.value = oscillator.volume;
 		oscNode.lfoIn = this.ctx.createGainNode();

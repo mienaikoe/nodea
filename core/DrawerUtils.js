@@ -18,27 +18,6 @@ var DrawerUtils = {
 				adderCallback();
 			});
 	},
-	
-	addSelectorToHead: function(sectionHead, options, selected, callback){		
-		// TODO: Add Key Code
-		// TODO: Other useful data
-
-		var selector = $("<select/>",{class:"heading_select dextra"}).appendTo(sectionHead);
-		options.forEach(function(machineName){
-			$("<option/>",{
-				html: machineName, 
-				value: machineName,
-				selected: (selected === machineName)
-			}).appendTo(selector);
-		}, this);
-
-		$(selector).change(function(){
-			var value = $(selector).val();
-			if( value ){
-				callback(value);
-			}
-		});
-	},
 
 	createDivision: function(section, title, className){
 		className = className ? className : '';
@@ -69,8 +48,12 @@ var DrawerUtils = {
 		});
 	},
 	
-	createSlider: function(key, attributes, value, changer, division){
-		var sliderBox = $("<div>",{class:"envelope_slider"}).appendTo(division);
+	
+	
+	// Useful Drawer UI Tools
+	
+	createSlider: function(key, attributes, value, changer, container){
+		var sliderBox = $("<div>",{class:"envelope_slider"});
 		$("<label>"+key+"</label>").appendTo(sliderBox);
 		$("<input/>", $.extend({type:'range', value: value, id: this.id+'_slider_'+key}, attributes)).
 			appendTo(sliderBox).
@@ -78,7 +61,33 @@ var DrawerUtils = {
 				$(this).blur();
 				changer(key, parseFloat(this.value));
 			});
+		if(container){
+			sliderBox.appendTo(container);
+		}	
+		return sliderBox;
+	},
+	
+	createSelector: function(options, selected, changer, container){		
+		var selector = $("<select/>");
+		options.forEach(function(machineName){
+			$("<option/>",{
+				html: machineName, 
+				value: machineName,
+				selected: (selected === machineName)
+			}).appendTo(selector);
+		}, this);
+		$(selector).change(function(){
+			var value = $(selector).val();
+			if( value ){
+				changer(value);
+			}
+		});
+		if(container){
+			selector.appendTo(container);
+		}
+		return selector;
 	}
+	
 	
 };
 

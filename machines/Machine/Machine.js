@@ -201,7 +201,7 @@ Machine.prototype.generateDrawer = function(){
 	detailsElement.empty();
 	
 	var machineSection = DrawerUtils.createSection(detailsElement, "Machine");
-	DrawerUtils.addSelectorToHead(machineSection.head, Machine.machinesManifest, this.handle, this.replaceSelf.bind(this));
+	DrawerUtils.createSelector(Machine.machinesManifest, this.handle, this.replaceSelf.bind(this), machineSection.head).addClass("heading_select dextra");
 	if( this.constructor !== Machine ){
 		this.generateMachineDivision(DrawerUtils.createDivision(machineSection.body, this.handle));
 	}

@@ -99,7 +99,7 @@ Circuit.prototype.generateDrawer = function(){
 	detailsElement.empty();
 	
 	var circuitSection = DrawerUtils.createSection(detailsElement, "Circuit");
-	DrawerUtils.addSelectorToHead(circuitSection.head, Circuit.circuitsManifest, this.handle, this.replaceSelf.bind(this));
+	DrawerUtils.createSelector(Circuit.circuitsManifest, this.handle, this.replaceSelf.bind(this), circuitSection.head).addClass("heading_select dextra");
 	if( this.constructor !== Circuit ){
 		this.generateCircuitDivision(DrawerUtils.createDivision(circuitSection.body, this.handle));
 	}
@@ -114,27 +114,6 @@ Circuit.prototype.replaceSelf = function(newHandle){
 	this.circuitReplacementCallback(this, newHandle);
 };
 
-Circuit.prototype.addSelectorToHead = function(sectionHead){		
-	// TODO: Add Key Code
-	// TODO: Other useful data
-	
-	var selector = $("<select/>",{class:"heading_select dextra"}).appendTo(sectionHead);
-	Circuit.circuitsManifest.forEach(function(circuitName){
-		$("<option/>",{
-			html: circuitName, 
-			value: circuitName,
-			selected: (this.handle === circuitName)
-		}).appendTo(selector);
-	}, this);
-	
-	var self = this;
-	$(selector).change(function(){
-		var selected = $(this).val();
-		if( selected ){
-			self.circuitReplacementCallback(self, selected);
-		}
-	});
-};
 
 
 Circuit.prototype.generateCircuitDivision = function(divisionBody) {
