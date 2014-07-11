@@ -63,6 +63,6 @@ Effect.prototype.load = function(settings){
 
 // TODO: Mark that Envelope is exclusively for circuits
 Effect.effectsManifest = {
-	machines: ["","Compressor","Reverb","Delay"],
-	circuits: ["","Compressor","Reverb","Delay","Filter"]
+	machines: ["","Compressor","Reverb","Delay","Panner"],
+	circuits: ["","Compressor","Reverb","Delay","Filter","Panner"]
 };

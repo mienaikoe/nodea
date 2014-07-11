@@ -16,6 +16,14 @@ var LFO = function(ctx, options){
 	}
 	this.gainer.gain.value = options.strength;
 	
+	if(typeof options.bypass === 'boolean'){
+		this.bypass = options.bypass;
+	} else {
+		this.bypass = false;
+	}
+	
+	this.connectionTarget = null;
+	
 	this.oscillator.connect(this.gainer);
 	this.oscillator.start(0);
 };
@@ -35,27 +43,34 @@ LFO.DESTINATIONS = ["volume","frequency"];
 
 
 LFO.prototype.connect = function(oscillator){
+	this.connectionTarget = oscillator;
 	switch(this.destination){
 		case "volume":
 			this.gainer.gain.value = this.strength;
-			this.gainer.connect(oscillator.lfoIn.gain);
+			if(!this.bypass){
+				this.gainer.connect(oscillator.lfoIn.gain);
+			}
 			break;
 		case "frequency":
 			this.gainer.gain.value = this.strength*100;
-			this.gainer.connect(oscillator.detune);
+			if(!this.bypass){
+				this.gainer.connect(oscillator.detune);
+			}
 			break;
 	}
 };
 
 
-LFO.prototype.render = function(container){
-	var signalTypeContainer = $("<spiv/>").appendTo(container);
+LFO.prototype.render = function(oscContainer){
+	this.container = $("<div/>",{class: "lfoContainer"}).appendTo(oscContainer);
+	
+	var signalTypeContainer = $("<spiv/>").appendTo(this.container);
 	DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, this.signalType, function(value){
 		this.oscillator.type = value;
 	}.bind(this), signalTypeContainer);
 	$("<div/>",{class:"thicket", text: "SIGNAL TYPE"}).appendTo(signalTypeContainer);
 
-	var destinationContainer = $("<spiv/>").appendTo(container);
+	var destinationContainer = $("<spiv/>").appendTo(this.container);
 	DrawerUtils.createSelector(LFO.DESTINATIONS, this.destination, function(value){
 		this.destination = value;
 	}.bind(this), destinationContainer);
@@ -63,11 +78,21 @@ LFO.prototype.render = function(container){
 	
 	DrawerUtils.createSlider("frequency", LFO.ATTRIBUTES.frequency, this.oscillator.frequency, function(key, value){
 		this.oscillator.frequency.value = parseInt(value);
-	}.bind(this), container);
+	}.bind(this), this.container);
 	
 	DrawerUtils.createSlider("strength", LFO.ATTRIBUTES.strength, this.strength, function(key, value){
 		this.strength = parseFloat(value);
-	}.bind(this), container);
+	}.bind(this), this.container);
+};
+
+LFO.prototype.toggleBypass = function(){
+	this.bypass = !this.bypass;
+	this.container.toggleClass("bypass");
+	if(this.bypass){
+		this.gainer.disconnect();
+	} else {
+		this.connect(this.connectionTarget);
+	}
 };
 
 
@@ -77,7 +102,8 @@ LFO.prototype.marshal = function(){
 		frequency: this.oscillator.frequency.value,
 		type: this.oscillator.type,
 		strength: this.strength,
-		destination: this.destination
+		destination: this.destination,
+		bypass: this.bypass
 	};
 };
 
@@ -260,9 +286,14 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 	var oscillatorDiv = $("<div/>",{id:"oscillator_"+idx, class:"listed"}).appendTo(oscillatorList);
 
 	var fieldLabel = $("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(oscillatorDiv);
-	$("<div/>",{class:"toggler dextra",text:"\u00d7"}).appendTo(fieldLabel).mouseover(function(ev){
+	$("<div/>",{class:"toggler dextra",text:"\u00d7"}).appendTo(fieldLabel).
+	mouseover(function(ev){
 		$(this).addClass("hover");
-	}).click(function(ev){
+	}).
+	mouseout(function(ev){
+		$(this).removeClass("hover");
+	}).
+	click(function(ev){
 		self.oscillatorAttributes.splice(idx,1);
 		self.resetOscillators();
 		oscillatorDiv.remove();
@@ -300,7 +331,19 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 	$("<div class='thicket'>CENTS</div>").appendTo(centsDiv);
 	
 	// LFO
-	$("<div/>",{class:"fieldLabel sub", text: "LFO "+(idx+1)}).appendTo(oscillatorDiv);
+	var lfoLabel = $("<div/>",{class:"fieldLabel sub", text: "LFO "+(idx+1)}).appendTo(oscillatorDiv);
+	$("<div/>",{class:"toggler dextra",text:(oscillator.lfo.bypass ? "off" : "on")}).appendTo(lfoLabel).
+	mouseover(function(ev){
+		$(this).addClass("hover");
+	}).
+	mouseout(function(ev){
+		$(this).removeClass("hover");
+	}).
+	click(function(ev){
+		oscillator.lfo.toggleBypass();
+		$(this).html(oscillator.lfo.bypass ? "off" : "on");
+	});
+	
 	oscillator.lfo.render(oscillatorDiv);
 };
 
