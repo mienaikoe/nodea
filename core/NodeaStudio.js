@@ -99,7 +99,6 @@ function NodeaStudio(editorContainer, project) {
 			machine.circuitsContainer.appendTo(self.circuitsContainer);
 			if(machine.ascii === NodeaStudio.defaultMachineCode){
 				self.selectMachine(NodeaStudio.defaultMachineCode);
-				machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
 			}
 		});
 	}

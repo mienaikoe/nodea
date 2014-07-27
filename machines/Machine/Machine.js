@@ -70,7 +70,10 @@ Machine.prototype.extractCircuits = function(marshaledCircuits){
 		this.initializeCircuit(marshaledCircuit, function(newCircuit, marshaledCircuit){
 			marshaledCircuit.tempContainer.replaceWith(newCircuit.container);
 			delete marshaledCircuit.tempContainer;
-		});
+			if(this.selectedCircuit === newCircuit.asciiCode){
+				this.swytcheSelected(newCircuit.asciiCode);
+			}
+		}.bind(this));
 		nodeRowClass = nodeRowClass === 'sinistra' ? 'dextra' : 'sinistra';
 	}, this);
 };
@@ -251,10 +254,16 @@ Machine.prototype.select = function(){
 	
 	this.tab.attr("style", "background: linear-gradient("+this.color+", #444);");
 	this.circuitsContainer.show();
+	
+	if(!this.selectedCircuit){
+		this.selectedCircuit = NodeaStudio.defaultCircuitCode;
+	}
+	this.swytcheSelected(this.selectedCircuit);
 };
 
 
 Machine.prototype.swytcheSelected = function(ordinal){
+	this.selectedCircuit = ordinal;
 	ordinal = ordinal.toString();
 	for( ascii in this.circuits){
 		var circuit = this.circuits[ascii];
@@ -333,5 +342,5 @@ Machine.keyCodeToAsciiMap = {
 
 Machine.machinesManifest = [
 	"",
-	"Uncharted"
+	"Synthesizer"
 ];
