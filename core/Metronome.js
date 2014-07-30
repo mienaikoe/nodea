@@ -1,6 +1,6 @@
 var Metronome = function(ctx, button, bpm){
 	this.ctx = ctx;
-	var gainNode = this.ctx.createGainNode();
+	var gainNode = this.ctx.createGain();
 	gainNode.gain.value = 0.1;
 	gainNode.connect(this.ctx.destination);
 	this.destination = gainNode;

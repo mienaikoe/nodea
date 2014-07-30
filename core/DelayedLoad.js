@@ -2,6 +2,7 @@ var DelayedLoad = {
 	
 	loadedScripts: {},
 	
+	// TODO: Replace with Require js
 	loadScript: function(type, handle, onload) {
 		if(type===undefined || handle===undefined){
 			console.warn("loadScript called with undefined type or handle");
@@ -32,32 +33,6 @@ var DelayedLoad = {
 				});
 				self.loadedScripts[label] = [];
 			};
-		}
-	},
-	
-	loadBuffer: function(bufferUrl, callback){
-		var self = this;
-		var request = new XMLHttpRequest();
-		request.open("GET", bufferUrl, true);
-		request.responseType = "arraybuffer";
-		request.onload = function() {
-			self.ctx.decodeAudioData(
-				request.response,
-				function(buffer) {
-					callback(buffer);
-				},
-				function() { 
-					console.log("Error decoding sample for "+this.bufferUrl); 
-					callback(null);
-				}
-			);
-		};
-		try{
-			request.send();
-		} catch(err) { // Not working...
-			console.error("Error when trying to fetch Buffer Source");
-			console.error(err.get_stack());
-			callback(null);
 		}
 	}
 };

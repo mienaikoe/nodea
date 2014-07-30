@@ -13,8 +13,8 @@ window.AudioContext =
 		window.AudioContext || 
 		window.webkitAudioContext;
 
-window.AudioContext.prototype.createGainNode =
-		window.AudioContext.prototype.createGainNode || 
+window.AudioContext.prototype.createGain =
+		window.AudioContext.prototype.createGain || 
 		window.AudioContext.prototype.createGain;
 
 if( !window.requestAnimationFrame || !window.AudioContext ){
@@ -41,31 +41,8 @@ Object.defineProperty(Object.prototype, 'extends', {
 });
 
 
-// TODO: Make Audio Params for each vol, and the general vol
-AudioContext.prototype.createStereoGain = function(bufferSize) {
-	if (!bufferSize) {
-		bufferSize = 2048;
-	}
 
-	var node = this.createScriptProcessor(bufferSize);
-	node.channelVolumes = [0.8, 0.8];
-	node.setGain = function(value){
-		node.channelVolumes = [value,value];
-	};
-	node.onaudioprocess = function(ev) {
-		var inBuff = ev.inputBuffer;
-		var outBuff = ev.outputBuffer;
-		for (var channel = 0; channel < 2; channel++) {
-			var outData = outBuff.getChannelData(channel);
-			var inData = inBuff.getChannelData(channel);
-			for (var sample = 0; sample < inBuff.length; sample++) {
-				outData[sample] = channelVolumes[channel] * inData[sample];
-			}
-		}
-	};
-	
-	return node;
-};
+
 
 
 AudioNode.prototype.connectSuper = AudioNode.prototype.connect;
@@ -82,4 +59,30 @@ AudioNode.prototype.connect = function(target){
 	   target.backwardConnections = [this];
    }
    AudioNode.prototype.connectSuper.call(this, target);
+};
+
+
+
+AudioContext.prototype.fetchBuffer = function(bufferUrl){
+	return new Promise( function(good, bad){
+		var request = new XMLHttpRequest();
+		request.open("GET", bufferUrl, true);
+		request.responseType = "arraybuffer";
+		request.onload = function() {
+			this.decodeAudioData( request.response,
+				function(buffer) {
+					good(buffer);
+				}.bind(this),
+				function() {
+					bad("Error decoding Buffer Source wth URL: "+bufferUrl);
+				}
+			);
+		}.bind(this);
+		try{
+			request.send();
+		} catch(err) { // Not working...
+			console.error(err);
+			bad("Error fetching Buffer Source with URL: "+bufferUrl);
+		}
+	}.bind(this));
 };

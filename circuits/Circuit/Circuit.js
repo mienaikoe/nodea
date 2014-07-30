@@ -163,7 +163,7 @@ Circuit.prototype.isDisplaying = function(){
 
 
 Circuit.prototype.allocateEnvelope = function(){
-	var envelope = this.ctx.createGainNode();
+	var envelope = this.ctx.createGain();
 	envelope.gain.value = 0;
 	envelope.connect(this.destination);
 	return envelope;

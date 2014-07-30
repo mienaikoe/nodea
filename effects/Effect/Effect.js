@@ -7,7 +7,7 @@ function Effect(ctx, effectReplacementCallback) {
 	/* because you can't create a generic audio node for pass-through
 	 * and there need to be several nodes that link to this node
 	 */
-	this.input = ctx.createGainNode();
+	this.input = ctx.createGain();
 	this.input.gain.value = 1.0;
 
 	this.output = this.input;

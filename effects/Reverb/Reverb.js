@@ -25,10 +25,13 @@ Reverb.DEFAULT_CONVOLUTION = "room";
 Reverb.prototype.setConvolution = function(convolution){
 	if( convolution && this.convolution !== convolution ){
 		this.convolution = convolution;
-		var self = this;
-		DelayedLoad.loadBuffer( "effects/Reverb/convolutions/"+convolution+".wav", function(buffer){
-			self.input.buffer = buffer;
-		});
+		this.ctx.fetchBuffer( "effects/Reverb/convolutions/"+convolution+".wav").then( 
+			function(buffer){
+				this.input.buffer = buffer;
+			}.bind(this), 
+			function(err){
+				console.error(err);
+			});
 	}
 };
 

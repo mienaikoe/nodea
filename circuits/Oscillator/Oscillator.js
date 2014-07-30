@@ -8,7 +8,7 @@ var LFO = function(ctx, options){
 	this.strength = options.strength || 1;
 		
 	this.oscillator = ctx.createOscillator();
-	this.gainer = ctx.createGainNode();
+	this.gainer = ctx.createGain();
 	
 	this.oscillator.frequency.value = options.frequency;
 	if(options.signalType){
@@ -378,9 +378,9 @@ Oscillator.prototype.allocateOscillators = function(){
 		var oscNode = this.ctx.createOscillator();
 		oscNode.type = oscillator.signalType;
 		oscNode.frequency.value = Pitch.addCents(this.pitch.frequency, (oscillator.offset.semitones*100)+oscillator.offset.cents); // detune is reserved for LFO
-		oscNode.gainer = this.ctx.createGainNode();
+		oscNode.gainer = this.ctx.createGain();
 		oscNode.gainer.gain.value = oscillator.volume;
-		oscNode.lfoIn = this.ctx.createGainNode();
+		oscNode.lfoIn = this.ctx.createGain();
 		
 		oscillator.lfo.connect(oscNode);
 		oscNode.connect(oscNode.lfoIn);

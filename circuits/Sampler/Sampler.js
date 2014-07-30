@@ -1,12 +1,15 @@
 function Sampler(ctx, machine, marshaledCircuit, destination, circuitReplacementCallback) {
 	Circuit.call(this, ctx, machine, marshaledCircuit, destination, circuitReplacementCallback);
 		
-	var self = this;
-	DelayedLoad.loadBuffer(this.bufferUrl, function(buffer){
-		self.buffer = buffer; 
-        self.resetSources();
-		self.bindBufferToNotes();
-	});
+	ctx.fetchBuffer(this.bufferUrl).then( 
+		function(buffer){
+			this.buffer = buffer; 
+			this.resetSources();
+			this.bindBufferToNotes();
+		}.bind(this), 
+		function(err){
+			console.error(err);
+		});
 };
 
 
@@ -41,10 +44,14 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 		text(this.bufferUrl).
 		change(	function(ev){ 
 			self.bufferUrl = this.value; 
-			DelayedLoad.loadBuffer(self.bufferUrl, function(buffer){
-                self.buffer = buffer; 
-                self.resetSources();
-			}); 
+			self.ctx.fetchBuffer(self.bufferUrl).then(
+				function(buffer){
+					self.buffer = buffer; 
+					self.resetSources();
+				}, 
+				function(err){
+					console.error(err);
+				}); 
 			studio.invalidateSavedStatus(); 
 		}); // TODO: Make this more foolproof.
 		
