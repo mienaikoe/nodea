@@ -89,10 +89,10 @@ Machine.prototype.initializeCircuit = function(marshaledCircuit, callback){
 	}
 	
 	var self = this;
-	DelayedLoad.loadScript("circuits", marshaledCircuit.handle, function(){
-		var newCircuit = self.eagerInitializeCircuit(marshaledCircuit);
-		callback.call(self, newCircuit, marshaledCircuit);
-	});
+
+	var newCircuit = self.eagerInitializeCircuit(marshaledCircuit);
+	callback.call(self, newCircuit, marshaledCircuit);
+	
 };
 
 
@@ -212,6 +212,8 @@ Machine.prototype.generateDrawer = function(){
 	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects").body, "machines" );
 	
 	DrawerUtils.activateDrawerToggles($("#machine_drawer"));
+	
+	return machineSection;
 };
 
 Machine.prototype.replaceSelf = function(newHandle){

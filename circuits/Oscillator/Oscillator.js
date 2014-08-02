@@ -133,6 +133,8 @@ function Oscillator(ctx, machine, marshaledCircuit, destination, circuitReplacem
 	/* Build out any further initialization you need 
 	 * to do here. 
 	 */
+	this.controls.oscillators = [];
+	
 	this.oscillatorNodes = [];
 };
 
@@ -256,18 +258,22 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 	var self = this;
 	
 	// Pitch
-	var colorSelector = $(circuitBody).find("#Oscillator-Color");
-	Pitch.pitchKeySelector(colorSelector, this.pitch.color,	function(ev){ 
+	this.controls.colorSelector = $(circuitBody).find("#Oscillator-Color");
+	Pitch.pitchKeySelector(this.controls.colorSelector, this.pitch.color,	function(ev){ 
 		self.color = this.value;
 		studio.invalidateSavedStatus(); 
 	});
-	$(circuitBody).find("#Oscillator-Octave").
+	
+	this.controls.octaveSelector = $(circuitBody).find("#Oscillator-Octave");
+	this.controls.octaveSelector.
 		val(this.pitch.octave).
 		change(	function(ev){ 
 			self.octave = this.value;
 			studio.invalidateSavedStatus(); 
 		});
-	$(circuitBody).find("#Oscillator-Add").
+		
+	this.controls.oscillatorAdder = $(circuitBody).find("#Oscillator-Add");
+	this.controls.oscillatorAdder.
 		click(	function(ev){ 
 			self.addOscillator();
 			studio.invalidateSavedStatus(); 
@@ -275,7 +281,8 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 				
 	var oscillatorList = $(circuitBody).find("#Oscillator-List");
 	this.oscillatorAttributes.forEach( function(oscillator, idx){
-		this.generateOscillatorBody(oscillator, oscillatorList, idx);
+		var oscillatorControls = this.generateOscillatorBody(oscillator, oscillatorList, idx);
+		this.controls.oscillators[idx] = oscillatorControls;
 	}, this);
 };
 
@@ -286,21 +293,22 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 	var oscillatorDiv = $("<div/>",{id:"oscillator_"+idx, class:"listed"}).appendTo(oscillatorList);
 
 	var fieldLabel = $("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(oscillatorDiv);
-	$("<div/>",{class:"toggler dextra",text:"\u00d7"}).appendTo(fieldLabel).
-	mouseover(function(ev){
-		$(this).addClass("hover");
-	}).
-	mouseout(function(ev){
-		$(this).removeClass("hover");
-	}).
-	click(function(ev){
-		self.oscillatorAttributes.splice(idx,1);
-		self.resetOscillators();
-		oscillatorDiv.remove();
-	});
+	var oscRemover = $("<div/>",{class:"toggler dextra",text:"\u00d7"}).
+			appendTo(fieldLabel).
+			mouseover(function(ev){
+				$(this).addClass("hover");
+			}).
+			mouseout(function(ev){
+				$(this).removeClass("hover");
+			}).
+			click(function(ev){
+				self.oscillatorAttributes.splice(idx,1);
+				self.resetOscillators();
+				oscillatorDiv.remove();
+			});
 
 	// Volume
-	DrawerUtils.createSlider("volume", Circuit.GAIN_ATTRIBUTES.volume, oscillator.volume, 
+	var volumeSlider = DrawerUtils.createSlider("volume", Circuit.GAIN_ATTRIBUTES.volume, oscillator.volume, 
 		function(key, value){
 			oscillator.volume = value;
 			self.resetOscillators();
@@ -309,42 +317,57 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 
 	// Signal Type
 	var signalDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-	DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, oscillator.signalType, function(value){ 
+	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, oscillator.signalType, function(value){ 
 		oscillator.signalType = value;
 		this.resetOscillators();
-		studio.invalidateSavedStatus(); 
+		studio.invalidateSavedStatus();
 	}.bind(this), signalDiv);
 	$("<div class='thicket'>SIGNAL TYPE</div>").appendTo(signalDiv);
 
 	// Semitones
 	var semitoneDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-	$("<input/>",{type:"number",value:oscillator.offset.semitones, class:"short"}).appendTo(semitoneDiv).change(function(ev){
-		oscillator.offset.semitones = parseInt(this.value);
-	});
+	var semitoneInput = $("<input/>",{type:"number",value:oscillator.offset.semitones, class:"short"}).
+			appendTo(semitoneDiv).
+			change(function(ev){
+				oscillator.offset.semitones = parseInt(this.value);
+			});
 	$("<div class='thicket'>SEMITONES</div>").appendTo(semitoneDiv);
 
 	// Cents
 	var centsDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-	$("<input/>",{type:"number",value:oscillator.offset.cents, class:"short"}).appendTo(centsDiv).change(function(ev){
-		oscillator.offset.cents = parseInt(this.value);
-	});
+	var centsInput = $("<input/>",{type:"number",value:oscillator.offset.cents, class:"short"}).
+			appendTo(centsDiv).
+			change(function(ev){
+				oscillator.offset.cents = parseInt(this.value);
+			});
 	$("<div class='thicket'>CENTS</div>").appendTo(centsDiv);
 	
 	// LFO
 	var lfoLabel = $("<div/>",{class:"fieldLabel sub", text: "LFO "+(idx+1)}).appendTo(oscillatorDiv);
-	$("<div/>",{class:"toggler dextra",text:(oscillator.lfo.bypass ? "off" : "on")}).appendTo(lfoLabel).
-	mouseover(function(ev){
-		$(this).addClass("hover");
-	}).
-	mouseout(function(ev){
-		$(this).removeClass("hover");
-	}).
-	click(function(ev){
-		oscillator.lfo.toggleBypass();
-		$(this).html(oscillator.lfo.bypass ? "off" : "on");
-	});
+	var lfoBypass = $("<div/>",{class:"toggler dextra",text:(oscillator.lfo.bypass ? "off" : "on")}).
+			appendTo(lfoLabel).
+			mouseover(function(ev){
+				$(this).addClass("hover");
+			}).
+			mouseout(function(ev){
+				$(this).removeClass("hover");
+			}).
+			click(function(ev){
+				oscillator.lfo.toggleBypass();
+				$(this).html(oscillator.lfo.bypass ? "off" : "on");
+			});
 	
 	oscillator.lfo.render(oscillatorDiv);
+	
+	// Return manifest of all controls created
+	return {
+		oscRemover: oscRemover,
+		volumeSlider: volumeSlider,
+		signalTypeSelector: signalTypeSelector,
+		semitoneInput: semitoneInput,
+		centsInput: centsInput,
+		lfoBypass: lfoBypass
+	};
 };
 
 

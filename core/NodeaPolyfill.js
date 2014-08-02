@@ -86,3 +86,7 @@ AudioContext.prototype.fetchBuffer = function(bufferUrl){
 		}
 	}.bind(this));
 };
+
+AudioContext.prototype.createStub = function(){
+	return this.createGain(); // TODO: Do something more fancy that takes up less memory.
+};

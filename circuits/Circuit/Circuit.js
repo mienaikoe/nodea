@@ -29,6 +29,11 @@ function Circuit(ctx, machine, marshaledCircuit, destination, circuitReplacement
 	
 	this.notes = [];
 	this.recordingNote = null;
+	
+	this.controls = {
+		gain: {},
+		envelope: {}
+	};
 				
 	this.chain = new EffectsChain(this.ctx, destination, "circuits");
 	this.destination = this.chain.input;
@@ -55,7 +60,7 @@ Circuit.prototype.extractChain = function(settings){
 	if( settings.chain ){
 		this.chain.load(settings.chain);
 	} else {
-		this.chain.load([{type:"Envelope", attack:0.1, decay:0.1, sustain:0.1, release:0.1}]);
+		this.chain.load([]);
 	}
 };
 
@@ -108,6 +113,8 @@ Circuit.prototype.generateDrawer = function(){
 	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects").body );
 	
 	DrawerUtils.activateDrawerToggles($("#circuit_drawer"));
+	
+	return circuitSection;
 };
 
 Circuit.prototype.replaceSelf = function(newHandle){
@@ -116,7 +123,7 @@ Circuit.prototype.replaceSelf = function(newHandle){
 
 
 
-Circuit.prototype.generateCircuitDivision = function(divisionBody) {
+Circuit.prototype.generateCircuitDivision = function(divisionBody, callback) {
 	var self = this;
 	$.get("circuits/"+this.handle+"/"+this.handle+".html",null,function(data){
 		self.circuitBody = $(data).appendTo(divisionBody);
@@ -125,26 +132,29 @@ Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 			keyup(      function(ev){ ev.stopPropagation(); });
 	
 		self.generateCircuitBody.call(self,self.circuitBody);
+		if(callback){
+			callback();
+		}
 	});
 };
 
 Circuit.prototype.generateEnvelopeDivision = function(divisionBody){
-	for(key in Circuit.GAIN_ATTRIBUTES){
+	for(var key in Circuit.GAIN_ATTRIBUTES){
 		var attributes = Circuit.GAIN_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this.envelopeAttributes[key] = value;
 			studio.invalidateSavedStatus();
 		}.bind(this);
-		DrawerUtils.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
+		this.controls.gain[key] = DrawerUtils.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
 	}
 	
-	for(key in Circuit.ENVELOPE_ATTRIBUTES){
+	for(var key in Circuit.ENVELOPE_ATTRIBUTES){
 		var attributes = Circuit.ENVELOPE_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this.envelopeAttributes[key] = value;
 			studio.invalidateSavedStatus();
 		}.bind(this);
-		DrawerUtils.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
+		this.controls.envelope[key] = DrawerUtils.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
 	}
 };
 

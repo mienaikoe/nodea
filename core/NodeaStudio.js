@@ -1,17 +1,9 @@
-
-
-DelayedLoad.loadedScripts["circuits:Circuit"] = [];
-DelayedLoad.loadedScripts["machines:Machine"] = [];
-
-
-
 function NodeaStudio(editorContainer, project) {
 	// Convenience Variable for setting event handling.
 	var self = this;
 	
 	// TODO: Don't know if i should add some global filters or effects to this and have those be configurable as well.
-	this.ctx = new AudioContext(); 
-	DelayedLoad.ctx = this.ctx;
+	this.ctx = new AudioContext();
 	
 	// Create space for Circuit-Specific Styles
 	this.circuitStylesheet = document.createElement('style');
@@ -223,16 +215,16 @@ NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMach
 	} else if(marshaledMachine.handle === ''){
 		marshaledMachine.handle = 'Machine';
 	}
-	DelayedLoad.loadScript('machines', marshaledMachine.handle, function(){
-		machineConstructor = window[marshaledMachine.handle];
-		var machine = new machineConstructor(self.ctx, tabDefinition, self, marshaledMachine, function(oldMachine, newHandle){
-			 self.replaceMachine(oldMachine, newHandle);
-		});
-		self.machines[tabDefinition.ascii] = machine;
-		if(callback){
-			callback.call(this, machine);
-		}
+
+	machineConstructor = window[marshaledMachine.handle];
+	var machine = new machineConstructor(self.ctx, tabDefinition, self, marshaledMachine, function(oldMachine, newHandle){
+		 self.replaceMachine(oldMachine, newHandle);
 	});
+	self.machines[tabDefinition.ascii] = machine;
+	if(callback){
+		callback.call(this, machine);
+	}
+
 };
 
 
