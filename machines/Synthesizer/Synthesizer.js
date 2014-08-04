@@ -5,6 +5,15 @@ function Synthesizer( ctx, tabDefinition, studio, marshaledMachine, machineRepla
 
 Synthesizer.extends(Machine);
 
+Synthesizer.templateHTML = "<div id='Synthesizer'> \
+    <div class='mainFields'> \
+        <spiv> \
+            <select id='Synthesizer-ScaleType'></select> \
+            <div class='thicket'>SCALE TYPE</div> \
+        </spiv> \
+    </div> \
+</div>";
+
 
 Synthesizer.prototype.extractSettings = function(settings){
 	Machine.prototype.extractSettings.call(this, settings);
@@ -45,7 +54,7 @@ Synthesizer.prototype.defaultCircuit = function(ordinal, pitch){
 		notes: [], 
 		settings: {
 			pitch: pitch,
-			oscillatorAttributes: [
+			signalsAttributes: [
 				{	signalType: "sine",
 					offset: {semitones: 0, cents: 0}
 				}
@@ -72,27 +81,136 @@ Synthesizer.prototype.generateDrawer = function(){
 	
 	// Render Template Oscillator
 	var circuitDivision = this.templateOscillator.generateCircuitDivision(
-			DrawerUtils.createDivision(machineSection.body, "Oscillator Template"),
-			function(){	
-				// Callbacks on Controls
-				var self = this;
-				this.templateOscillator.controls.colorSelector.off("change").change(function(ev){
-					self.templateOscillator.pitch = new Pitch(this.value, self.templateOscillator.pitch.octave);
-					self.rescale();
-					self.studio.invalidateSavedStatus(); 
-				});
-
-				this.templateOscillator.controls.octaveSelector.off("change").change(function(ev){ 
-					self.templateOscillator.pitch = new Pitch( self.templateOscillator.pitch.color, parseInt(this.value) );
-					self.rescale();
-					self.studio.invalidateSavedStatus(); 
-				});
-			}.bind(this)
-	);	
+			DrawerUtils.createDivision(machineSection.body, "Oscillator Template"));
 	
 	var envelopeDivision = this.templateOscillator.generateEnvelopeDivision(
 			DrawerUtils.createDivision(machineSection.body, "Amp Envelope"));
+	
+	this.bindControls(this.templateOscillator.controls);	
 };
+
+Synthesizer.prototype.bindControls = function(controls){
+	// Callbacks on Osc Controls
+	var self = this;
+	var oscControls = this.templateOscillator.controls;
+	oscControls.colorSelector.change(function(ev){
+		self.rescale();
+		self.studio.invalidateSavedStatus(); 
+	});
+	oscControls.octaveSelector.change(function(ev){
+		self.rescale();
+		self.studio.invalidateSavedStatus(); 
+	});
+	
+	
+	
+	// Callbacks on each Oscillator
+	function eachOscCallbackConstructor(index, signalCallback){
+		return function(ev){
+			for( ordinal in self.circuits ){
+				var circuit = self.circuits[ordinal];
+				var signal = null;
+				if(circuit.constructor.name === "Oscillator"){
+					if(typeof index === 'number'){
+						signal = circuit.signalsAttributes[index];
+					}
+					signalCallback(circuit, signal, this);
+				}
+			}
+			studio.invalidateSavedStatus();
+		};
+	}
+	
+	oscControls.signalAdder.click(	eachOscCallbackConstructor(null, 
+			function(oscillator, signal, control){
+				oscillator.addSignal();
+				self.generateDrawer();
+			})
+	);
+
+	this.templateOscillator.signalsAttributes.forEach(function(signal, idx){
+		var signalControls = signal.controls;
+		signalControls.signalRemover.click( eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				oscillator.removeSignal(signal);
+				self.generateDrawer();
+			}) );
+		
+		signalControls.volumeSlider.change( eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.volume = control.value;
+				oscillator.resetSignals();
+				if(signal.controls && signal.controls.volumeSlider){
+					signal.controls.volumeSlider.value = control.value;
+				}
+			}) );
+			
+		signalControls.signalTypeSelector.change( eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.signalType = control.value;
+				oscillator.resetSignals();
+				if(signal.controls && signal.controls.volumeSlider){
+					signal.controls.volumeSlider.value = control.value;
+				}
+			}) );	
+		
+		signalControls.semitoneInput.change( eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.offset.semitones = parseInt(control.value);
+				oscillator.resetSignals();
+			}) );
+			
+		signalControls.centsInput.change( eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.offset.cents = parseInt(control.value);
+				oscillator.resetSignals();
+			}) );	
+
+
+		// LFO Controls
+		signalControls.lfoBypass.click( eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.lfo.toggleBypass();
+			}) );
+			
+		signalControls.lfo.signalTypeSelector.change(eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.lfo.signal.type = control.value;
+			}) );
+			
+		signalControls.lfo.destinationSelector.change(eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.lfo.destination = control.value;
+				oscillator.resetSignals();
+			}) );
+			
+		signalControls.lfo.frequencySlider.change(eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.lfo.signal.frequency.value = parseInt(control.value);
+			}) );
+			
+		signalControls.lfo.strengthSlider.change(eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.lfo.strength = parseFloat(control.value);
+			}) );
+	});
+	
+	for(var key in Circuit.ENVELOPE_ATTRIBUTES){
+		var attributes = Circuit.ENVELOPE_ATTRIBUTES[key];
+		var changer = (function(attrKey){
+			return eachOscCallbackConstructor(null,
+				function(oscillator, signal, control){
+					oscillator.envelopeAttributes[attrKey] = parseFloat(control.value);
+				}
+			);
+		}(key));
+		controls.envelope[key].change(changer);
+	}
+};
+
+
+
+
 
 
 /*

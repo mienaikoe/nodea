@@ -7,12 +7,12 @@ var LFO = function(ctx, options){
 	this.destination = options.destination;
 	this.strength = options.strength || 1;
 		
-	this.oscillator = ctx.createOscillator();
+	this.signal = ctx.createOscillator();
 	this.gainer = ctx.createGain();
 	
-	this.oscillator.frequency.value = options.frequency;
+	this.signal.frequency.value = options.frequency;
 	if(options.signalType){
-		this.oscillator.type = options.signalType;
+		this.signal.type = options.signalType;
 	}
 	this.gainer.gain.value = options.strength;
 	
@@ -24,12 +24,12 @@ var LFO = function(ctx, options){
 	
 	this.connectionTarget = null;
 	
-	this.oscillator.connect(this.gainer);
-	this.oscillator.start(0);
+	this.signal.connect(this.gainer);
+	this.signal.start(0);
 };
 
 LFO.default = function(ctx){
-	return new LFO(ctx, {frequency: 3, strength: 1, destination: "volume", signalType: "sine"});
+	return new LFO(ctx, {frequency: 3, strength: 1, destination: "volume", signalType: "sine", bypass: false});
 };
 
 
@@ -42,19 +42,19 @@ LFO.DESTINATIONS = ["volume","frequency"];
 
 
 
-LFO.prototype.connect = function(oscillator){
-	this.connectionTarget = oscillator;
+LFO.prototype.connect = function(signal){
+	this.connectionTarget = signal;
 	switch(this.destination){
 		case "volume":
 			this.gainer.gain.value = this.strength;
 			if(!this.bypass){
-				this.gainer.connect(oscillator.lfoIn.gain);
+				this.gainer.connect(signal.lfoIn.gain);
 			}
 			break;
 		case "frequency":
 			this.gainer.gain.value = this.strength*100;
 			if(!this.bypass){
-				this.gainer.connect(oscillator.detune);
+				this.gainer.connect(signal.detune);
 			}
 			break;
 	}
@@ -65,33 +65,48 @@ LFO.prototype.render = function(oscContainer){
 	this.container = $("<div/>",{class: "lfoContainer"}).appendTo(oscContainer);
 	
 	var signalTypeContainer = $("<spiv/>").appendTo(this.container);
-	DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, this.signalType, function(value){
-		this.oscillator.type = value;
+	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, this.signalType, function(value){
+		this.signal.type = value;
 	}.bind(this), signalTypeContainer);
 	$("<div/>",{class:"thicket", text: "SIGNAL TYPE"}).appendTo(signalTypeContainer);
 
 	var destinationContainer = $("<spiv/>").appendTo(this.container);
-	DrawerUtils.createSelector(LFO.DESTINATIONS, this.destination, function(value){
+	var destinationSelector = DrawerUtils.createSelector(LFO.DESTINATIONS, this.destination, function(value){
 		this.destination = value;
 	}.bind(this), destinationContainer);
 	$("<div/>",{class:"thicket", text: "DESTINATION"}).appendTo(destinationContainer);
 	
-	DrawerUtils.createSlider("frequency", LFO.ATTRIBUTES.frequency, this.oscillator.frequency, function(key, value){
-		this.oscillator.frequency.value = parseInt(value);
+	var frequencySlider = DrawerUtils.createSlider("frequency", LFO.ATTRIBUTES.frequency, this.signal.frequency, function(key, value){
+		this.signal.frequency.value = parseInt(value);
 	}.bind(this), this.container);
 	
-	DrawerUtils.createSlider("strength", LFO.ATTRIBUTES.strength, this.strength, function(key, value){
+	var strengthSlider = DrawerUtils.createSlider("strength", LFO.ATTRIBUTES.strength, this.strength, function(key, value){
 		this.strength = parseFloat(value);
 	}.bind(this), this.container);
+	
+	this.controls = {
+		signalTypeSelector : signalTypeSelector,
+		destinationSelector: destinationSelector,
+		frequencySlider: frequencySlider,
+		strengthSlider: strengthSlider
+	};
+	return this.controls;
 };
 
 LFO.prototype.toggleBypass = function(){
 	this.bypass = !this.bypass;
-	this.container.toggleClass("bypass");
 	if(this.bypass){
 		this.gainer.disconnect();
 	} else {
-		this.connect(this.connectionTarget);
+		if(this.connectTarget){
+			this.connect(this.connectionTarget);
+		}
+	}
+	if( this.bypassToggler ){
+		$(this.bypassToggler).html(this.bypass ? "off" : "on");
+	}
+	if( this.container ){
+		this.container.toggleClass("bypass");
 	}
 };
 
@@ -99,8 +114,8 @@ LFO.prototype.toggleBypass = function(){
 
 LFO.prototype.marshal = function(){
 	return {
-		frequency: this.oscillator.frequency.value,
-		type: this.oscillator.type,
+		frequency: this.signal.frequency.value,
+		type: this.signal.type,
 		strength: this.strength,
 		destination: this.destination,
 		bypass: this.bypass
@@ -109,9 +124,9 @@ LFO.prototype.marshal = function(){
 
 
 LFO.prototype.destroy = function(){
-	this.oscillator.disconnect();
+	this.signal.disconnect();
 	this.gainer.disconnect();
-	delete this.oscillator;
+	delete this.signal;
 	delete this.gainer;
 };
 
@@ -133,29 +148,45 @@ function Oscillator(ctx, machine, marshaledCircuit, destination, circuitReplacem
 	/* Build out any further initialization you need 
 	 * to do here. 
 	 */
-	this.controls.oscillators = [];
+	this.controls.signals = [];
 	
-	this.oscillatorNodes = [];
+	this.signalNodes = [];
 };
 
 Oscillator.extends(Circuit);
+
+Oscillator.templateHTML = "<div id='Oscillator'>\
+    <div class='fieldLabel'>Pitch</div>\
+    <div class='mainFields'>\
+        <spiv>\
+            <select id='Oscillator-Color'></select>\
+            <div class='thicket'>KEY</div>\
+        </spiv>\
+        <spiv>\
+            <input type='number' class='short' id='Oscillator-Octave'></input>\
+            <div class='thicket'>OCTAVE</div>\
+        </spiv>\
+        <button id='Oscillator-Add'>add signal</button>\
+    </div>\
+    <div id='Oscillator-List' class='mainFields'></div>\
+</div>";
 
 
 Oscillator.prototype.extractSettings = function(settings){
 	Circuit.prototype.extractSettings.call(this, settings);
 	if(settings){
 		if(settings.pitch){
-			this.pitch = new Pitch(settings.pitch.color, settings.pitch.octave);
+			this.pitch = new Pitch(settings.pitch.color, parseInt(settings.pitch.octave));
 		}
 		
-		this.oscillatorAttributes = [];
-		if(settings.oscillatorAttributes){
-			settings.oscillatorAttributes.forEach(function(oscSettings){
-				this.oscillatorAttributes.push(this.extractOscillatorSettings(oscSettings));
+		this.signalsAttributes = [];
+		if(settings.signalsAttributes){
+			settings.signalsAttributes.forEach(function(oscSettings){
+				this.signalsAttributes.push(this.extractSignalSettings(oscSettings));
 			}, this);
 		}
-		if(this.oscillatorAttributes.length === 0){
-			this.oscillatorAttributes.push(Oscillator.DEFAULT_OSCILLATOR);
+		if(this.signalsAttributes.length === 0){
+			this.signalsAttributes.push(Oscillator.defaultSignal(this.ctx));
 		}
 	}
 	
@@ -166,10 +197,13 @@ Oscillator.prototype.extractSettings = function(settings){
 
 Oscillator.DEFAULT_PITCH = new Pitch("A",4);
 
-Oscillator.DEFAULT_OSCILLATOR = {
-	signalType: "sine",
-	offset: {semitones: 0, cents: 0},
-	volume: 1
+Oscillator.defaultSignal = function(ctx){
+	return {
+		signalType: "sine",
+		offset: {semitones: 0, cents: 0},
+		volume: 1,
+		lfo: LFO.default(ctx)
+	};
 };
 
 Oscillator.SIGNAL_TYPES = [
@@ -177,60 +211,60 @@ Oscillator.SIGNAL_TYPES = [
 ];
 
 
-Oscillator.prototype.extractOscillatorSettings = function(settings){
-	var osc = {};
+Oscillator.prototype.extractSignalSettings = function(settings){
+	var signal = {};
 	if( settings){
 		/* Any necessary settings that you add in the marshalSettings function 
 		 * will be in settings
 		 */
 		if(settings.offset){
-			osc.offset = settings.offset;
+			signal.offset = settings.offset;
 		}
 		if(settings.signalType){
-			osc.signalType = settings.signalType;
+			signal.signalType = settings.signalType;
 		}
 		if(settings.volume){
-			osc.volume = settings.volume;
+			signal.volume = settings.volume;
 		}
 		if(settings.lfo){
-			osc.lfo = new LFO(this.ctx,settings.lfo);
+			signal.lfo = new LFO(this.ctx,settings.lfo);
 		}
 	}
 	
-	if(!osc.offset){
-		osc.offset = {semitones: 0, cents: 0};
+	if(!signal.offset){
+		signal.offset = {semitones: 0, cents: 0};
 	}
-	if(!osc.signalType){
-		osc.signalType = "sine";
+	if(!signal.signalType){
+		signal.signalType = "sine";
 	}
-	if(!osc.volume){
-		osc.volume = 1;
+	if(!signal.volume){
+		signal.volume = 1;
 	}
-	if(!osc.lfo){
-		osc.lfo = LFO.default(this.ctx);
+	if(!signal.lfo){
+		signal.lfo = LFO.default(this.ctx);
 	}
 	
-	return osc;
+	return signal;
 };
 
 
 
 
-Oscillator.prototype.addOscillator = function(){
-	var defaultOsc = Oscillator.DEFAULT_OSCILLATOR;
-	defaultOsc.lfo = LFO.default(this.ctx);
-	
-	this.oscillatorAttributes.push(Oscillator.DEFAULT_OSCILLATOR);
+Oscillator.prototype.addSignal = function(){
+	this.signalsAttributes.push(Oscillator.defaultSignal(this.ctx));
 	this.generateDrawer();
 };
 
-Oscillator.prototype.removeOscillator = function(oscillator){
-	var idx = this.oscillatorAttributes.indexOf(oscillator);
+Oscillator.prototype.removeSignal = function(signal){
+	var idx = this.signalsAttributes.indexOf(signal);
 	if(idx > -1){
-		this.oscillatorAttributes.splice(idx,1);
-		oscillator.lfo.destroy();
+		this.signalsAttributes.splice(idx,1);
+		signal.lfo.destroy();
+		this.resetSignals();
+		if(signal.signalDiv){
+			signal.signalDiv.remove();
+		}
 	}
-	this.generateDrawer();
 };
 
 
@@ -240,7 +274,7 @@ Oscillator.prototype.repitch = function(pitch){
 		this.circuitBody.find("#Oscillator-Color").val(pitch.color).change();
 		this.circuitBody.find("#Oscillator-Octave").val(pitch.octave).change();
 	}
-	this.resetOscillators();
+	this.resetSignals();
 };
 
 
@@ -260,7 +294,7 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 	// Pitch
 	this.controls.colorSelector = $(circuitBody).find("#Oscillator-Color");
 	Pitch.pitchKeySelector(this.controls.colorSelector, this.pitch.color,	function(ev){ 
-		self.color = this.value;
+		self.pitch.color = this.value;
 		studio.invalidateSavedStatus(); 
 	});
 	
@@ -268,32 +302,33 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 	this.controls.octaveSelector.
 		val(this.pitch.octave).
 		change(	function(ev){ 
-			self.octave = this.value;
+			self.pitch.octave = this.value;
 			studio.invalidateSavedStatus(); 
 		});
 		
-	this.controls.oscillatorAdder = $(circuitBody).find("#Oscillator-Add");
-	this.controls.oscillatorAdder.
+	this.controls.signalAdder = $(circuitBody).find("#Oscillator-Add");
+	this.controls.signalAdder.
 		click(	function(ev){ 
-			self.addOscillator();
+			self.addSignal();
 			studio.invalidateSavedStatus(); 
 		});
 				
-	var oscillatorList = $(circuitBody).find("#Oscillator-List");
-	this.oscillatorAttributes.forEach( function(oscillator, idx){
-		var oscillatorControls = this.generateOscillatorBody(oscillator, oscillatorList, idx);
-		this.controls.oscillators[idx] = oscillatorControls;
+	var signalList = $(circuitBody).find("#Oscillator-List");
+	this.signalsAttributes.forEach( function(signal, idx){
+		var signalControls = this.generateSignalBody(signal, signalList, idx);
+		this.controls.signals[idx] = signalControls;
 	}, this);
 };
 
 
 
-Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorList, idx){
+Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 	var self = this;
-	var oscillatorDiv = $("<div/>",{id:"oscillator_"+idx, class:"listed"}).appendTo(oscillatorList);
+	var signalDiv = $("<div/>",{id:"signal_"+idx, class:"listed"}).appendTo(signalList);
+	signal.signalDiv = signalDiv;
 
-	var fieldLabel = $("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(oscillatorDiv);
-	var oscRemover = $("<div/>",{class:"toggler dextra",text:"\u00d7"}).
+	var fieldLabel = $("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(signalDiv);
+	var signalRemover = $("<div/>",{class:"toggler dextra",text:"\u00d7"}).
 			appendTo(fieldLabel).
 			mouseover(function(ev){
 				$(this).addClass("hover");
@@ -302,50 +337,51 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 				$(this).removeClass("hover");
 			}).
 			click(function(ev){
-				self.oscillatorAttributes.splice(idx,1);
-				self.resetOscillators();
-				oscillatorDiv.remove();
+				self.removeSignal(signal);
 			});
 
 	// Volume
-	var volumeSlider = DrawerUtils.createSlider("volume", Circuit.GAIN_ATTRIBUTES.volume, oscillator.volume, 
+	var volumeSlider = DrawerUtils.createSlider("volume", Circuit.ENVELOPE_ATTRIBUTES.volume, signal.volume, 
 		function(key, value){
-			oscillator.volume = value;
-			self.resetOscillators();
+			signal.volume = value;
+			self.resetSignals();
 			studio.invalidateSavedStatus();
-		}.bind(this), oscillatorDiv);
+		}.bind(this), signalDiv);
 
 	// Signal Type
-	var signalDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, oscillator.signalType, function(value){ 
-		oscillator.signalType = value;
-		this.resetOscillators();
+	var signalDiv = $("<spiv></spiv>").appendTo(signalDiv);
+	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, signal.signalType, function(value){ 
+		signal.signalType = value;
+		this.resetSignals();
 		studio.invalidateSavedStatus();
 	}.bind(this), signalDiv);
 	$("<div class='thicket'>SIGNAL TYPE</div>").appendTo(signalDiv);
 
 	// Semitones
-	var semitoneDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-	var semitoneInput = $("<input/>",{type:"number",value:oscillator.offset.semitones, class:"short"}).
+	var semitoneDiv = $("<spiv></spiv>").appendTo(signalDiv);
+	var semitoneInput = $("<input/>",{type:"number",value:signal.offset.semitones, class:"short"}).
 			appendTo(semitoneDiv).
 			change(function(ev){
-				oscillator.offset.semitones = parseInt(this.value);
+				signal.offset.semitones = parseInt(this.value);
+				self.resetSignals();
 			});
 	$("<div class='thicket'>SEMITONES</div>").appendTo(semitoneDiv);
 
 	// Cents
-	var centsDiv = $("<spiv></spiv>").appendTo(oscillatorDiv);
-	var centsInput = $("<input/>",{type:"number",value:oscillator.offset.cents, class:"short"}).
+	var centsDiv = $("<spiv></spiv>").appendTo(signalDiv);
+	var centsInput = $("<input/>",{type:"number",value:signal.offset.cents, class:"short"}).
 			appendTo(centsDiv).
 			change(function(ev){
-				oscillator.offset.cents = parseInt(this.value);
+				signal.offset.cents = parseInt(this.value);
+				self.resetSignals();
 			});
 	$("<div class='thicket'>CENTS</div>").appendTo(centsDiv);
 	
 	// LFO
-	var lfoLabel = $("<div/>",{class:"fieldLabel sub", text: "LFO "+(idx+1)}).appendTo(oscillatorDiv);
-	var lfoBypass = $("<div/>",{class:"toggler dextra",text:(oscillator.lfo.bypass ? "off" : "on")}).
-			appendTo(lfoLabel).
+	var lfoLabel = $("<div/>",{class:"fieldLabel sub", text: "LFO "+(idx+1)}).appendTo(signalDiv);
+	var lfoBypass = $("<div/>",{class:"toggler dextra",text:(signal.lfo.bypass ? "off" : "on")}).appendTo(lfoLabel);
+	signal.lfo.bypassToggler = lfoBypass;
+	lfoBypass.
 			mouseover(function(ev){
 				$(this).addClass("hover");
 			}).
@@ -353,21 +389,22 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
 				$(this).removeClass("hover");
 			}).
 			click(function(ev){
-				oscillator.lfo.toggleBypass();
-				$(this).html(oscillator.lfo.bypass ? "off" : "on");
+				signal.lfo.toggleBypass();
 			});
 	
-	oscillator.lfo.render(oscillatorDiv);
+	signal.lfo.render(signalDiv);
 	
 	// Return manifest of all controls created
-	return {
-		oscRemover: oscRemover,
+	signal.controls = {
+		signalRemover: signalRemover,
 		volumeSlider: volumeSlider,
 		signalTypeSelector: signalTypeSelector,
 		semitoneInput: semitoneInput,
 		centsInput: centsInput,
-		lfoBypass: lfoBypass
+		lfoBypass: lfoBypass,
+		lfo: signal.lfo.controls
 	};
+	return signal.controls;
 };
 
 
@@ -381,40 +418,40 @@ Oscillator.prototype.generateOscillatorBody = function(oscillator, oscillatorLis
  * you'll want to do something extra to the note object. If your circuit
  * won't need these, then feel free to delete them.
  */
-Oscillator.prototype.addNote = function(note){
-	Circuit.prototype.addNote.call(this, note);
-	note.oscillators = this.allocateOscillators();
-	note.oscillators.forEach(function(oscillator){
-		oscillator.gainer.connect(note.envelope);
+Oscillator.prototype.addNoteNoUndo = function(note){
+	Circuit.prototype.addNoteNoUndo.call(this, note);
+	note.signals = this.allocateSignals();
+	note.signals.forEach(function(signal){
+		signal.gainer.connect(note.envelope);
 	});
 };
 Oscillator.prototype.deleteNote = function(note){	
-	note.oscillators.forEach(function(oscillator){
-		this.deallocateOscillator(oscillator);
+	note.signals.forEach(function(signal){
+		this.deallocateSignal(signal);
 	}, this);
 	Circuit.prototype.deleteNote.call(this, note);
 };
 
-Oscillator.prototype.allocateOscillators = function(){
-	var oscillators = [];
-	this.oscillatorAttributes.forEach(function(oscillator){
+Oscillator.prototype.allocateSignals = function(){
+	var signals = [];
+	this.signalsAttributes.forEach(function(signalAttributes){
 		var oscNode = this.ctx.createOscillator();
-		oscNode.type = oscillator.signalType;
-		oscNode.frequency.value = Pitch.addCents(this.pitch.frequency, (oscillator.offset.semitones*100)+oscillator.offset.cents); // detune is reserved for LFO
+		oscNode.type = signalAttributes.signalType;
+		oscNode.frequency.value = Pitch.addCents(this.pitch.frequency, (signalAttributes.offset.semitones*100)+signalAttributes.offset.cents); // detune is reserved for LFO
 		oscNode.gainer = this.ctx.createGain();
-		oscNode.gainer.gain.value = oscillator.volume;
+		oscNode.gainer.gain.value = signalAttributes.volume;
 		oscNode.lfoIn = this.ctx.createGain();
 		
-		oscillator.lfo.connect(oscNode);
+		signalAttributes.lfo.connect(oscNode);
 		oscNode.connect(oscNode.lfoIn);
 		oscNode.lfoIn.connect(oscNode.gainer);
 		
-		oscillators.push(oscNode);
+		signals.push(oscNode);
 	}, this);
-	return oscillators;
+	return signals;
 };
 
-Oscillator.prototype.deallocateOscillator = function(osc){
+Oscillator.prototype.deallocateSignal = function(osc){
 	if(osc){ osc.disconnect(0); }
 };
 
@@ -433,35 +470,35 @@ Oscillator.prototype.deallocateOscillator = function(osc){
  */
 Oscillator.prototype.scheduleCircuitStart = function(startWhen, note){
 	var delayTime = Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note);
-	note.oscillators.forEach(function(oscillator){
-		oscillator.start(startWhen + delayTime);
+	note.signals.forEach(function(signal){
+		signal.start(startWhen + delayTime);
 	});
 	return delayTime;
 };
 
 Oscillator.prototype.scheduleCircuitStop = function(endWhen, note){
 	var delayTime = Circuit.prototype.scheduleCircuitStop.call(this, endWhen, note);
-	note.oscillators.forEach(function(oscillator){
-		oscillator.stop(endWhen + delayTime);
+	note.signals.forEach(function(signal){
+		signal.stop(endWhen + delayTime);
 	});
 	return delayTime;
 };
 
 Oscillator.prototype.pause = function(){
 	Circuit.prototype.pause.call(this);
-	this.resetOscillators();
+	this.resetSignals();
 };
 
 
 
-Oscillator.prototype.resetOscillators = function(){
+Oscillator.prototype.resetSignals = function(){
 	this.notes.forEach(function(note){ 
-		note.oscillators.forEach(function(osc){
-			this.deallocateOscillator(osc);
+		note.signals.forEach(function(osc){
+			this.deallocateSignal(osc);
 		}, this);
-		note.oscillators = this.allocateOscillators();
-		note.oscillators.forEach(function(oscillator){
-			oscillator.gainer.connect(note.envelope);
+		note.signals = this.allocateSignals();
+		note.signals.forEach(function(signal){
+			signal.gainer.connect(note.envelope);
 		});
 	}, this);
 };
@@ -487,21 +524,21 @@ Oscillator.prototype.resetOscillators = function(){
 Oscillator.prototype.on = function(location) {
 	Circuit.prototype.on.call(this, location);
 	this.envelope = this.allocateEnvelope();
-	this.oscillatorNodes.forEach(function(osc){
-		this.deallocateOscillator(osc);
+	this.signalNodes.forEach(function(osc){
+		this.deallocateSignal(osc);
 	}, this);
-	this.oscillatorNodes = this.allocateOscillators();
-	this.oscillatorNodes.forEach(function(oscNode){
+	this.signalNodes = this.allocateSignals();
+	this.signalNodes.forEach(function(oscNode){
 		oscNode.gainer.connect(this.envelope);
 	}, this);
-	this.scheduleCircuitStart(this.ctx.currentTime, {oscillators: this.oscillatorNodes, envelope: this.envelope});
+	this.scheduleCircuitStart(this.ctx.currentTime, {signals: this.signalNodes, envelope: this.envelope});
 };
 
 
 Oscillator.prototype.off = function(location) {
 	Circuit.prototype.off.call(this, location);
-	if( this.oscillatorNodes && this.envelope ){
-		this.scheduleCircuitStop(this.ctx.currentTime, {oscillators: this.oscillatorNodes, envelope: this.envelope});
+	if( this.signalNodes && this.envelope ){
+		this.scheduleCircuitStop(this.ctx.currentTime, {signals: this.signalNodes, envelope: this.envelope});
 	}
 };
 
@@ -524,10 +561,10 @@ Oscillator.prototype.marshalSettings = function(){
 	if( this.pitch ){
 		ret.pitch = this.pitch.marshal();
 	}
-	if( this.oscillatorAttributes ){
-		ret.oscillatorAttributes = [];
-		this.oscillatorAttributes.forEach(function(osc){
-			ret.oscillatorAttributes.push({
+	if( this.signalsAttributes ){
+		ret.signalsAttributes = [];
+		this.signalsAttributes.forEach(function(osc){
+			ret.signalsAttributes.push({
 				signalType: osc.signalType,
 				offset: osc.offset,
 				volume: osc.volume,
