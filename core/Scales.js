@@ -23,6 +23,10 @@ Pitch.fromName = function(pitchName){
 	return new Pitch(color, parseInt(pitchName.substr(color.length, pitchName.length)));
 };
 
+Pitch.prototype.pitchName = function(){
+	return this.color + this.octave;
+};
+
 Pitch.pitchColor = function(pitchName){
 	if( !pitchName ){ throw "Invalid Note Name: "+pitchName; }
 

@@ -222,15 +222,11 @@ Machine.prototype.replaceSelf = function(newHandle){
 
 
 Machine.prototype.generateMachineDivision = function(divisionBody) {
-	var self = this;
-	$.get("machines/"+this.handle+"/"+this.handle+".html",null,function(data){
-		self.machineBody = $(data).appendTo(divisionBody);
-		self.machineBody.
-			keydown(    function(ev){ ev.stopPropagation(); }).
-			keyup(      function(ev){ ev.stopPropagation(); });
-	
-		self.generateMachineBody.call(self, self.machineBody);
-	});
+	this.machineBody = $(this.constructor.templateHTML).appendTo(divisionBody);
+	this.machineBody.
+		keydown(    function(ev){ ev.stopPropagation(); }).
+		keyup(      function(ev){ ev.stopPropagation(); });
+	this.generateMachineBody.call(this, this.machineBody);
 };
 
 Machine.prototype.generateMachineBody = function(machineBody){	
@@ -344,5 +340,6 @@ Machine.keyCodeToAsciiMap = {
 
 Machine.machinesManifest = [
 	"",
-	"Synthesizer"
+	"Synthesizer",
+	"MultiSampler"
 ];

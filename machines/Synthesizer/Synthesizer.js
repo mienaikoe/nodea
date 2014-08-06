@@ -213,41 +213,6 @@ Synthesizer.prototype.bindControls = function(controls){
 
 
 
-/*
-controls = {
-	colorSelector,
-	octaveSelector,
-	oscillatorAdder,
-	oscillators: [
-		{
-			oscRemover: oscRemover,
-			volumeSlider: volumeSlider,
-			signalTypeSelector: signalTypeSelector,
-			semitoneInput: semitoneInput,
-			centsInput: centsInput,
-			lfoBypass: lfoBypass
-		},{
-			oscRemover: oscRemover,
-			volumeSlider: volumeSlider,
-			signalTypeSelector: signalTypeSelector,
-			semitoneInput: semitoneInput,
-			centsInput: centsInput,
-			lfoBypass: lfoBypass
-		}
-	],
-	gain: {
-		volume
-	},
-	envelope: {
-		attack,
-		decay,
-		sustain,
-		release
-	}
-};
- */
-
-
 
 Synthesizer.prototype.rescale = function(){
 	this.scale = Scales.scalePitches(this.templateOscillator.pitch, this.scaleType, 30 );

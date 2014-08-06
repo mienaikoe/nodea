@@ -1,21 +1,20 @@
 function Sampler(ctx, machine, marshaledCircuit, destination, circuitReplacementCallback) {
 	Circuit.call(this, ctx, machine, marshaledCircuit, destination, circuitReplacementCallback);
-		
-	ctx.fetchBuffer(this.bufferUrl).then( 
-		function(buffer){
-			this.buffer = buffer; 
-			this.resetSources();
-			this.bindBufferToNotes();
-		}.bind(this), 
-		function(err){
-			console.error(err);
-		});
+	this.setBuffer(this.bufferUrl);
 };
 
 
 // vital to Noda Creation. This Inherits the static values from Circuit
 Sampler.extends(Circuit);
 
+Sampler.templateHTML = "<div id=\"Sampler\">\
+    <div class=\"fieldLabel\">Sample Source</div>\
+    <div class=\"mainFields\">\
+        <textarea id=\"Sampler-Source\" class=\"urlarea\"></textarea>\
+        <input id=\"Sampler-Entire\" type=\"checkbox\"></input>\
+        <label>Play Entire Note</label>\
+    </div>\
+</div>";
 
 
 Sampler.prototype.extractSettings = function(settings){
@@ -43,16 +42,7 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 	$(circuitBody).find("#Sampler-Source").
 		text(this.bufferUrl).
 		change(	function(ev){ 
-			self.bufferUrl = this.value; 
-			self.ctx.fetchBuffer(self.bufferUrl).then(
-				function(buffer){
-					self.buffer = buffer; 
-					self.resetSources();
-				}, 
-				function(err){
-					console.error(err);
-				}); 
-			studio.invalidateSavedStatus(); 
+			self.setBuffer(this.value);
 		}); // TODO: Make this more foolproof.
 		
 	$(circuitBody).find("#Sampler-Entire").
@@ -62,6 +52,23 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 			$(this).blur();
 			studio.invalidateSavedStatus();
 		});
+};
+
+
+Sampler.prototype.setBuffer = function(bufferUrl){
+	this.bufferUrl = bufferUrl; 
+	this.ctx.fetchBuffer(this.bufferUrl).then(
+		function(buffer){
+			this.buffer = buffer; 
+			this.resetSources();
+			this.bindBufferToNotes();
+		}.bind(this), 
+		function(err){
+			console.error(err);
+		}); 
+	if(studio){
+		studio.invalidateSavedStatus(); 
+	}
 };
 
 

@@ -55,7 +55,7 @@ var DrawerUtils = {
 	createSlider: function(key, attributes, value, changer, container){
 		var sliderBox = $("<div>",{class:"envelope_slider"});
 		$("<label>"+key+"</label>").appendTo(sliderBox);
-		$("<input/>", $.extend({type:'range', value: value, id: this.id+'_slider_'+key}, attributes)).
+		var slider = $("<input/>", $.extend({type:'range', value: value, id: this.id+'_slider_'+key}, attributes)).
 			appendTo(sliderBox).
 			change(function(){
 				$(this).blur();
@@ -64,7 +64,7 @@ var DrawerUtils = {
 		if(container){
 			sliderBox.appendTo(container);
 		}	
-		return sliderBox;
+		return slider;
 	},
 	
 	createSelector: function(options, selected, changer, container){		
