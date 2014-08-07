@@ -289,17 +289,19 @@
         
         <!-- Nota.io tie -->
         <script type="text/javascript">
-            var _NOTA = {
-                project: "92243eed-e45c-461f-b642-42810381df45",
-                projectProtocol: "http",
-                appDomain: "beta.nota.io"
-            };
+            if(window.location.origin.indexOf("mienaikoe.github.io") !== -1 ){
+                var _NOTA = {
+                    project: "92243eed-e45c-461f-b642-42810381df45",
+                    projectProtocol: "http",
+                    appDomain: "beta.nota.io"
+                };
 
-            (function() {;
-                var n = document.createElement("script"); n.type = "text/javascript"; n.async = true;
-                n.src = ("https:" === document.location.protocol ? "https://" : "http://") + "beta.nota.io/scripts/build/client/client.bootstrap.js";
-                var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(n, s);
-            })();
+                (function() {;
+                    var n = document.createElement("script"); n.type = "text/javascript"; n.async = true;
+                    n.src = ("https:" === document.location.protocol ? "https://" : "http://") + "beta.nota.io/scripts/build/client/client.bootstrap.js";
+                    var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(n, s);
+                })();
+            }
          </script>
 
     </body>

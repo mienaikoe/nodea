@@ -12,6 +12,7 @@ MultiSampler.templateHTML = "<div id='MultiSampler'> \
             <select id='MultiSampler-ScaleType'></select> \
             <div class='thicket'>SCALE TYPE</div> \
         </spiv> \
+		<br/> \
         <spiv> \
             <select id='MultiSampler-ScaleKey'></select> \
             <div class='thicket'>SCALE KEY</div> \
@@ -20,6 +21,11 @@ MultiSampler.templateHTML = "<div id='MultiSampler'> \
             <input type='number' id='MultiSampler-ScaleOctave'></input> \
             <div class='thicket'>SCALE OCTAVE</div> \
         </spiv> \
+		<br/> \
+		<spiv> \
+			<select id='MultiSampler-Instrument'></input> \
+			<div class='thicket'>INSTRUMENT</div> \
+		</spiv> \
 	</div> \
 </div>";
 
@@ -92,26 +98,35 @@ MultiSampler.prototype.defaultCircuit = function(ordinal){
 MultiSampler.prototype.generateMachineBody = function(machineBody){	
 	var self = this;
 			
-	var scaleType = machineBody.find("#MultiSampler-ScaleType");
+	var scaleType = machineBody.find("#MultiSampler-ScaleType").val(this.scaleType);
 	Scales.scaleTypeSelector(scaleType, this.scaleType, function(ev){ 
 		self.scaleType = this.value;
 		self.rescale();
 		self.studio.invalidateSavedStatus();
 	}); 
 	
-	var scaleKey = machineBody.find("#MultiSampler-ScaleKey");
+	var scaleKey = machineBody.find("#MultiSampler-ScaleKey").val(this.scalePitch.color);
 	Pitch.pitchKeySelector(scaleKey, this.scalePitch.color, function(ev){ 
 		self.scalePitch.color = this.value;
 		self.rescale();
 		self.studio.invalidateSavedStatus();
 	}); 
 	
-	var scaleOctave = machineBody.find("#MultiSampler-ScaleOctave");
+	var scaleOctave = machineBody.find("#MultiSampler-ScaleOctave").val(this.scalePitch.octave);
 	scaleOctave.change( function(ev){ 
-		self.scalePitch.octave = this.value;
+		self.scalePitch.octave = parseInt(this.value);
 		self.rescale();
 		self.studio.invalidateSavedStatus();
 	}); 
+	
+	var instrumentSelector = machineBody.find("#MultiSampler-Instrument").val(this.instrumentName);
+	for( var instrumentName in MultiSampler.INSTRUMENTS ){
+		$("<option/>",{value: instrumentName, html: instrumentName.titlecase()}).appendTo(instrumentSelector);
+	}
+	instrumentSelector.change( function(ev){
+		self.setInstrument(this.value);
+		self.studio.invalidateSavedStatus();
+	});
 };
 
 
@@ -127,6 +142,7 @@ MultiSampler.prototype.rescale = function(){
 			circuit.setBuffer(this.bufferUrlForPitch(this.scale[idx]));
 		}
 	}, this);
+	this.studio.invalidateSavedStatus();
 };
 
 MultiSampler.prototype.bufferUrlForPitch = function(pitch){
@@ -150,7 +166,7 @@ MultiSampler.prototype.marshalSettings = function(){
 
 
 MultiSampler.INSTRUMENTS = {
-	"clavichord": {
+	clavichord: {
 		"A#2": "ClavichordA#2.wav",
 		"A2": "ClavichordA2.wav",
 		"B3": "ClavichordB3.wav",
@@ -203,5 +219,64 @@ MultiSampler.INSTRUMENTS = {
 		"F#5": "ClavichordF#5.wav",
 		"G#4": "ClavichordG#4.wav",
 		"F2": "ClavichordF2.wav"
+	},
+	bowed_crotales: {
+		"A#1": "A#1_crotbow.wav",
+		"A2": "A2_crotbow.wav",
+		"C#1": "C#1_crotbow.wav",
+		"C2": "C2_crotbow.wav",
+		"D#2": "D#2_crotbow.wav",
+		"E1": "E1_crotbow.wav",
+		"F#2": "F#2_crotbow.wav",
+		"G#1": "G#1_crotbow.wav",
+		"G2": "G2_crotbow.wav",
+		"A#2": "A#2_crotbow.wav",
+		"B1": "B1_crotbow.wav",
+		"C#2": "C#2_crotbow.wav",
+		"C3": "C3_crotbow.wav",
+		"D1": "D1_crotbow.wav",
+		"E2": "E2_crotbow.wav",
+		"F1": "F1_crotbow.wav",
+		"G#2": "G#2_crotbow.wav",
+		"A1": "A1_crotbow.wav",
+		"B2": "B2_crotbow.wav",
+		"C1": "C1_crotbow.wav",
+		"D#1": "D#1_crotbow.wav",
+		"D2": "D2_crotbow.wav",
+		"F#1": "F#1_crotbow.wav",
+		"F2": "F2_crotbow.wav",
+		"G1": "G1_crotbow.wav"
+	},
+	bowed_glockenspiel: {
+		"A#1": "A#1_glockbow.wav",
+		"A1": "A1_glockbow.wav",
+		"B1": "B1_glockbow.wav",
+		"C#2": "C#2_glockbow.wav",
+		"C3": "C3_glockbow.wav",
+		"D#3": "D#3_glockbow.wav",
+		"E2": "E2_glockbow.wav",
+		"F#3": "F#3_glockbow.wav",
+		"G#1": "G#1_glockbow.wav",
+		"G1": "G1_glockbow.wav",
+		"A#3": "A#3_glockbow.wav",
+		"A3": "A3_glockbow.wav",
+		"B3": "B3_glockbow.wav",
+		"C#3": "C#3_glockbow.wav",
+		"C4": "C4_glockbow.wav",
+		"D2": "D2_glockbow.wav",
+		"E3": "E3_glockbow.wav",
+		"F2": "F2_glockbow.wav",
+		"G#3": "G#3_glockbow.wav",
+		"G3": "G3_glockbow.wav",
+		"A#4": "A#4_glockbow.wav",
+		"A4": "A4_glockbow.wav",
+		"B4": "B4_glockbow.wav",
+		"C2": "C2_glockbow.wav",
+		"D#2": "D#2_glockbow.wav",
+		"D3": "D3_glockbow.wav",
+		"F#2": "F#2_glockbow.wav",
+		"F3": "F3_glockbow.wav",
+		"G#4": "G#4_glockbow.wav",
+		"G4": "G4_glockbow.wav"
 	}
 };

@@ -90,3 +90,13 @@ AudioContext.prototype.fetchBuffer = function(bufferUrl){
 AudioContext.prototype.createStub = function(){
 	return this.createGain(); // TODO: Do something more fancy that takes up less memory.
 };
+
+String.prototype.titlecase = function(){
+	var pieces = this.match(/[a-zA-Z0-9]+/g);
+	var ret = pieces.map(function(word, idx){
+		return word.substr(0,1).toUpperCase() + word.substr(1);
+	}).reduce(function(last, current, idx){
+		return last + " " + current;
+	});
+	return ret;
+};
