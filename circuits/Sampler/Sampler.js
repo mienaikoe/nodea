@@ -26,13 +26,12 @@ Sampler.prototype.extractSettings = function(settings){
 		if( settings.sourceFile ){
 			this.bufferUrl = settings.sourceFile;
 		}
+		if( settings.bufferUrl ){
+			this.bufferUrl = settings.bufferUrl;
+		}
 		if( settings.playEntire ){
 			this.playEntire = settings.playEntire;
 		}
-	}
-
-	if( !this.bufferUrl ){
-		this.bufferUrl = 'circuits/Sampler/samples/Vibe_A3.wav';
 	}
 };
 
@@ -55,20 +54,32 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 };
 
 
-Sampler.prototype.setBuffer = function(bufferUrl){
-	this.bufferUrl = bufferUrl; 
-	this.ctx.fetchBuffer(this.bufferUrl).then(
-		function(buffer){
-			this.buffer = buffer; 
-			this.resetSources();
-			this.bindBufferToNotes();
-		}.bind(this), 
-		function(err){
-			console.error(err);
-		}); 
+Sampler.prototype.setBuffer = function(bufferUrl){	
+	if( bufferUrl ){
+		this.bufferUrl = bufferUrl; 
+		this.ctx.fetchBuffer(this.bufferUrl).then(
+			function(buffer){
+				this.buffer = buffer; 
+				this.resetSources();
+				this.bindBufferToNotes();
+			}.bind(this), 
+			function(err){
+				console.error(err);
+				this.unsetBuffer();
+			}.bind(this)); 
+	} else {
+		this.unsetBuffer();
+	}
 	if(studio){
 		studio.invalidateSavedStatus(); 
 	}
+};
+
+Sampler.prototype.unsetBuffer = function(){
+	this.bufferUrl = null;
+	this.buffer = null;
+	this.resetSources();
+	this.bindBufferToNotes();
 };
 
 
@@ -76,8 +87,12 @@ Sampler.prototype.setBuffer = function(bufferUrl){
 Sampler.prototype.bindBufferToNotes = function(){
 	try{ 
 		this.notes.forEach(function(note){
-			note.source = this.allocateSource(); 
-			note.source.connect(note.envelope);
+			if( this.buffer ){
+				note.source = this.allocateSource(); 
+				note.source.connect(note.envelope);
+			} else {
+				not.source = null;
+			}
 		}, this);
 	} catch (exception) {
 		console.error("Error Allocating Source: ");
@@ -109,8 +124,10 @@ Sampler.prototype.deallocateSource = function(src){
 
 Sampler.prototype.scheduleCircuitStart = function(startWhen, note){
 	var delayTime = Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note);
-	note.source.started = startWhen + delayTime; 	
-	note.source.start(note.source.started);
+	if(note.source){
+		note.source.started = startWhen + delayTime; 	
+		note.source.start(note.source.started);
+	}
 	return delayTime;
 };
 
@@ -141,8 +158,10 @@ Sampler.prototype.pause = function(){
 Sampler.prototype.resetSources = function(){
 	this.notes.forEach(function(note){ 
 		this.deallocateSource(note.source); 
-		note.source = this.allocateSource(); 
-		note.source.connect(note.envelope);
+		if(this.buffer){
+			note.source = this.allocateSource(); 
+			note.source.connect(note.envelope);
+		}
 	}, this);
 };
 
@@ -154,10 +173,12 @@ Sampler.prototype.resetSources = function(){
 
 Sampler.prototype.on = function(location) {
 	Circuit.prototype.on.call(this, location);
-	this.source = this.allocateSource();
-	this.envelope = this.allocateEnvelope();
-	this.source.connect(this.envelope);
-	this.scheduleCircuitStart(this.ctx.currentTime, {source: this.source, envelope: this.envelope});
+	if(this.buffer){
+		this.source = this.allocateSource();
+		this.envelope = this.allocateEnvelope();
+		this.source.connect(this.envelope);
+		this.scheduleCircuitStart(this.ctx.currentTime, {source: this.source, envelope: this.envelope});
+	}
 };
 
 
@@ -181,7 +202,7 @@ Sampler.prototype.off = function(location) {
 
 Sampler.prototype.marshalSettings = function(){
 	return {
-		sourceFile: this.bufferUrl,
+		bufferUrl: this.bufferUrl,
 		playEntire: this.playEntire
 	};
 };

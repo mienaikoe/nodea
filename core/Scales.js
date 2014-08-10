@@ -89,7 +89,11 @@ Pitch.pitchKeySelector = function(selectBox, value, changer){
 	for( key in Pitch.PRIMARIES.FREQUENCIES ){
 		var fullKey = key;
 		if( key.indexOf("#") !== -1 ){
-			fullKey += "/" + String.fromCharCode(key.charCodeAt(0)+1) + "♭";
+			var flatKey = String.fromCharCode(key.charCodeAt(0)+1);
+			if(flatKey === "H"){
+				flatKey = "A";
+			}
+			fullKey += "/" + flatKey + "♭";
 		}
 		$("<option></option>",{value: key, html: fullKey, selected: (value === key)}).appendTo(selectBox);
 	}
