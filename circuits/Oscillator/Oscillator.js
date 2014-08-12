@@ -349,13 +349,13 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 		}.bind(this), signalDiv);
 
 	// Signal Type
-	var signalDiv = $("<spiv></spiv>").appendTo(signalDiv);
+	var signalTypeDiv = $("<spiv></spiv>").appendTo(signalDiv);
 	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, signal.signalType, function(value){ 
 		signal.signalType = value;
 		this.resetSignals();
 		studio.invalidateSavedStatus();
-	}.bind(this), signalDiv);
-	$("<div class='thicket'>SIGNAL TYPE</div>").appendTo(signalDiv);
+	}.bind(this), signalTypeDiv);
+	$("<div class='thicket'>SIGNAL TYPE</div>").appendTo(signalTypeDiv);
 
 	// Semitones
 	var semitoneDiv = $("<spiv></spiv>").appendTo(signalDiv);
