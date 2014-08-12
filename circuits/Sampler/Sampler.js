@@ -91,7 +91,7 @@ Sampler.prototype.bindBufferToNotes = function(){
 				note.source = this.allocateSource(); 
 				note.source.connect(note.envelope);
 			} else {
-				not.source = null;
+				note.source = null;
 			}
 		}, this);
 	} catch (exception) {
@@ -133,7 +133,9 @@ Sampler.prototype.scheduleCircuitStart = function(startWhen, note){
 
 Sampler.prototype.scheduleCircuitStop = function(endWhen, note){
 	var delayTime;
-	if(this.playEntire){
+	if(!note.source){
+		delayTime = Circuit.prototype.scheduleCircuitStop.call(this, endWhen, note);
+	} else if(this.playEntire){
 		wholeEnd = note.source.started + this.buffer.duration;
 		Circuit.prototype.scheduleCircuitStop.call(this, wholeEnd - this.envelopeAttributes.release, note);
 		note.source.stop(wholeEnd);

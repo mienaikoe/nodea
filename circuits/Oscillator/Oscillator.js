@@ -76,7 +76,7 @@ LFO.prototype.render = function(oscContainer){
 	}.bind(this), destinationContainer);
 	$("<div/>",{class:"thicket", text: "DESTINATION"}).appendTo(destinationContainer);
 	
-	var frequencySlider = DrawerUtils.createSlider("frequency", LFO.ATTRIBUTES.frequency, this.signal.frequency, function(key, value){
+	var frequencySlider = DrawerUtils.createSlider("frequency", LFO.ATTRIBUTES.frequency, this.signal.frequency.value, function(key, value){
 		this.signal.frequency.value = parseInt(value);
 	}.bind(this), this.container);
 	

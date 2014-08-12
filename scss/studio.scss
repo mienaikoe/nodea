@@ -19,6 +19,7 @@ $instrumentation_height: 259px; // required for correct positioning of tracks
 $machine_color: #222;
 $case_color: #444; //rgba(100,100,100,0.62);
 $drawer_content_color: #777;
+$drawer_input_color: #333;
 
 $circuitrow_margin: 5px;
 $circuitrow_width: ($machine_width/2) - (2*$circuitrow_margin);
@@ -174,6 +175,15 @@ a{
                 width:36px;
                 margin: 2px;
             }
+            background-color: $drawer_input_color;
+            color: white;
+            border: 2px solid #333;
+        }
+        select{
+            background-color: $drawer_input_color;
+            color: white;
+            -webkit-appearance: none;
+            border-color: $drawer_input_color;
         }
         .envelope_slider{
             margin-bottom: 2px;
@@ -187,7 +197,7 @@ a{
             }
             input[type=range] {
                 -webkit-appearance: none;
-                background-color: #333;
+                background-color: $drawer_input_color;
                 height:12px;
                 cursor: ew-resize;
                 width: 188px;
