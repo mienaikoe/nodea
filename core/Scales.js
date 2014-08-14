@@ -172,7 +172,7 @@ Scales.SCALE_TYPES = {
 
 Scales.scaleTypeSelector = function(selectBox, value, changer){
 	for( type in Scales.SCALE_TYPES ){
-		$("<option></option>",{value: type, html: type, selected: (value === type)}).appendTo(selectBox);
+		$("<option></option>",{value: type, html: type.titlecase(), selected: (value === type)}).appendTo(selectBox);
 	}
 	selectBox.change( function(ev){
 		if(changer){changer.call(this,ev);}

@@ -69,14 +69,14 @@ LFO.prototype.render = function(oscContainer){
 	var signalTypeSpiv = $("<spiv/>").appendTo(signalTypeDiv);
 	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, this.signalType, function(value){
 		this.signal.type = value;
-	}.bind(this), signalTypeSpiv);
+	}.bind(this), signalTypeSpiv).addClass("medium");
 
 	var destinationDiv = $("<div/>",{class:"envelope_slider"}).appendTo(this.container);
 	$("<label/>",{text:"destination"}).appendTo(destinationDiv);
 	var destinationSpiv = $("<spiv/>").appendTo(destinationDiv);
 	var destinationSelector = DrawerUtils.createSelector(LFO.DESTINATIONS, this.destination, function(value){
 		this.destination = value;
-	}.bind(this), destinationSpiv);
+	}.bind(this), destinationSpiv).addClass("medium");
 	
 	var frequencySlider = DrawerUtils.createSlider("frequency", LFO.ATTRIBUTES.frequency, this.signal.frequency.value, function(key, value){
 		this.signal.frequency.value = parseInt(value);
@@ -352,19 +352,19 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 
 	// Signal Type
 	var signalTypeDiv = $("<div/>",{class: "envelope_slider"}).appendTo(signalDiv);
-	var signalTypeLabel = $("<label/>",{text:"signal type"}).appendTo(signalTypeDiv);
+	$("<label/>",{text:"signal type"}).appendTo(signalTypeDiv);
 	var signalTypeSpiv = $("<spiv/>").appendTo(signalTypeDiv);
 	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, signal.signalType, function(value){ 
 		signal.signalType = value;
 		this.resetSignals();
 		studio.invalidateSavedStatus();
-	}.bind(this), signalTypeSpiv);
+	}.bind(this), signalTypeSpiv).addClass("medium");
 
 	// Semitones
 	var semitoneDiv = $("<div/>",{class: "envelope_slider"}).appendTo(signalDiv);
 	$("<label/>",{text:"pitch offset"}).appendTo(semitoneDiv);
 	var semitoneSpiv = $("<spiv/>",{class:"encroach"}).appendTo(semitoneDiv);
-	var semitoneInput = $("<input/>",{type:"number",value:signal.offset.semitones, class:""}).
+	var semitoneInput = $("<input/>",{type:"number",value:signal.offset.semitones, class:"medium"}).
 			appendTo(semitoneSpiv).
 			change(function(ev){
 				signal.offset.semitones = parseInt(this.value);
@@ -374,7 +374,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 
 	// Cents
 	var centsSpiv = $("<spiv/>",{class: "encroach"}).appendTo(semitoneDiv);
-	var centsInput = $("<input/>",{type:"number",value:signal.offset.cents, class:""}).
+	var centsInput = $("<input/>",{type:"number",value:signal.offset.cents, class:"medium"}).
 			appendTo(centsSpiv).
 			change(function(ev){
 				signal.offset.cents = parseInt(this.value);
