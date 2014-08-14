@@ -57,7 +57,7 @@ function NodeaStudio(editorContainer, project) {
 	this.swytchesContainer = $(this.instrumentationContainer).find("#swytches");	
 	this.tracks = {};
 	this.swytches = {};
-	this.keyset.domOrder.forEach(function(ordinal){
+	this.keyset.chromaticOrder.forEach(function(ordinal){
 		this.swytches[ordinal] = jQuery('<spiv/>',{class: 'trackSwitch', html: String.fromCharCode(ordinal)}).
 				appendTo(this.swytchesContainer).click(function(ev){
 					self.selectedMachine.swytcheSelected(ordinal);

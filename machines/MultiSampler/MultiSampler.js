@@ -8,24 +8,29 @@ MultiSampler.extends(Machine);
 
 MultiSampler.templateHTML = "<div id='MultiSampler'> \
     <div class='mainFields'> \
-        <spiv> \
-            <select id='MultiSampler-ScaleType'></select> \
-            <div class='thicket'>SCALE TYPE</div> \
-        </spiv> \
-		<br/> \
-        <spiv> \
-            <select id='MultiSampler-ScaleKey'></select> \
-            <div class='thicket'>SCALE KEY</div> \
-        </spiv> \
-		<spiv> \
-            <input type='number' id='MultiSampler-ScaleOctave'></input> \
-            <div class='thicket'>SCALE OCTAVE</div> \
-        </spiv> \
-		<br/> \
-		<spiv> \
-			<select id='MultiSampler-Instrument'></select> \
-			<div class='thicket'>INSTRUMENT</div> \
-		</spiv> \
+		<div class='envelope_slider'>\
+			<label>Scale Type</label>\
+			<spiv> \
+				<select id='MultiSampler-ScaleType'></select> \
+			</spiv> \
+		</div>\
+		<div class='envelope_slider'>\
+			<label>Scale Pitch</label>\
+			<spiv class='encroach'> \
+				<select class='medium' id='MultiSampler-ScaleKey'></select> \
+				<div class='thicket'>KEY</div> \
+			</spiv> \
+			<spiv class='encroach'> \
+				<input type='number' id='MultiSampler-ScaleOctave'></input> \
+				<div class='thicket'>OCTAVE</div> \
+			</spiv> \
+		</div>\
+		<div class='envelope_slider'>\
+			<label>Instrument</label>\
+			<spiv> \
+				<select id='MultiSampler-Instrument'></select> \
+			</spiv> \
+		</div>\
 	</div> \
 </div>";
 

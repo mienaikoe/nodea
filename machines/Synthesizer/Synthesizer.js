@@ -7,10 +7,12 @@ Synthesizer.extends(Machine);
 
 Synthesizer.templateHTML = "<div id='Synthesizer'> \
     <div class='mainFields'> \
-        <spiv> \
-            <select id='Synthesizer-ScaleType'></select> \
-            <div class='thicket'>SCALE TYPE</div> \
-        </spiv> \
+		<div class='envelope_slider'>\
+			<label>Scale Type</label>\
+			<spiv> \
+				<select id='Synthesizer-ScaleType'></select> \
+			</spiv> \
+		</div>\
     </div> \
 </div>";
 

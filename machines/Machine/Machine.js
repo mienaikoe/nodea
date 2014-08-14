@@ -339,7 +339,7 @@ Machine.keyCodeToAsciiMap = {
 
 
 Machine.machinesManifest = [
-	"",
+	"Machine",
 	"Synthesizer",
 	"MultiSampler"
 ];

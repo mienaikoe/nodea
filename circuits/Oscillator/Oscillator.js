@@ -64,17 +64,19 @@ LFO.prototype.connect = function(signal){
 LFO.prototype.render = function(oscContainer){
 	this.container = $("<div/>",{class: "lfoContainer"}).appendTo(oscContainer);
 	
-	var signalTypeContainer = $("<spiv/>").appendTo(this.container);
+	var signalTypeDiv = $("<div/>",{class:"envelope_slider"}).appendTo(this.container);
+	$("<label/>",{text:"signal type"}).appendTo(signalTypeDiv);
+	var signalTypeSpiv = $("<spiv/>").appendTo(signalTypeDiv);
 	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, this.signalType, function(value){
 		this.signal.type = value;
-	}.bind(this), signalTypeContainer);
-	$("<div/>",{class:"thicket", text: "SIGNAL TYPE"}).appendTo(signalTypeContainer);
+	}.bind(this), signalTypeSpiv);
 
-	var destinationContainer = $("<spiv/>").appendTo(this.container);
+	var destinationDiv = $("<div/>",{class:"envelope_slider"}).appendTo(this.container);
+	$("<label/>",{text:"destination"}).appendTo(destinationDiv);
+	var destinationSpiv = $("<spiv/>").appendTo(destinationDiv);
 	var destinationSelector = DrawerUtils.createSelector(LFO.DESTINATIONS, this.destination, function(value){
 		this.destination = value;
-	}.bind(this), destinationContainer);
-	$("<div/>",{class:"thicket", text: "DESTINATION"}).appendTo(destinationContainer);
+	}.bind(this), destinationSpiv);
 	
 	var frequencySlider = DrawerUtils.createSlider("frequency", LFO.ATTRIBUTES.frequency, this.signal.frequency.value, function(key, value){
 		this.signal.frequency.value = parseInt(value);
@@ -156,18 +158,18 @@ function Oscillator(ctx, machine, marshaledCircuit, destination, circuitReplacem
 Oscillator.extends(Circuit);
 
 Oscillator.templateHTML = "<div id='Oscillator'>\
-    <div class='fieldLabel'>Pitch</div>\
-    <div class='mainFields'>\
-        <spiv>\
-            <select id='Oscillator-Color'></select>\
+    <div class='mainFields envelope_slider'>\
+	    <label>Pitch</label>\
+        <spiv class='encroach'>\
+            <select class='medium' id='Oscillator-Color'></select>\
             <div class='thicket'>KEY</div>\
         </spiv>\
-        <spiv>\
-            <input type='number' class='short' id='Oscillator-Octave'></input>\
+        <spiv class='encroach'>\
+            <input type='number' class='medium' id='Oscillator-Octave'></input>\
             <div class='thicket'>OCTAVE</div>\
         </spiv>\
-        <button id='Oscillator-Add'>add signal</button>\
     </div>\
+	<button id='Oscillator-Add'>add signal</button>\
     <div id='Oscillator-List' class='mainFields'></div>\
 </div>";
 
@@ -349,33 +351,36 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 		}.bind(this), signalDiv);
 
 	// Signal Type
-	var signalTypeDiv = $("<spiv></spiv>").appendTo(signalDiv);
+	var signalTypeDiv = $("<div/>",{class: "envelope_slider"}).appendTo(signalDiv);
+	var signalTypeLabel = $("<label/>",{text:"signal type"}).appendTo(signalTypeDiv);
+	var signalTypeSpiv = $("<spiv/>").appendTo(signalTypeDiv);
 	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, signal.signalType, function(value){ 
 		signal.signalType = value;
 		this.resetSignals();
 		studio.invalidateSavedStatus();
-	}.bind(this), signalTypeDiv);
-	$("<div class='thicket'>SIGNAL TYPE</div>").appendTo(signalTypeDiv);
+	}.bind(this), signalTypeSpiv);
 
 	// Semitones
-	var semitoneDiv = $("<spiv></spiv>").appendTo(signalDiv);
-	var semitoneInput = $("<input/>",{type:"number",value:signal.offset.semitones, class:"short"}).
-			appendTo(semitoneDiv).
+	var semitoneDiv = $("<div/>",{class: "envelope_slider"}).appendTo(signalDiv);
+	$("<label/>",{text:"pitch offset"}).appendTo(semitoneDiv);
+	var semitoneSpiv = $("<spiv/>",{class:"encroach"}).appendTo(semitoneDiv);
+	var semitoneInput = $("<input/>",{type:"number",value:signal.offset.semitones, class:""}).
+			appendTo(semitoneSpiv).
 			change(function(ev){
 				signal.offset.semitones = parseInt(this.value);
 				self.resetSignals();
 			});
-	$("<div class='thicket'>SEMITONES</div>").appendTo(semitoneDiv);
+	$("<spiv/>",{class:"thicket",text:"SEMITONES"}).appendTo(semitoneSpiv);
 
 	// Cents
-	var centsDiv = $("<spiv></spiv>").appendTo(signalDiv);
-	var centsInput = $("<input/>",{type:"number",value:signal.offset.cents, class:"short"}).
-			appendTo(centsDiv).
+	var centsSpiv = $("<spiv/>",{class: "encroach"}).appendTo(semitoneDiv);
+	var centsInput = $("<input/>",{type:"number",value:signal.offset.cents, class:""}).
+			appendTo(centsSpiv).
 			change(function(ev){
 				signal.offset.cents = parseInt(this.value);
 				self.resetSignals();
 			});
-	$("<div class='thicket'>CENTS</div>").appendTo(centsDiv);
+	$("<spiv/>",{class:"thicket",text:"CENTS"}).appendTo(centsSpiv);
 	
 	// LFO
 	var lfoLabel = $("<div/>",{class:"fieldLabel sub", text: "LFO "+(idx+1)}).appendTo(signalDiv);

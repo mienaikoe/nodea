@@ -168,22 +168,35 @@ a{
             display: inline-block;
             vertical-align: middle;
         }
+        .medium{
+            width: 78px;
+            input[type=number]{
+                width: 72px;
+            }
+        }
+        .short{
+            width: 42px;
+            input[type=number]{
+                width: 36px;
+            }
+        }
+        
         input[type=number] {
             width: 72px;
             padding: 0px 2px;
-            &.short{
-                width:36px;
-                margin: 2px;
-            }
+            margin: 0px 2px;
             background-color: $drawer_input_color;
             color: white;
-            border: 2px solid #333;
+            border: 1px solid #333;
+            //border: none;
         }
         select{
             background-color: $drawer_input_color;
             color: white;
             -webkit-appearance: none;
-            border-color: $drawer_input_color;
+            //border-color: $drawer_input_color;
+            border: none;
+            margin: 0px 2px;
         }
         .envelope_slider{
             margin-bottom: 2px;
@@ -192,7 +205,7 @@ a{
                 width: 48px;
                 //background-color: #333;
             }
-            input{
+            input, select{
                 vertical-align: middle;
             }
             input[type=range] {
@@ -201,7 +214,7 @@ a{
                 height:12px;
                 cursor: ew-resize;
                 width: 188px;
-                margin: 0px;
+                margin: 0px 2px;
             }
             input[type="range"]::-webkit-slider-thumb {
                 -webkit-appearance: none;
@@ -211,9 +224,15 @@ a{
            }
         }
 
+        .encroach{
+            position: relative;
+            .thicket{
+                position:absolute;
+                bottom: 0px;
+                right: 20px;
+            }
+        }
 
-
-        
         button{
             margin-top: 2px;
             height: 20px;
