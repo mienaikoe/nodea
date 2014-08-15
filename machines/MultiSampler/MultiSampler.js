@@ -40,14 +40,14 @@ MultiSampler.prototype.extractSettings = function(settings){
 	
 	var scaleColor = "C";
 	var scaleOctave = 4;
-	var instrumentName = "calvichord";
+	var instrumentName = "clavichord";
 	
 	if( settings ){
 		if( settings.scaleType ){
 			this.scaleType = settings.scaleType;
 		}
-		if( settings.instrument ){
-			this.instrument = settings.instrument;
+		if( settings.instrumentName ){
+			instrumentName = settings.instrumentName;
 		}
 		if( settings.color ){
 			scaleColor = settings.color;
@@ -128,10 +128,11 @@ MultiSampler.prototype.generateMachineBody = function(machineBody){
 		self.studio.invalidateSavedStatus();
 	}); 
 	
-	var instrumentSelector = machineBody.find("#MultiSampler-Instrument").val(this.instrumentName);
+	var instrumentSelector = machineBody.find("#MultiSampler-Instrument");
 	for( var instrumentName in MultiSampler.INSTRUMENTS ){
 		$("<option/>",{value: instrumentName, html: instrumentName.titlecase()}).appendTo(instrumentSelector);
 	}
+	instrumentSelector.val(this.instrumentName);
 	instrumentSelector.change( function(ev){
 		self.setInstrument(this.value);
 		self.studio.invalidateSavedStatus();
@@ -161,7 +162,7 @@ MultiSampler.prototype.bufferUrlForPitch = function(pitch){
 MultiSampler.prototype.marshalSettings = function(){
 	var ret = Machine.prototype.marshalSettings.call(this);
 	ret.scaleType = this.scaleType;
-	ret.instrument = this.instrumentName;
+	ret.instrumentName = this.instrumentName;
 	ret.color = this.scalePitch.color;
 	ret.octave = this.scalePitch.octave;
 	return ret;

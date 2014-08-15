@@ -360,7 +360,7 @@ a {
         #studio #editor #instrumentation #edit_controls .control {
           min-height: 20px;
           padding: 3px 2px 2px 2px;
-          line-height: 20px;
+          line-height: 18px;
           box-shadow: inset 0 0 5px #999;
           margin: 0px auto;
           border: 1px solid #000;
