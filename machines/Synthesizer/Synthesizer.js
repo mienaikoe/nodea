@@ -1,6 +1,7 @@
 function Synthesizer( ctx, tabDefinition, studio, marshaledMachine, machineReplacementCallback ){
 	Machine.call(this, ctx, tabDefinition, studio, marshaledMachine, machineReplacementCallback);
 	
+	this.rescale();
 };
 
 Synthesizer.extends(Machine);
@@ -41,7 +42,6 @@ Synthesizer.prototype.extractSettings = function(settings){
 	}
 	
 	this.templateOscillator = new Oscillator(this.ctx, this, marshaledTemplateOscillator, this.ctx.createStub(), function(){});
-	this.scale = Scales.scalePitches(this.templateOscillator.pitch, this.scaleType, 30 );
 };
 
 
