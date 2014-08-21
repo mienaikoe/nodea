@@ -63,7 +63,7 @@ MultiSampler.prototype.extractSettings = function(settings){
 		if( settings.octave){
 			scaleOctave = settings.octave;
 		}
-		if( settings.entire){
+		if( settings.playEntire){
 			this.playEntire = settings.playEntire;
 		}
 	}
@@ -159,9 +159,11 @@ MultiSampler.prototype.generateMachineBody = function(machineBody){
 	});
 	
 	var playEntireBox = machineBody.find("#MultiSampler-PlayEntire");
+	playEntireBox.prop("checked", this.playEntire);
 	playEntireBox.change( function(ev){
 		self.playEntire = this.checked;
 		self.resetPlayEntire();
+		$(this).blur();
 	});
 };
 
