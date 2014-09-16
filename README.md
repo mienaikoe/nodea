@@ -1,7 +1,7 @@
 nodea
 =====
 
-Web Nodepad + DAW in JavaScript
+Nodepad + DAW for the web in JavaScript
 
 [Link to Beta App](http://mienaikoe.github.io/nodea)
 

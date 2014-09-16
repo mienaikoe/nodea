@@ -145,7 +145,8 @@ function NodeaStudio(editorContainer, project) {
 		var parts = this.value.split("_");
 		var counter = parseInt(parts[0]);
 		switch(parts[1]){
-			case "bar": self.advanceAmount = counter * self.pixels_per_bar; break;
+			case "bar": 
+				self.advanceAmount = counter * self.pixels_per_bar; break;
 			case "beat":
 				self.advanceAmount = counter * self.pixels_per_beat; break;
 			case "pixel":

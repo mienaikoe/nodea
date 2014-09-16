@@ -71,7 +71,7 @@ Circuit.prototype.extractSettings = function(settings){
 Circuit.prototype.extractEnvelopeAttributes = function(envelopeAttributes){
 	if( envelopeAttributes === undefined || envelopeAttributes === null ){
 		this.envelopeAttributes = {};
-		for( key in Circuit.ENVELOPE_ATTRIBUTES){
+		for( var key in Circuit.ENVELOPE_ATTRIBUTES){
 			this.envelopeAttributes[key] = Circuit.ENVELOPE_ATTRIBUTES[key].default;
 		}
 	} else {

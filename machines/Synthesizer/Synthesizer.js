@@ -41,7 +41,7 @@ Synthesizer.prototype.extractSettings = function(settings){
 		marshaledTemplateOscillator = this.defaultCircuit(keySetKey, new Pitch("C",4));
 	}
 	
-	this.templateOscillator = new Oscillator(this.ctx, this, marshaledTemplateOscillator, this.ctx.createStub(), function(){});
+	this.templateOscillator = new Oscillator(this.ctx, this, marshaledTemplateOscillator, this.ctx.createPassthrough(), function(){});
 };
 
 
@@ -195,6 +195,37 @@ Synthesizer.prototype.bindControls = function(controls){
 			function(oscillator, signal, control){
 				signal.lfo.strength = parseFloat(control.value);
 			}) );
+			
+		// EnvFilter Controls
+		signalControls.filterBypass.click( eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.filter.toggleBypass();
+			}) );
+			
+		signalControls.filter.filterTypeSelector.change( eachOscCallbackConstructor(idx, 
+			function(oscillator, signal, control){
+				signal.filter.biquadder.type = control.value;
+			}) );
+
+		for( var key in Filter.FILTER_ATTRIBUTES ){ // Q, frequency
+			signal.filter.controls[key+"Slider"].change( eachOscCallbackConstructor(idx, 
+				function(filterKey){
+					return function(oscillator, signal, control){
+						signal.filter[filterKey] = parseFloat(control.value);
+					};
+				}(key)
+			));
+		}
+
+		for( var key in Filter.ENVELOPE_ATTRIBUTES){ // adsr
+			signal.filter.controls[key+"Slider"].change( eachOscCallbackConstructor(idx, 
+				function(filterKey){
+					return function(oscillator, signal, control){
+						signal.filter[filterKey] = parseFloat(control.value);
+					};
+				}(key)
+			));
+		}	
 	});
 	
 	for(var key in Circuit.ENVELOPE_ATTRIBUTES){

@@ -69,13 +69,26 @@ var DrawerUtils = {
 	
 	createSelector: function(options, selected, changer, container){		
 		var selector = $("<select/>");
-		options.forEach(function(machineName){
+
+		if(options instanceof Array){
+			newOpts = {};
+			options.forEach(function(item, idx){
+				newOpts[item] = item;
+			});
+			options = newOpts;
+		}
+		
+		for(key in options){
+			if(!options.hasOwnProperty(key)){
+				continue;
+			}
 			$("<option/>",{
-				html: machineName, 
-				value: machineName,
-				selected: (selected === machineName)
+				html: options[key], 
+				value: key,
+				selected: (selected === key)
 			}).appendTo(selector);
-		}, this);
+		}
+		
 		$(selector).change(function(){
 			var value = $(selector).val();
 			if( value ){

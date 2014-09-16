@@ -86,7 +86,7 @@ Pitch.PRIMARIES = {
 
 
 Pitch.pitchKeySelector = function(selectBox, value, changer){
-	for( key in Pitch.PRIMARIES.FREQUENCIES ){
+	for( var key in Pitch.PRIMARIES.FREQUENCIES ){
 		var fullKey = key;
 		if( key.indexOf("#") !== -1 ){
 			var flatKey = String.fromCharCode(key.charCodeAt(0)+1);

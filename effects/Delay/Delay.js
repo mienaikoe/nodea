@@ -60,7 +60,7 @@ Delay.INPUT_ATTRIBUTES = {
 };
 
 Delay.prototype.render = function(division) {
-	for( key in Delay.INPUT_ATTRIBUTES ){
+	for( var key in Delay.INPUT_ATTRIBUTES ){
 		var input = Delay.INPUT_ATTRIBUTES[key];
 		DrawerUtils.createSlider(key, input.attributes, input.valuer(this), input.changer.bind(this), division );
 	}

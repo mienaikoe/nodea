@@ -295,7 +295,7 @@ Machine.prototype.marshal = function(){
 
 Machine.prototype.marshalCircuits = function(){
 	var ret = {};
-	for( key in this.circuits ){
+	for( var key in this.circuits ){
 		var circuit = this.circuits[key];
 		if(circuit.handle !== "Circuit"){
 			ret[key] = circuit.marshal();

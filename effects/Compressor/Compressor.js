@@ -13,7 +13,7 @@ function Compressor(ctx, effectReplacementCallback) {
 	this.input = ctx.createDynamicsCompressor();
 	this.output = this.input;
 	
-	for( key in Compressor.SLIDER_ATTRIBUTES){
+	for( var key in Compressor.SLIDER_ATTRIBUTES){
 		this[key] = Compressor.SLIDER_ATTRIBUTES[key].default;
 	}
 }
@@ -51,7 +51,7 @@ Compressor.prototype.render = function(division) {
 // marshal / load
 Compressor.prototype.marshal = function() {
 	var ret = Effect.prototype.marshal.call(this);
-	for( key in Compressor.SLIDER_ATTRIBUTES ){
+	for( var key in Compressor.SLIDER_ATTRIBUTES ){
 		ret[key] = this.input[key].value;
 	}
 	return ret;
@@ -59,7 +59,7 @@ Compressor.prototype.marshal = function() {
 
 Compressor.prototype.load = function(settings) {
 	if( settings ){
-		for( key in Compressor.SLIDER_ATTRIBUTES ){
+		for( var key in Compressor.SLIDER_ATTRIBUTES ){
 			this.input[key].value = settings[key];
 		}
 	}
