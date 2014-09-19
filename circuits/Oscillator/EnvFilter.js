@@ -81,7 +81,7 @@ Oscillator.EnvFilter.prototype.render = function(oscContainer){
 			this[key] = value;
 			studio.invalidateSavedStatus();
 		}.bind(this);
-		this.controls[key+"Slider"] = DrawerUtils.createSlider(key, attributes, this.input[key].value, changer, this.container);
+		this.controls[key+"Slider"] = DrawerUtils.createSlider(key, attributes, this[key], changer, this.container);
 	}
 	
 	for(key in Filter.ENVELOPE_ATTRIBUTES){ // adsr
@@ -176,8 +176,8 @@ Oscillator.EnvFilter.prototype.stop = function(when) {
 Oscillator.EnvFilter.prototype.marshal = function(){
 	return {
 		type: this.biquadder.type,
-		frequency: this.biquadder.frequency.value,
-		Q: this.biquadder.Q,
+		frequency: this.frequency,
+		Q: this.Q,
 		attack: this.attack,
 		release: this.release,
 		bypass: this.bypass
