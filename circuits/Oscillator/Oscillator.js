@@ -63,7 +63,7 @@ Oscillator.defaultSignal = function(ctx){
 		offset: {semitones: 0, cents: 0},
 		volume: 1,
 		lfo: Oscillator.LFO.default(ctx),
-		filter: Oscillator.EnvFilter.default(ctx)
+		filter: Oscillator.EnvFilter.default(ctx, this)
 	};
 };
 
@@ -91,7 +91,7 @@ Oscillator.prototype.extractSignalSettings = function(settings){
 			signal.lfo = new Oscillator.LFO(this.ctx,settings.lfo);
 		}
 		if(settings.filter){
-			signal.filter = new Oscillator.EnvFilter(this.ctx, settings.filter);
+			signal.filter = new Oscillator.EnvFilter(this.ctx, this, settings.filter);
 		}
 	}
 	
@@ -108,7 +108,7 @@ Oscillator.prototype.extractSignalSettings = function(settings){
 		signal.lfo = Oscillator.LFO.default(this.ctx);
 	}
 	if(!signal.filter){
-		signal.filter = Oscillator.EnvFilter.default(this.ctx);
+		signal.filter = Oscillator.EnvFilter.default(this.ctx, this);
 	}
 	
 	return signal;
