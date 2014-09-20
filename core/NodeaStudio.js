@@ -597,7 +597,7 @@ NodeaStudio.prototype.startSelectBox = function(x, y){
 		var noteFinishBound = ideasHeight - newTop;
 		var noteStartBound = noteFinishBound - newHeight;
 		
-		self.keyset.domOrder.forEach(function(ascii, idx){
+		self.keyset.chromaticOrder.forEach(function(ascii, idx){
 			if(idx < firstTrackIndex || idx > lastTrackIndex){ 
 				self.selectedMachine.circuits[ascii].notes.forEach(function(note){
 					note.unselect();
