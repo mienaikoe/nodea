@@ -79,6 +79,9 @@ MultiSampler.prototype.extractSettings = function(settings){
 	this.scalePitch = new Pitch(scaleColor, scaleOctave);
 	this.scale = Scales.scalePitches(this.scalePitch, this.scaleType, 30 );
 	this.instrumentName = instrumentName;
+	
+	var keySetKey = this.studio.keyset.chromaticOrder[0];
+	this.templateSampler = new Sampler(this.ctx, this, this.defaultCircuit(keySetKey), this.ctx.createPassthrough(), function(){});
 };
 
 
@@ -167,7 +170,44 @@ MultiSampler.prototype.generateMachineBody = function(machineBody){
 	});
 };
 
+MultiSampler.prototype.generateDrawer = function(){	
+	var machineSection = Machine.prototype.generateDrawer.call(this);
+	
+	// Render Template Oscillator	
+	var envelopeDivision = this.templateSampler.generateEnvelopeDivision(
+			DrawerUtils.createDivision(machineSection.body, "Amp Envelope"));
+	
+	this.bindControls(this.templateSampler.controls);	
+};
 
+
+
+MultiSampler.prototype.bindControls = function(controls){
+	// Callbacks on Osc Controls
+	var self = this;
+	
+	// Callbacks on each Oscillator
+	function eachCallbackConstructor(samplerCallback){
+		return function(ev){
+			for( ordinal in self.circuits ){
+				var circuit = self.circuits[ordinal];
+				if(circuit.constructor.name === "Sampler"){
+					samplerCallback(circuit, this);
+				}
+			}
+			studio.invalidateSavedStatus();
+		};
+	}
+	
+	for(var key in Circuit.ENVELOPE_ATTRIBUTES){
+		var changer = (function(attrKey){
+			return eachCallbackConstructor( function(circuit, control){
+				circuit.envelopeAttributes[attrKey] = parseFloat(control.value);
+			});
+		}(key));
+		controls.envelope[key].change(changer);
+	}
+};
 
 
 
