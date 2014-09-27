@@ -32,7 +32,7 @@ Effect.prototype.render = function(divisionBody, type) {
 	
 	var commiter = $("<button>Change</button>").appendTo(divisionBody);
 	var self = this;
-	$(commiter).click(function(){
+	$(commiter).on("click",function(){
 		if( $(selector).val()){
 			self.effectReplacementCallback(self, $(selector).val());
 		}

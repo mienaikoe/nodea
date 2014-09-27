@@ -95,11 +95,11 @@ Synthesizer.prototype.bindControls = function(controls){
 	// Callbacks on Osc Controls
 	var self = this;
 	var oscControls = this.templateOscillator.controls;
-	oscControls.colorSelector.change(function(ev){
+	oscControls.colorSelector.on("change", function(ev){
 		self.rescale();
 		self.studio.invalidateSavedStatus(); 
 	});
-	oscControls.octaveSelector.change(function(ev){
+	oscControls.octaveSelector.on("change", function(ev){
 		self.rescale();
 		self.studio.invalidateSavedStatus(); 
 	});
@@ -123,7 +123,7 @@ Synthesizer.prototype.bindControls = function(controls){
 		};
 	}
 	
-	oscControls.signalAdder.click(	eachOscCallbackConstructor(null, 
+	oscControls.signalAdder.on("click",	eachOscCallbackConstructor(null, 
 			function(oscillator, signal, control){
 				oscillator.addSignal();
 				self.generateDrawer();
@@ -132,7 +132,7 @@ Synthesizer.prototype.bindControls = function(controls){
 
 	this.templateOscillator.signalsAttributes.forEach(function(signal, idx){
 		var signalControls = signal.controls;
-		signalControls.signalRemover.click( eachOscCallbackConstructor(idx, 
+		signalControls.signalRemover.on("click", eachOscCallbackConstructor(idx, 
 			function(oscillator, signal, control){
 				oscillator.removeSignal(signal);
 				self.generateDrawer();
@@ -170,7 +170,7 @@ Synthesizer.prototype.bindControls = function(controls){
 
 
 		// LFO Controls
-		signalControls.lfoBypass.click( eachOscCallbackConstructor(idx, 
+		signalControls.lfoBypass.on("click", eachOscCallbackConstructor(idx, 
 			function(oscillator, signal, control){
 				signal.lfo.toggleBypass();
 			}) );
@@ -197,7 +197,7 @@ Synthesizer.prototype.bindControls = function(controls){
 			}) );
 			
 		// EnvFilter Controls
-		signalControls.filterBypass.click( eachOscCallbackConstructor(idx, 
+		signalControls.filterBypass.on("click", eachOscCallbackConstructor(idx, 
 			function(oscillator, signal, control){
 				signal.filter.toggleBypass();
 			}) );

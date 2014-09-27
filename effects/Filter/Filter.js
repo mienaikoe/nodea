@@ -63,7 +63,7 @@ Filter.prototype.render = function(division) {
 	var self = this;
 	
 	var typeContainer = $("<spiv></spiv>").appendTo(division);
-	var typeChooser = $("<select></select>",{id: "type_chooser"}).appendTo(typeContainer).change(function(){
+	var typeChooser = $("<select></select>",{id: "type_chooser"}).appendTo(typeContainer).on("change", function(){
 		self.input.type = this.value;
 		studio.invalidateSavedStatus();
 	});

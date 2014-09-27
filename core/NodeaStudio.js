@@ -26,16 +26,16 @@ function NodeaStudio(editorContainer, project) {
 	this.resetPixelTiming();
 	
 	// === Main UI Containers ===
-	this.instrumentationContainer = $(editorContainer).find("#instrumentation").click(function(ev){ 
+	this.instrumentationContainer = $(editorContainer).find("#instrumentation").on("click",function(ev){ 
 		self.nodas.forEach(function(noda){ 
 			noda.lightOff('selected'); 
 		});
 	});
 
 	this.ideasContainer = $(editorContainer).find("#ideas").
-		bind('mousewheel', function(ev){ 
+		on('mousewheel', function(ev){ 
 			self.advance((ev.originalEvent.wheelDelta > 0) ? self.advanceAmount : -self.advanceAmount); 
-		}).mousedown(function(ev){
+		}).on("mousedown",function(ev){
 			// unless propagation stopped by notes
 			Note.unselectAll();
 			self.startSelectBox(ev.pageX, ev.pageY);
@@ -58,12 +58,12 @@ function NodeaStudio(editorContainer, project) {
 	this.tracks = {};
 	this.swytches = {};
 	this.keyset.chromaticOrder.forEach(function(ordinal){
-		this.swytches[ordinal] = jQuery('<spiv/>',{class: 'trackSwitch', html: String.fromCharCode(ordinal)}).
-				appendTo(this.swytchesContainer).click(function(ev){
+		this.swytches[ordinal] = $('<spiv/>',{class: 'trackSwitch', html: String.fromCharCode(ordinal)}).
+				appendTo(this.swytchesContainer).on("click",function(ev){
 					self.selectedMachine.swytcheSelected(ordinal);
 					ev.stopPropagation();
 				});
-		this.tracks[ordinal] = jQuery('<spiv/>',{id: 'track_'+ordinal, class:'circuitTrack'}).
+		this.tracks[ordinal] = $('<spiv/>',{id: 'track_'+ordinal, class:'circuitTrack'}).
 				appendTo(this.tracksContainer);
 	}, this);
 	
@@ -99,7 +99,7 @@ function NodeaStudio(editorContainer, project) {
 	
 	
 	// === Event Handling ===
-	$("body").keydown(function(ev) {
+	$("body").on("keydown",function(ev) {
 		var key = ev.keyCode;
 		if( ev.ctrlKey && key in self.ctrlKeyControlMap){ // ctrl keys
 			self.ctrlKeyControlMap[key](self);
@@ -120,7 +120,7 @@ function NodeaStudio(editorContainer, project) {
 			console.log(key);
 	        return;
 	    }
-	}).keyup(function(ev) {
+	}).on("keyup",function(ev) {
 		var key = ev.keyCode;
 	    if( key in self.keyCodeToAsciiMap ){
 			self.selectedMachine.circuitOff(self.keyCodeToAsciiMap[key]);
@@ -131,8 +131,8 @@ function NodeaStudio(editorContainer, project) {
 	    } else {
 	        return;
 		}
-	}).mouseup(function(ev){
-		self.selectedMachine.mouseup();
+	}).on("mouseup",function(ev){
+		self.selectedMachine.trigger("mouseup");
 	});
 	
 	
@@ -156,34 +156,34 @@ function NodeaStudio(editorContainer, project) {
 			
 	this.snapBox = $("#snap_resolution_box");
 	this.snapResolution = parseInt(this.snapBox.val());
-	this.snapBox.change( function(){
+	this.snapBox.on("change", function(){
 		self.snapResolution = parseInt(this.value);
 	});
 			
 	
 	this.bpmBox = $("#bpm");
 	this.bpmBox.
-	    change(     function(){ self.setBPM(this.value); } ).
-	    keydown(    function(ev){ ev.stopPropagation(); }).
-	    keyup(      function(ev){ ev.stopPropagation(); });
+	    on("change", function(){ self.setBPM(this.value); } ).
+	    on("keydown",    function(ev){ ev.stopPropagation(); }).
+	    on("keyup",      function(ev){ ev.stopPropagation(); });
 	this.barSizeBox = $("#bar_size");
 	this.barSizeBox.
 		change(		function(){ self.setBarSize(this.value); }).
-	    keydown(    function(ev){ ev.stopPropagation(); }).
-	    keyup(      function(ev){ ev.stopPropagation(); });
+	    on("keydown",    function(ev){ ev.stopPropagation(); }).
+	    on("keyup",      function(ev){ ev.stopPropagation(); });
 	this.barCountBox = $("#bar_count");
 	this.barCountBox.
 		change(		function(){ self.setBarCount(this.value); }).
-	    keydown(    function(ev){ ev.stopPropagation(); }).
-	    keyup(      function(ev){ ev.stopPropagation(); });
+	    on("keydown",    function(ev){ ev.stopPropagation(); }).
+	    on("keyup",      function(ev){ ev.stopPropagation(); });
 	$('#name').
 		change(		function(){ self.setName(this.value); }).
-	    keydown(    function(ev){ ev.stopPropagation(); }).
-	    keyup(      function(ev){ ev.stopPropagation(); });
+	    on("keydown",    function(ev){ ev.stopPropagation(); }).
+	    on("keyup",      function(ev){ ev.stopPropagation(); });
 	$('#description').
 		change(		function(){ self.setDescription(this.value); }).
-	    keydown(    function(ev){ ev.stopPropagation(); }).
-	    keyup(      function(ev){ ev.stopPropagation(); });
+	    on("keydown",    function(ev){ ev.stopPropagation(); }).
+	    on("keyup",      function(ev){ ev.stopPropagation(); });
 
 
 	this.metronome = new Metronome(this.ctx, $("#metronome"), this.beats_per_minute);
@@ -612,9 +612,9 @@ NodeaStudio.prototype.startSelectBox = function(x, y){
 				}, self);
 			}
 		}, self);
-	}).mouseup(function(ev_up){
+	}).on("mouseup",function(ev_up){
 		noteSelectBox.remove();
-		$(document.body).unbind("mousemove").unbind("mouseup");
+		$(document.body).off("mousemove").off("mouseup");
 	});
 };
 

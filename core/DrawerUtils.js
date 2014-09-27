@@ -13,7 +13,7 @@ var DrawerUtils = {
 		var hoverFunc = function(){ $(this).toggleClass("hover"); };
 		$("<div/>",{class: 'heading_button dextra', text: '+'}).appendTo(heading)
 			.hover(hoverFunc, hoverFunc)
-			.click(function(ev){
+			.on("click",function(ev){
 				ev.stopPropagation();
 				adderCallback();
 			});
@@ -32,7 +32,7 @@ var DrawerUtils = {
 		var hoverFunc = function(){ $(this).toggleClass("hover"); };
 		$("<div/>",{class: 'heading_button dextra', text: '\u00d7'}).appendTo(heading)
 			.hover(hoverFunc, hoverFunc)
-			.click(function(ev){
+			.on("click",function(ev){
 				ev.stopPropagation();
 				removerCallback();
 			});
@@ -44,7 +44,7 @@ var DrawerUtils = {
 			var hoverFunc = function(){ $(this).toggleClass("hover"); };
 			$(toggler).
 					hover( hoverFunc, hoverFunc ).
-					click(function(){ togglee.toggle(); });
+					on("click", function(){ togglee.toggle(); });
 		});
 	},
 	
@@ -57,7 +57,7 @@ var DrawerUtils = {
 		$("<label>"+key+"</label>").appendTo(sliderBox);
 		var slider = $("<input/>", $.extend({type:'range', value: value, id: this.id+'_slider_'+key}, attributes)).
 			appendTo(sliderBox).
-			change(function(){
+			on("change", function(){
 				$(this).blur();
 				changer(key, parseFloat(this.value));
 			});
@@ -89,7 +89,7 @@ var DrawerUtils = {
 			}).appendTo(selector);
 		}
 		
-		$(selector).change(function(){
+		$(selector).on("change", function(){
 			var value = $(selector).val();
 			if( value ){
 				changer(value);

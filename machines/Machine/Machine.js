@@ -16,7 +16,7 @@ function Machine( ctx, tabDefinition, studio, marshaledMachine, machineReplaceme
 	
 	var self = this;
 	this.tab = $("<spiv/>",{class:"machine", html:String.fromCharCode(this.ascii)}).
-		click(function(ev){
+		on("click", function(ev){
 			self.studio.selectMachine(self.ascii);
 		});
 		
@@ -29,7 +29,7 @@ function Machine( ctx, tabDefinition, studio, marshaledMachine, machineReplaceme
 	this.extractCircuits(marshaledMachine.circuits);
 	
 	// Touchpad maybe later
-	//jQuery('<div/>',{class: 'touchpad'}).appendTo(this.keyContainer);
+	//$('<div/>',{class: 'touchpad'}).appendTo(this.keyContainer);
 };
 
 
@@ -55,14 +55,14 @@ Machine.prototype.extractCircuits = function(marshaledCircuits){
 	this.studio.keyset.domOrder.forEach(function(keySetKey, idx){
 		var rowKeyIndex = idx%15;
 		if( rowKeyIndex === 0 ){
-			keyRow = jQuery('<div/>',{class: 'circuitRow '+nodeRowClass}).appendTo(this.circuitsContainer);
+			keyRow = $('<div/>',{class: 'circuitRow '+nodeRowClass}).appendTo(this.circuitsContainer);
 		}
 		
 		var marshaledCircuit = marshaledCircuits[keySetKey];
 		if( !marshaledCircuit ){
 			marshaledCircuit = this.defaultCircuit(keySetKey);
 		}
-		marshaledCircuit.tempContainer = jQuery('<div/>',{class: 'circuit'}).appendTo(keyRow);
+		marshaledCircuit.tempContainer = $('<div/>',{class: 'circuit'}).appendTo(keyRow);
 		if(marshaledCircuit.handle === 'Function'){
 			marshaledCircuit.handle = "Circuit";
 		}
@@ -118,15 +118,15 @@ Machine.prototype.eagerInitializeCircuit = function(marshalledCircuit){
 		
 	var self = this;
 	circuit.container.
-			mousedown(function(ev){ 
+			on("mousedown",function(ev){ 
 				self.circuitOn(circuit.asciiCode);
 				self.mousedCircuits[circuit.asciiCode] = circuit;
 				ev.stopPropagation(); }).
-			mouseup(function(ev){ 
+			on("mouseup",function(ev){ 
 				self.circuitOff(circuit.asciiCode); 
 				delete self.mousedCircuits[circuit.asciiCode];
 			}).
-			click(function(ev){ ev.stopPropagation(); });
+			on("click", function(ev){ ev.stopPropagation(); });
 		
 	return circuit;
 };
@@ -138,7 +138,7 @@ Machine.prototype.replaceCircuit = function( oldCircuit, newHandle ){
 	
 	var self = this;
 	this.initializeCircuit( marshaledCircuit, function(newCircuit, marshaledCircuit){
-		newCircuit.swytche.click();
+		newCircuit.swytche.trigger("click");
 		oldCircuit.container.replaceWith(newCircuit.container);
 		self.studio.invalidateSavedStatus();
 	});
@@ -204,7 +204,7 @@ Machine.prototype.generateDrawer = function(){
 	detailsElement.empty();
 	
 	var machineSection = DrawerUtils.createSection(detailsElement, "Machine");
-	DrawerUtils.createSelector(Machine.machinesManifest, this.handle, this.replaceSelf.bind(this), machineSection.head).addClass("heading_select dextra");
+	DrawerUtils.createSelector(Machine.machinesManifest, this.handle, this.replaceSelf.bind(this), machineSection.head).addClass("heading_select").addClass("dextra");
 	if( this.constructor !== Machine ){
 		this.generateMachineDivision(DrawerUtils.createDivision(machineSection.body, this.handle));
 	}
@@ -224,8 +224,8 @@ Machine.prototype.replaceSelf = function(newHandle){
 Machine.prototype.generateMachineDivision = function(divisionBody) {
 	this.machineBody = $(this.constructor.templateHTML).appendTo(divisionBody);
 	this.machineBody.
-		keydown(    function(ev){ ev.stopPropagation(); }).
-		keyup(      function(ev){ ev.stopPropagation(); });
+		on("keydown",    function(ev){ ev.stopPropagation(); }).
+		on("keyup",      function(ev){ ev.stopPropagation(); });
 	this.generateMachineBody.call(this, this.machineBody);
 };
 

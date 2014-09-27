@@ -46,7 +46,7 @@ Sampler.prototype.generateCircuitBody = function(circuitBody){
 		
 	$(circuitBody).find("#Sampler-Entire").
 		attr("checked", self.playEntire).
-		change(function(ev){
+		on("change", function(ev){
 			self.playEntire = this.checked;
 			$(this).blur();
 			studio.invalidateSavedStatus();

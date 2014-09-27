@@ -203,7 +203,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 			mouseout(function(ev){
 				$(this).removeClass("hover");
 			}).
-			click(function(ev){
+			on("click", function(ev){
 				self.removeSignal(signal);
 			});
 
@@ -231,7 +231,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 	var semitoneSpiv = $("<spiv/>",{class:"encroach"}).appendTo(semitoneDiv);
 	var semitoneInput = $("<input/>",{type:"number",value:signal.offset.semitones, class:"medium"}).
 			appendTo(semitoneSpiv).
-			change(function(ev){
+			on("change", function(ev){
 				signal.offset.semitones = parseInt(this.value);
 				self.resetSignals();
 			});
@@ -241,7 +241,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 	var centsSpiv = $("<spiv/>",{class: "encroach"}).appendTo(semitoneDiv);
 	var centsInput = $("<input/>",{type:"number",value:signal.offset.cents, class:"medium"}).
 			appendTo(centsSpiv).
-			change(function(ev){
+			on("change", function(ev){
 				signal.offset.cents = parseInt(this.value);
 				self.resetSignals();
 			});
@@ -258,7 +258,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 			mouseout(function(ev){
 				$(this).removeClass("hover");
 			}).
-			click(function(ev){
+			on("click", function(ev){
 				signal.lfo.toggleBypass();
 			});
 	
@@ -275,7 +275,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 			mouseout(function(ev){
 				$(this).removeClass("hover");
 			}).
-			click(function(ev){
+			on("click", function(ev){
 				signal.filter.toggleBypass();
 			});
 	

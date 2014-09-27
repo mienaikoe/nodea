@@ -42,10 +42,10 @@ Note.prototype.createContainer = function(){
 	var slivers = this.finish - this.start;
 	var self = this;
 	
-	this.container = jQuery('<div/>',{ 
+	this.container = $('<div/>',{ 
 			class: 'noteCapsule ' + clazz, 
 			style: 'bottom: '+(this.start-Note.EXPANDER_HEIGHT)+'px; height: '+(slivers+(Note.EXPANDER_HEIGHT*2))+'px;'
-		}).mousedown(function(ev){
+		}).on("mousedown",function(ev){
 				if(!ev.ctrlKey){
 					Note.unselectAll();
 				}
@@ -54,8 +54,8 @@ Note.prototype.createContainer = function(){
 				ev.stopPropagation();
 			});
 			
-	this.noteBox = jQuery('<div/>',{ class: 'note', style: 'height: '+slivers+'px; background-color: '+this.circuit.machine.color}).
-			mousedown(function(ev){
+	this.noteBox = $('<div/>',{ class: 'note', style: 'height: '+slivers+'px; background-color: '+this.circuit.machine.color}).
+			on("mousedown",function(ev){
 				if( self.container.hasClass("selected") ){
 					Note.selecteds.forEach(function(note){
 						note.mouseSetpoint = parseInt(note.container.css('bottom')) + ev.pageY;
@@ -64,18 +64,18 @@ Note.prototype.createContainer = function(){
 						Note.selecteds.forEach(function(note){
 							note.container.css('bottom', (note.mouseSetpoint - ev_move.pageY)+'px');
 						});
-					}).mouseup(function(ev_up){
+					}).on("mouseup",function(ev_up){
 						Note.selecteds.forEach(function(note){
 							note.move(note.mouseSetpoint - ev_up.pageY);
-							$(document.body).unbind("mousemove").unbind("mouseup");
+							$(document.body).off("mousemove").off("mouseup");
 						});
 					});
 					ev.stopPropagation();
 				}
 			});
 	
-	this.northExpander = jQuery('<div/>',{ class: 'noteExpander north'}).
-			mousedown(function(ev){
+	this.northExpander = $('<div/>',{ class: 'noteExpander north'}).
+			on("mousedown",function(ev){
 				if( self.container.hasClass("selected") ){
 					Note.selecteds.forEach(function(note){
 						note.heightSetpoint = parseInt(note.container.css('height')) + ev.pageY;
@@ -85,18 +85,18 @@ Note.prototype.createContainer = function(){
 							note.container.css('height', (note.heightSetpoint - ev_move.pageY)+'px');
 							note.noteBox.css('height', (note.heightSetpoint - (Note.EXPANDER_HEIGHT*2) - ev_move.pageY)+'px');
 						});
-					}).mouseup(function(ev_up){
+					}).on("mouseup",function(ev_up){
 						Note.selecteds.forEach(function(note){
 							note.newFinish(note.start + note.heightSetpoint - ev_up.pageY - (Note.EXPANDER_HEIGHT*2));
-							$(document.body).unbind("mousemove").unbind("mouseup");
+							$(document.body).off("mousemove").off("mouseup");
 						});
 					});
 					ev.stopPropagation();
 				}
 			});
 	
-	this.southExpander = jQuery('<div/>',{ class: 'noteExpander south'}).
-			mousedown(function(ev){
+	this.southExpander = $('<div/>',{ class: 'noteExpander south'}).
+			on("mousedown",function(ev){
 				if( self.container.hasClass("selected") ){
 					Note.selecteds.forEach(function(note){
 						note.mouseSetpoint = parseInt(note.container.css('bottom')) + ev.pageY;
@@ -108,11 +108,11 @@ Note.prototype.createContainer = function(){
 							note.container.css('height', (note.heightSetpoint + ev_move.pageY)+'px');
 							note.noteBox.css('height', (note.heightSetpoint - (Note.EXPANDER_HEIGHT*2) + ev_move.pageY)+'px');
 						});
-					}).mouseup(function(ev_up){
+					}).on("mouseup",function(ev_up){
 						Note.selecteds.forEach(function(note){
 							note.newStart(note.mouseSetpoint - ev_up.pageY);
 							note.container.removeClass("expandingSouth");
-							$(document.body).unbind("mousemove").unbind("mouseup");	
+							$(document.body).off("mousemove").off("mouseup");	
 						});
 					});
 					ev.stopPropagation();

@@ -25,7 +25,7 @@ function Circuit(ctx, machine, marshaledCircuit, destination, circuitReplacement
 	this.trackline = machine.studio.tracks[this.asciiCode];
 	this.swytche = machine.studio.swytches[this.asciiCode];
 	
-	this.container = jQuery('<spiv/>',{class: 'circuit ' + this.handle, id: 'key_'+this.asciiCode, html: this.key});
+	this.container = $('<spiv/>',{class: 'circuit ' + this.handle, id: 'key_'+this.asciiCode, html: this.key});
 	
 	this.notes = [];
 	this.recordingNote = null;
@@ -100,7 +100,7 @@ Circuit.prototype.generateDrawer = function(){
 	detailsElement.empty();
 	
 	var circuitSection = DrawerUtils.createSection(detailsElement, "Circuit");
-	DrawerUtils.createSelector(Circuit.circuitsManifest, this.handle, this.replaceSelf.bind(this), circuitSection.head).addClass("heading_select dextra");
+	DrawerUtils.createSelector(Circuit.circuitsManifest, this.handle, this.replaceSelf.bind(this), circuitSection.head).addClass("heading_select").addClass("dextra");
 	if( this.constructor !== Circuit ){
 		this.generateCircuitDivision(DrawerUtils.createDivision(circuitSection.body, this.handle));
 	}
@@ -122,8 +122,8 @@ Circuit.prototype.replaceSelf = function(newHandle){
 Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 	this.circuitBody = $(this.constructor.templateHTML).appendTo(divisionBody);
 	this.circuitBody.
-		keydown(    function(ev){ ev.stopPropagation(); }).
-		keyup(      function(ev){ ev.stopPropagation(); });
+		on("keydown",    function(ev){ ev.stopPropagation(); }).
+		on("keyup",      function(ev){ ev.stopPropagation(); });
 
 	this.generateCircuitBody.call(this,this.circuitBody);
 };

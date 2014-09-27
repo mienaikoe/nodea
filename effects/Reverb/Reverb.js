@@ -40,7 +40,7 @@ Reverb.prototype.setConvolution = function(convolution){
 
 Reverb.prototype.render = function(division) {
 	var self = this;
-	var convoChooser = $("<select></select>",{id: "convolution_chooser"}).appendTo(division).change(function(){
+	var convoChooser = $("<select></select>",{id: "convolution_chooser"}).appendTo(division).on("change", function(){
 		self.setConvolution(this.value);
 		studio.invalidateSavedStatus();
 	});

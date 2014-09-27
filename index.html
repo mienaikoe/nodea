@@ -9,6 +9,7 @@
         <link href="fonts/kiroregular/stylesheet.css" media="all" rel="stylesheet" />
         <link href="fonts/gudea/stylesheet.css" media="all" rel="stylesheet" />
 	<script src="lib/jquery-2.1.0.min.js"></script>
+        <!-- <script src="lib/cash.min.js"></script> -->
 		
         <!-- Base Scripts -->
         <script src="core/NodeaPolyfill.js"></script>
@@ -198,10 +199,10 @@
 
         <script type="text/javascript">
             $('.control.button:not(.javascript)').
-                    mousedown(function() {
+                    on("mousedown",function() {
                         $(this).addClass('active');
                     }).
-                    mouseup(function() {
+                    on("mouseup",function() {
                         $(this).removeClass('active');
                     });
 
@@ -283,7 +284,7 @@
             } else {
                 project = JSON.parse(projectStr);
             }
-            $(function() {
+            $(document).ready(function() {
                 studio = new NodeaStudio(document.getElementById("editor"), project);
             });</script>
         

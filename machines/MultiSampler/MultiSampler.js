@@ -145,7 +145,7 @@ MultiSampler.prototype.generateMachineBody = function(machineBody){
 	}); 
 	
 	var scaleOctave = machineBody.find("#MultiSampler-ScaleOctave").val(this.scalePitch.octave);
-	scaleOctave.change( function(ev){ 
+	scaleOctave.on("change", function(ev){ 
 		self.scalePitch.octave = parseInt(this.value);
 		self.rescale();
 		self.studio.invalidateSavedStatus();
@@ -156,14 +156,14 @@ MultiSampler.prototype.generateMachineBody = function(machineBody){
 		$("<option/>",{value: instrumentName, html: instrumentName.titlecase()}).appendTo(instrumentSelector);
 	}
 	instrumentSelector.val(this.instrumentName);
-	instrumentSelector.change( function(ev){
+	instrumentSelector.on("change", function(ev){
 		self.setInstrument(this.value);
 		self.studio.invalidateSavedStatus();
 	});
 	
 	var playEntireBox = machineBody.find("#MultiSampler-PlayEntire");
 	playEntireBox.prop("checked", this.playEntire);
-	playEntireBox.change( function(ev){
+	playEntireBox.on("change", function(ev){
 		self.playEntire = this.checked;
 		self.resetPlayEntire();
 		$(this).blur();

@@ -97,7 +97,7 @@ Pitch.pitchKeySelector = function(selectBox, value, changer){
 		}
 		$("<option></option>",{value: key, html: fullKey, selected: (value === key)}).appendTo(selectBox);
 	}
-	selectBox.change(function(ev){
+	selectBox.on("change", function(ev){
 		if(changer){changer.call(this,ev);}
 		$(this).blur();
 	});
@@ -175,7 +175,7 @@ Scales.scaleTypeSelector = function(selectBox, value, changer){
 	for( type in Scales.SCALE_TYPES ){
 		$("<option></option>",{value: type, html: type.titlecase(), selected: (value === type)}).appendTo(selectBox);
 	}
-	selectBox.change( function(ev){
+	selectBox.on("change", function(ev){
 		if(changer){changer.call(this,ev);}
 		$(this).blur();
 	});
