@@ -132,7 +132,7 @@ function NodeaStudio(editorContainer, project) {
 	        return;
 		}
 	}).on("mouseup",function(ev){
-		self.selectedMachine.trigger("mouseup");
+		self.selectedMachine.mouseup();
 	});
 	
 	
