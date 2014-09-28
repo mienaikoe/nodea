@@ -290,6 +290,8 @@ a{
             }
             .heading_select{
                 margin: $ds_element_padding - 2px;
+                padding: 2px;
+                font-family: $interface_font;
             }
         }
     }

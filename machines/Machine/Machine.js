@@ -203,15 +203,15 @@ Machine.prototype.generateDrawer = function(){
 	var detailsElement = $("#machine_controls");
 	detailsElement.empty();
 	
-	var machineSection = DrawerUtils.createSection(detailsElement, "Machine");
-	DrawerUtils.createSelector(Machine.machinesManifest, this.handle, this.replaceSelf.bind(this), machineSection.head).addClass("heading_select").addClass("dextra");
+	var machineSection = DrawerUtils.createSection(detailsElement, "");
+	DrawerUtils.createSelector(Machine.machinesManifest, this.handle, this.replaceSelf.bind(this), machineSection.head).addClass("heading_select").addClass("sinistra");
 	if( this.constructor !== Machine ){
-		this.generateMachineDivision(DrawerUtils.createDivision(machineSection.body, this.handle));
+		this.generateMachineDivision(machineSection.body);
 	}
 	
 	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects").body, "machines" );
 	
-	DrawerUtils.activateDrawerToggles($("#machine_drawer"));
+	DrawerUtils.activateDrawerToggles(detailsElement);
 	
 	return machineSection;
 };
@@ -221,8 +221,9 @@ Machine.prototype.replaceSelf = function(newHandle){
 };
 
 
-Machine.prototype.generateMachineDivision = function(divisionBody) {
-	this.machineBody = $(this.constructor.templateHTML).appendTo(divisionBody);
+Machine.prototype.generateMachineDivision = function(sectionBody) {
+	machineDivision = DrawerUtils.createDivision(sectionBody, null);
+	this.machineBody = $(this.constructor.templateHTML).appendTo(machineDivision.body);
 	this.machineBody.
 		on("keydown",    function(ev){ ev.stopPropagation(); }).
 		on("keyup",      function(ev){ ev.stopPropagation(); });

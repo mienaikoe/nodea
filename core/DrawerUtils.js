@@ -22,15 +22,18 @@ var DrawerUtils = {
 	createDivision: function(section, title, className){
 		className = className ? className : '';
 		var drawerDivision = $("<div/>", {class: "drawer_division toggle"}).appendTo(section);
-		var divisionHeader = $("<div/>", {class: "dd_heading"}).appendTo(drawerDivision);
-		$("<div/>", {class: "heading_text sinistra toggler", text: '>> '+title}).appendTo(divisionHeader);
-		return $("<div/>", {class: "dd_body togglee "+className}).appendTo(drawerDivision);
+		if( title !== null ){
+			drawerDivision.header = $("<div/>", {class: "dd_heading"}).appendTo(drawerDivision);
+			$("<div/>", {class: "heading_text sinistra toggler", text: '>> '+title}).appendTo(drawerDivision.header);
+		}
+		drawerDivision.body = $("<div/>", {class: "dd_body togglee "+className}).appendTo(drawerDivision);
+		return drawerDivision;
 	},
 	
-	makeDivisionRemovable: function(sectionBody, removerCallback){
-		var heading = $(sectionBody).siblings(".dd_heading").first();
+	makeDivisionRemovable: function(division, removerCallback){
+		var heading = $(division).children(".dd_heading").first();
 		var hoverFunc = function(){ $(this).toggleClass("hover"); };
-		$("<div/>",{class: 'heading_button dextra', text: '\u00d7'}).appendTo(heading)
+		return $("<div/>",{class: 'heading_button dextra', text: '\u00d7'}).appendTo(heading)
 			.hover(hoverFunc, hoverFunc)
 			.on("click",function(ev){
 				ev.stopPropagation();

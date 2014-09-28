@@ -122,7 +122,7 @@ EffectsChain.prototype.render = function(section){
 			self.remove(effectIndex);
 			$(division).parent().remove();
 		});
-		effect.render(division, self.type);
+		effect.render(division.body, self.type);
 	});
 	
 	this.rerender();
@@ -138,7 +138,7 @@ EffectsChain.prototype.rerender = function(){
 				self.remove(effectIndex);
 				$(division).parent().remove();
 			});
-			effect.render(division, self.type);
+			effect.render(division.body, self.type);
 		}, this);
 	}
 };

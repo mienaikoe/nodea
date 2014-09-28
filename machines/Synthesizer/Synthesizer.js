@@ -66,6 +66,13 @@ Synthesizer.prototype.defaultCircuit = function(ordinal, pitch){
 };
 
 
+Synthesizer.prototype.generateMachineDivision = function(sectionBody) {
+	Machine.prototype.generateMachineDivision.call(this, sectionBody);
+	
+	// Render Template Oscillator
+	this.templateOscillator.generateCircuitDivision(sectionBody);
+	this.templateOscillator.generateEnvelopeDivision(sectionBody);
+};
 
 Synthesizer.prototype.generateMachineBody = function(machineBody){	
 	var self = this;
@@ -78,16 +85,10 @@ Synthesizer.prototype.generateMachineBody = function(machineBody){
 	}); 
 };
 
+
+
 Synthesizer.prototype.generateDrawer = function(){	
-	var machineSection = Machine.prototype.generateDrawer.call(this);
-	
-	// Render Template Oscillator
-	var circuitDivision = this.templateOscillator.generateCircuitDivision(
-			DrawerUtils.createDivision(machineSection.body, "Oscillator Template"));
-	
-	var envelopeDivision = this.templateOscillator.generateEnvelopeDivision(
-			DrawerUtils.createDivision(machineSection.body, "Amp Envelope"));
-	
+	Machine.prototype.generateDrawer.call(this);	
 	this.bindControls(this.templateOscillator.controls);	
 };
 

@@ -174,8 +174,7 @@ MultiSampler.prototype.generateDrawer = function(){
 	var machineSection = Machine.prototype.generateDrawer.call(this);
 	
 	// Render Template Oscillator	
-	var envelopeDivision = this.templateSampler.generateEnvelopeDivision(
-			DrawerUtils.createDivision(machineSection.body, "Amp Envelope"));
+	this.templateSampler.generateEnvelopeDivision(machineSection.body);
 	
 	this.bindControls(this.templateSampler.controls);	
 };

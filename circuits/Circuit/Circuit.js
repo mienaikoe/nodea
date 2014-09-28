@@ -99,12 +99,12 @@ Circuit.prototype.generateDrawer = function(){
 	var detailsElement = $("#circuit_controls");
 	detailsElement.empty();
 	
-	var circuitSection = DrawerUtils.createSection(detailsElement, "Circuit");
-	DrawerUtils.createSelector(Circuit.circuitsManifest, this.handle, this.replaceSelf.bind(this), circuitSection.head).addClass("heading_select").addClass("dextra");
+	var circuitSection = DrawerUtils.createSection(detailsElement, "");
+	DrawerUtils.createSelector(Circuit.circuitsManifest, this.handle, this.replaceSelf.bind(this), circuitSection.head).addClass("heading_select").addClass("sinistra");
 	if( this.constructor !== Circuit ){
-		this.generateCircuitDivision(DrawerUtils.createDivision(circuitSection.body, this.handle));
+		this.generateCircuitDivision(circuitSection.body);
 	}
-	this.generateEnvelopeDivision(DrawerUtils.createDivision(circuitSection.body, "Amp Envelope"));
+	this.generateEnvelopeDivision(circuitSection.body);
 	
 	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects").body );
 	
@@ -119,8 +119,9 @@ Circuit.prototype.replaceSelf = function(newHandle){
 
 
 
-Circuit.prototype.generateCircuitDivision = function(divisionBody) {
-	this.circuitBody = $(this.constructor.templateHTML).appendTo(divisionBody);
+Circuit.prototype.generateCircuitDivision = function(sectionBody) {
+	var division = DrawerUtils.createDivision(sectionBody, null);
+	this.circuitBody = $(this.constructor.templateHTML).appendTo(division.body);
 	this.circuitBody.
 		on("keydown",    function(ev){ ev.stopPropagation(); }).
 		on("keyup",      function(ev){ ev.stopPropagation(); });
@@ -128,14 +129,15 @@ Circuit.prototype.generateCircuitDivision = function(divisionBody) {
 	this.generateCircuitBody.call(this,this.circuitBody);
 };
 
-Circuit.prototype.generateEnvelopeDivision = function(divisionBody){	
+Circuit.prototype.generateEnvelopeDivision = function(sectionBody){	
+	var division = DrawerUtils.createDivision(sectionBody, "Amp Envelope");
 	for(var key in Circuit.ENVELOPE_ATTRIBUTES){
 		var attributes = Circuit.ENVELOPE_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this.envelopeAttributes[key] = value;
 			studio.invalidateSavedStatus();
 		}.bind(this);
-		this.controls.envelope[key] = DrawerUtils.createSlider(key, attributes, this.envelopeAttributes[key], changer, divisionBody);
+		this.controls.envelope[key] = DrawerUtils.createSlider(key, attributes, this.envelopeAttributes[key], changer, division.body);
 	}
 };
 
@@ -348,7 +350,7 @@ Circuit.prototype.marshalSettings = function(){
 
 
 Circuit.circuitsManifest = [
-	"",
+	"Circuit",
 	"Sampler",
 	"Oscillator"
 ];

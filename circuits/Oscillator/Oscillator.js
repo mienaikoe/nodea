@@ -28,8 +28,7 @@ Oscillator.templateHTML = "<div id='Oscillator'>\
         </spiv>\
     </div>\
 	<button id='Oscillator-Add'>add signal</button>\
-    <div id='Oscillator-List' class='mainFields'></div>\
-</div>";
+  </div>";
 
 
 Oscillator.prototype.extractSettings = function(settings){
@@ -46,7 +45,7 @@ Oscillator.prototype.extractSettings = function(settings){
 			}, this);
 		}
 		if(this.signalsAttributes.length === 0){
-			this.signalsAttributes.push(Oscillator.defaultSignal(this.ctx));
+			this.signalsAttributes.push(this.defaultSignal(this.ctx));
 		}
 	}
 	
@@ -57,7 +56,7 @@ Oscillator.prototype.extractSettings = function(settings){
 
 Oscillator.DEFAULT_PITCH = new Pitch("A",4);
 
-Oscillator.defaultSignal = function(ctx){
+Oscillator.prototype.defaultSignal = function(ctx){
 	return {
 		signalType: "sine",
 		offset: {semitones: 0, cents: 0},
@@ -118,7 +117,7 @@ Oscillator.prototype.extractSignalSettings = function(settings){
 
 
 Oscillator.prototype.addSignal = function(){
-	this.signalsAttributes.push(Oscillator.defaultSignal(this.ctx));
+	this.signalsAttributes.push(this.defaultSignal(this.ctx));
 	this.generateDrawer();
 };
 
@@ -155,6 +154,22 @@ Oscillator.prototype.repitch = function(pitch){
  * Use this function to fill in info, turn knobs, attach events on {handle}.html
  */
 
+
+Oscillator.prototype.generateCircuitDivision = function(sectionBody){
+	Circuit.prototype.generateCircuitDivision.call(this, sectionBody);
+	
+	this.signalsAttributes.forEach( function(signal, idx){
+		signal.signalDiv = DrawerUtils.createDivision(sectionBody, "Signal "+(idx+1));
+		var signalControls = this.generateSignalBody(signal, signal.signalDiv.body, idx);
+		var self = this;
+		signalControls.signalRemover = DrawerUtils.makeDivisionRemovable(signal.signalDiv, function(ev){
+			self.removeSignal(signal);
+		});
+		this.controls.signals[idx] = signalControls;
+	}, this);
+};
+
+
 Oscillator.prototype.generateCircuitBody = function(circuitBody){
 	var self = this;
 	
@@ -179,33 +194,13 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 			self.addSignal();
 			studio.invalidateSavedStatus(); 
 		});
-				
-	var signalList = $(circuitBody).find("#Oscillator-List");
-	this.signalsAttributes.forEach( function(signal, idx){
-		var signalControls = this.generateSignalBody(signal, signalList, idx);
-		this.controls.signals[idx] = signalControls;
-	}, this);
 };
 
 
 
 Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 	var self = this;
-	var signalDiv = $("<div/>",{id:"signal_"+idx, class:"listed"}).appendTo(signalList);
-	signal.signalDiv = signalDiv;
-
-	var fieldLabel = $("<div/>",{class:"fieldLabel",text:"Signal "+(idx+1)}).appendTo(signalDiv);
-	var signalRemover = $("<div/>",{class:"toggler dextra",text:"\u00d7"}).
-			appendTo(fieldLabel).
-			mouseover(function(ev){
-				$(this).addClass("hover");
-			}).
-			mouseout(function(ev){
-				$(this).removeClass("hover");
-			}).
-			on("click", function(ev){
-				self.removeSignal(signal);
-			});
+	var signalBody = $("<div/>",{id:"signal_"+idx, class:"listed"}).appendTo(signalList);
 
 	// Volume
 	var volumeSlider = DrawerUtils.createSlider("volume", Circuit.ENVELOPE_ATTRIBUTES.volume, signal.volume, 
@@ -213,10 +208,10 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 			signal.volume = value;
 			self.resetSignals();
 			studio.invalidateSavedStatus();
-		}.bind(this), signalDiv);
+		}.bind(this), signalBody);
 
 	// Signal Type
-	var signalTypeDiv = $("<div/>",{class: "envelope_slider"}).appendTo(signalDiv);
+	var signalTypeDiv = $("<div/>",{class: "envelope_slider"}).appendTo(signalBody);
 	$("<label/>",{text:"signal type"}).appendTo(signalTypeDiv);
 	var signalTypeSpiv = $("<spiv/>").appendTo(signalTypeDiv);
 	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, signal.signalType, function(value){ 
@@ -226,7 +221,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 	}.bind(this), signalTypeSpiv).addClass("medium");
 
 	// Semitones
-	var semitoneDiv = $("<div/>",{class: "envelope_slider"}).appendTo(signalDiv);
+	var semitoneDiv = $("<div/>",{class: "envelope_slider"}).appendTo(signalBody);
 	$("<label/>",{text:"pitch offset"}).appendTo(semitoneDiv);
 	var semitoneSpiv = $("<spiv/>",{class:"encroach"}).appendTo(semitoneDiv);
 	var semitoneInput = $("<input/>",{type:"number",value:signal.offset.semitones, class:"medium"}).
@@ -248,7 +243,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 	$("<spiv/>",{class:"thicket",text:"CENTS"}).appendTo(centsSpiv);
 	
 	// Oscillator.LFO
-	var lfoLabel = $("<div/>",{class:"fieldLabel sub", text: "LFO "+(idx+1)}).appendTo(signalDiv);
+	var lfoLabel = $("<div/>",{class:"fieldLabel sub", text: "LFO"}).appendTo(signalBody);
 	var lfoBypass = $("<div/>",{class:"toggler dextra",text:(signal.lfo.bypass ? "off" : "on")}).appendTo(lfoLabel);
 	signal.lfo.bypassToggler = lfoBypass;
 	lfoBypass.
@@ -262,10 +257,10 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 				signal.lfo.toggleBypass();
 			});
 	
-	signal.lfo.render(signalDiv);
+	signal.lfo.render(signalBody);
 	
 	// Oscillator.EnvFilter
-	var filterLabel = $("<div/>",{class:"fieldLabel sub", text: "Filter "+(idx+1)}).appendTo(signalDiv);
+	var filterLabel = $("<div/>",{class:"fieldLabel sub", text: "Filter"}).appendTo(signalBody);
 	var filterBypass = $("<div/>",{class:"toggler dextra",text:(signal.filter.bypass ? "off" : "on")}).appendTo(filterLabel);
 	signal.filter.bypassToggler = filterBypass;
 	filterBypass.
@@ -279,11 +274,10 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 				signal.filter.toggleBypass();
 			});
 	
-	signal.filter.render(signalDiv);
+	signal.filter.render(signalBody);
 	
 	// Return manifest of all controls created
 	signal.controls = {
-		signalRemover: signalRemover,
 		volumeSlider: volumeSlider,
 		signalTypeSelector: signalTypeSelector,
 		semitoneInput: semitoneInput,
