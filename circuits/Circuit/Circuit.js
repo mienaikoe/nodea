@@ -256,7 +256,14 @@ Circuit.prototype.pause = function(){
 
 // recording
 
+Circuit.prototype.canPlayback = function(note){
+	return true;
+};
+
 Circuit.prototype.on = function(location) {
+	if( !this.canPlayback() ){
+		return false;
+	}
 	if(location){
 		this.recordingNote = new Note({start: location, circuit: this});
 		this.recordingNote.envelope = this.allocateEnvelope();
@@ -267,9 +274,13 @@ Circuit.prototype.on = function(location) {
 	}
 	
 	navigator.vibrate(10);
+	return true;
 };
 
 Circuit.prototype.off = function(location) {
+	if( !this.canPlayback() ){
+		return false;
+	}
 	if(location && this.recordingNote !== null){
 		var note = this.recordingNote;
 		if( note.start > location ){
@@ -286,6 +297,7 @@ Circuit.prototype.off = function(location) {
 	} else {
 		this.lightOff('active');
 	}
+	return true;
 };
 
 

@@ -120,22 +120,27 @@ Sampler.prototype.deallocateSource = function(src){
 
 
 // playback
+Sampler.prototype.canPlayback = function(){
+	return assert(this.buffer);
+};
 
 
 Sampler.prototype.scheduleCircuitStart = function(startWhen, note){
-	var delayTime = Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note);
-	if(note.source){
-		note.source.started = startWhen + delayTime; 	
-		note.source.start(note.source.started);
+	if( !note.source ){
+		return false;
 	}
+	var delayTime = Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note);
+	note.source.started = startWhen + delayTime; 	
+	note.source.start(note.source.started);
 	return delayTime;
 };
 
 Sampler.prototype.scheduleCircuitStop = function(endWhen, note){
+	if( !note.source ){
+		return false;
+	}
 	var delayTime;
-	if(!note.source){
-		delayTime = Circuit.prototype.scheduleCircuitStop.call(this, endWhen, note);
-	} else if(this.playEntire){
+	if(this.playEntire){
 		wholeEnd = note.source.started + this.buffer.duration;
 		Circuit.prototype.scheduleCircuitStop.call(this, wholeEnd - this.envelopeAttributes.release, note);
 		note.source.stop(wholeEnd);
@@ -174,19 +179,20 @@ Sampler.prototype.resetSources = function(){
 // recording
 
 Sampler.prototype.on = function(location) {
-	Circuit.prototype.on.call(this, location);
-	if(this.buffer){
+	if( Circuit.prototype.on.call(this, location) ){
 		this.source = this.allocateSource();
 		this.envelope = this.allocateEnvelope();
 		this.source.connect(this.envelope);
 		this.scheduleCircuitStart(this.ctx.currentTime, {source: this.source, envelope: this.envelope});
+		return true;
+	} else {
+		return false;
 	}
 };
 
 
 Sampler.prototype.off = function(location) {
-	Circuit.prototype.off.call(this, location);
-	if (this.source && this.envelope) {
+	if( Circuit.prototype.off.call(this, location) ){
 		var targetSource = this.source;
 		var targetEnvelope = this.envelope;
 		delayTime = this.scheduleCircuitStop(this.ctx.currentTime, {source: targetSource, envelope: targetEnvelope});
@@ -194,6 +200,9 @@ Sampler.prototype.off = function(location) {
 		window.setTimeout(function(){
 			self.deallocateSource(targetSource);
 		}, delayTime*1000);
+		return true;
+	} else {
+		return false;
 	}
 };
 

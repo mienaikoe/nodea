@@ -356,6 +356,9 @@ Oscillator.prototype.deallocateSignal = function(osc){
  *			playback should begin at. Schedule your notes based
  *			on this parameter.
  */
+
+// playback
+
 Oscillator.prototype.scheduleCircuitStart = function(startWhen, note){
 	var delayTime = Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note);
 	startWhen += delayTime;
@@ -423,7 +426,7 @@ Oscillator.prototype.on = function(location) {
 		oscNode.gainer.connect(this.envelope);
 	}, this);
 	this.scheduleCircuitStart(this.ctx.currentTime, {signals: this.signalNodes, envelope: this.envelope});
-	Circuit.prototype.on.call(this, location);
+	return Circuit.prototype.on.call(this, location);
 };
 
 
@@ -431,7 +434,7 @@ Oscillator.prototype.off = function(location) {
 	if( this.signalNodes && this.envelope ){
 		this.scheduleCircuitStop(this.ctx.currentTime, {signals: this.signalNodes, envelope: this.envelope});
 	}
-	Circuit.prototype.off.call(this, location);
+	return Circuit.prototype.off.call(this, location);
 };
 
 

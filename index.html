@@ -169,40 +169,40 @@
 
         <div id="studio">
             <div  class="centering">
-            <div id="machine_drawer" class="drawer sinistra">
+                <div id="machine_drawer" class="drawer sinistra">
 
-                <div class="drawer_heading">
-                    <span>Machine Controls</span>
-                </div>
-                <div class="drawer_content" id="machine_controls">
+                    <div class="drawer_heading">
+                        <span>Machine Controls</span>
+                    </div>
+                    <div class="drawer_content" id="machine_controls">
 
-                </div>
-
-            </div>
-
-            <div id="editor" class="main">
-
-                <div id="idea_window">
-                    <div id="ideas"></div>
-                </div>
-                <div id="swytches"></div>
-                <div class="bottom charm" id="instrumentation">
-                    <div id="machines"></div>
-                    <div id="circuits"></div>
-                </div>
-
-            </div>
-
-            <div id="circuit_drawer" class="drawer dextra">
-
-                <div class="drawer_heading">
-                    <span>Circuit Controls</span>
-                </div>
-                <div class="drawer_content" id="circuit_controls">
+                    </div>
 
                 </div>
 
-            </div>
+                <div id="editor" class="main">
+
+                    <div id="idea_window">
+                        <div id="ideas"></div>
+                    </div>
+                    <div id="swytches"></div>
+                    <div class="bottom charm" id="instrumentation">
+                        <div id="machines"></div>
+                        <div id="circuits"></div>
+                    </div>
+
+                </div>
+
+                <div id="circuit_drawer" class="drawer dextra">
+
+                    <div class="drawer_heading">
+                        <span>Circuit Controls</span>
+                    </div>
+                    <div class="drawer_content" id="circuit_controls">
+
+                    </div>
+
+                </div>
 
 
             </div>
@@ -221,83 +221,18 @@
 
 
             var projectStr = window.localStorage.defaultProject;
-            var project = null;
-            if (projectStr === null || projectStr === undefined) {
-                project = {
-                    "project_id": 1,
-                    "name": "Test Project",
-                    "description": "Initial Project for Testing purposes",
-                    "beats_per_minute": 130,
-                    "beats_per_bar": 3,
-                    "keyset": "desktop",
-                    "bar_count": 20,
-                    "machines": {
-                        48: {
-                            handle: "Synthesizer",
-                            circuits: {
-                                60: {
-                                    handle: "Oscillator",
-                                    frequency: 440
-                                }
-                            }
-                        }
-                    },
-                    "nodas": [{
-                            "ordinal": 49,
-                            "handle": "Sampler",
-                            "settings": {
-                                "sourceFile": "http://upload.wikimedia.org/wikipedia/commons/6/66/Mango.ogg"
-                            },
-                            "notes": [{
-                                    "start": 50,
-                                    "finish": 73
-                                },
-                                {
-                                    "start": 83,
-                                    "finish": 117
-                                }]
-                        },
-                        {
-                            "ordinal": 50,
-                            "handle": "Sampler",
-                            "settings": {
-                                "sourceFile": "http://upload.wikimedia.org/wikipedia/commons/3/33/Mangos.ogg"
-                            },
-                            "notes": [{
-                                    "start": 51,
-                                    "finish": 74
-                                },
-                                {
-                                    "start": 84,
-                                    "finish": 118
-                                }]
-                        },
-                        {
-                            "ordinal": 51,
-                            "handle": "Sampler",
-                            "settings": {
-                                "sourceFile": "http://upload.wikimedia.org/wikipedia/commons/c/cb/Sugar2.ogg"
-                            },
-                            "notes": [{
-                                    "start": 52,
-                                    "finish": 75
-                                },
-                                {
-                                    "start": 85,
-                                    "finish": 119
-                                },
-                                {
-                                    "start": 0,
-                                    "finish": 40
-                                }]
-                        }]
-                };
+            if (assert(projectStr)) {
+                $(document).ready(function() {
+                    studio = new NodeaStudio(document.getElementById("editor"), JSON.parse(projectStr));
+                });
             } else {
-                project = JSON.parse(projectStr);
+                $.get("demos/brandnew.json", function(project) {
+                    $(document).ready(function() {
+                        studio = new NodeaStudio(document.getElementById("editor"), project);
+                    });
+                });
             }
-            $(document).ready(function() {
-                studio = new NodeaStudio(document.getElementById("editor"), project);
-            });</script>
+        </script>
 
 
         <!-- Nota.io tie -->
@@ -310,7 +245,6 @@
                 };
 
                 (function() {
-                    ;
                     var n = document.createElement("script");
                     n.type = "text/javascript";
                     n.async = true;
