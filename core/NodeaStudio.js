@@ -54,7 +54,7 @@ function NodeaStudio(editorContainer, project) {
 	this.keyset = this.keySets[this.keysetName];
 	
 	this.tracksContainer = $('<div id="tracks"></div>').appendTo(this.ideasContainer);
-	this.swytchesContainer = $(this.instrumentationContainer).find("#swytches");	
+	this.swytchesContainer = $("#swytches");	
 	this.tracks = {};
 	this.swytches = {};
 	this.keyset.chromaticOrder.forEach(function(ordinal){
