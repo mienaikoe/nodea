@@ -6,7 +6,7 @@ Oscillator.EnvFilter = function(ctx, oscillator, options){
 	this.biquadder = ctx.createBiquadFilter();
 	this.biquadder.filter_type = options.filter_type || 'lowpass';
 	this.frequency = options.frequency || Oscillator.EnvFilter.FILTER_ATTRIBUTES.frequency.default;
-	this.Q = options.Q || Oscillator.EnvFilter.FILTER_ATTRIBUTES.Q.default;
+	this.Q = assert(options.Q) ? options.Q : Oscillator.EnvFilter.FILTER_ATTRIBUTES.Q.default;
 	this.oscillator = oscillator;
 	switch(this.biquadder.filter_type){
 		case 'lowpass':
@@ -34,7 +34,7 @@ Oscillator.EnvFilter = function(ctx, oscillator, options){
 	this.input = this.output = (this.bypass ? this.bypasser : this.biquadder);
 	
 	for( var key in Filter.ENVELOPE_ATTRIBUTES){
-		this[key] = options[key] || Filter.ENVELOPE_ATTRIBUTES[key].default;
+		this[key] = assert(options[key]) ? options[key] : Filter.ENVELOPE_ATTRIBUTES[key].default;
 	}
 };
 

@@ -110,6 +110,7 @@ Synthesizer.prototype.bindControls = function(controls){
 	// Callbacks on each Oscillator
 	function eachOscCallbackConstructor(index, signalCallback){
 		return function(ev){
+			signalCallback(self.templateOscillator, self.templateOscillator.signalsAttributes[index], this);
 			for( ordinal in self.circuits ){
 				var circuit = self.circuits[ordinal];
 				var signal = null;
