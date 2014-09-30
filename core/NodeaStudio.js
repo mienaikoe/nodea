@@ -105,11 +105,11 @@ function NodeaStudio(editorContainer, project) {
 			self.ctrlKeyControlMap[key](self);
 			ev.preventDefault();
 		} else if( key in self.keyCodeToAsciiMap ){ // circuit
-			if( ev.shiftKey ){
-				self.selectedMachine.swytcheSelected(self.keyCodeToAsciiMap[key]);
-			} else {
+			//if( ev.shiftKey ){
+			//	self.selectedMachine.swytcheSelected(self.keyCodeToAsciiMap[key]);
+			//} else {
 				self.selectedMachine.circuitOn(self.keyCodeToAsciiMap[key]);		
-			}
+			//}
 			ev.preventDefault();
 	    } else if ( key >= 48 && key <= 57 ){ // machine
 			self.selectMachine(key);

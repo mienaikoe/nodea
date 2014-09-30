@@ -200,18 +200,19 @@ Machine.prototype.circuitOff = function( ordinal ){
 // Drawers and Circuit Bindings
 
 Machine.prototype.generateDrawer = function(){	
-	var detailsElement = $("#machine_controls");
-	detailsElement.empty();
-	
-	var machineSection = DrawerUtils.createSection(detailsElement, "");
+	var machineElement = $("#machine_controls");
+	machineElement.empty();
+	var machineSection = DrawerUtils.createSection(machineElement, "");
 	DrawerUtils.createSelector(Machine.machinesManifest, this.handle, this.replaceSelf.bind(this), machineSection.head).addClass("heading_select").addClass("sinistra");
 	if( this.constructor !== Machine ){
 		this.generateMachineDivision(machineSection.body);
 	}
+	DrawerUtils.activateDrawerToggles(machineElement);
 	
-	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects").body, "machines" );
-	
-	DrawerUtils.activateDrawerToggles(detailsElement);
+	var effectsElement = $("#effects_controls");
+	effectsElement.empty();
+	this.chain.render( DrawerUtils.createSection(effectsElement, "Effects").body, "machines" );
+	DrawerUtils.activateDrawerToggles(effectsElement);
 	
 	return machineSection;
 };
@@ -257,10 +258,10 @@ Machine.prototype.select = function(){
 	if(!this.selectedCircuit){
 		this.selectedCircuit = NodeaStudio.defaultCircuitCode;
 	}
-	this.swytcheSelected(this.selectedCircuit);
+	//this.swytcheSelected(this.selectedCircuit);
 };
 
-
+/*
 Machine.prototype.swytcheSelected = function(ordinal){
 	this.selectedCircuit = ordinal;
 	ordinal = ordinal.toString();
@@ -274,7 +275,7 @@ Machine.prototype.swytcheSelected = function(ordinal){
 		}
 	}
 };
-
+*/
 
 
 

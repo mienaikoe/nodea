@@ -233,22 +233,6 @@ a{
         right: 0px;
     }
 
-    .drawer_heading{
-        background-color: $drawer_content_color;
-        border-bottom: 1px solid white;
-        margin: 0px;
-        line-height: 40px;
-        padding: 0px 10px;
-        font-weight: 100;
-        font-size: 18px;
-        clear: both;
-        .heading_words{
-            float: left;
-        }
-        .controls{
-            float: right;
-        }
-    }
     .fieldLabel{
         margin-top: 8px;
         padding-top: 4px;
@@ -359,6 +343,10 @@ a{
                 background-color: #333;
                 font-size: 14px;
                 overflow: hidden;
+                .heading_select, .heading_text{
+                    margin: $ds_element_padding - 2px;
+                    font-size: 14px;
+                }
             }
             .ds_body{
                 .drawer_division{
@@ -377,20 +365,19 @@ a{
                 }
             }
         }
-        .heading_text{
-            padding: $ds_element_padding;
-            cursor: pointer;
-        }
         .heading_button{
             padding: $ds_element_padding;
             min-width: 10px;
             text-align: center;
             cursor: pointer;
         }
-        .heading_select{
+        .heading_select, .heading_text{
             margin: $ds_element_padding - 2px;
             padding: 2px;
             font-family: $interface_font;
+        }
+        .heading_select{
+            cursor: pointer;
         }
     }
 }

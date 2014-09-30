@@ -1,10 +1,13 @@
 var DrawerUtils = {
 	createSection: function(container, title, className){
 		className = className ? className : '';
-		var drawerSection = $("<div/>", {class: "drawer_section toggle"}).appendTo(container);
+		var drawerSection = $("<div/>", {class: "drawer_section"}).appendTo(container);
 		drawerSection.head = $("<div/>", {class: "ds_heading"}).appendTo(drawerSection);
-		$("<div/>", {class: "heading_text sinistra toggler", text: '>> '+title}).appendTo(drawerSection.head);
-		drawerSection.body = $("<div/>", {class: "ds_body togglee "+className}).appendTo(drawerSection);
+		$("<div/>", {class: "heading_text sinistra", text: '>> '}).appendTo(drawerSection.head);
+		if(title){
+			$("<div/>", {class: "heading_text sinistra", text: title}).appendTo(drawerSection.head);
+		}
+		drawerSection.body = $("<div/>", {class: "ds_body "+className}).appendTo(drawerSection);
 		return drawerSection;
 	},
 	
