@@ -15,35 +15,35 @@ $track_width: 19px;
 $circuit_padding: 10px;
 $tracks_width: (($track_width+1px)*30) + 1px; //tracks + borders
 
-$swytches_height: $track_width + 2px;
+$swytches_height: $track_width + 1px;
 
 $machine_width: $tracks_width;
 $machine_height: 30px;
-$instrumentation_height: 184px; // required for correct positioning of tracks
+$instrumentation_height: 192px; // required for correct positioning of tracks
 
-$machine_color: #222;
-$case_color: #444; //rgba(100,100,100,0.62);
-$drawer_content_color: #777;
-$drawer_input_color: #333;
 
-$slider_color: #DA3;
+$case_color: #222; //rgba(100,100,100,0.62);
+$mid_color: #333;
+$light_color: #444;
+$dark_color: #111;
+//$trim_color: #DA3;
+$trim_color: #D82;
+$note_color: #DDD;
+$chill_color: #AAA;
+
 $slider_width: 4px;
 
 $circuitrow_margin: 5px;
-$circuitrow_width: ($machine_width/2) - (2*$circuitrow_margin);
+$circuitrow_width: ($machine_width/2) - (2*$circuitrow_margin) - 2px;
 
 $circuit_margin: 4px;
 $circuit_border: 1px;
 $circuits_per_row: 5;
 $circuit_width: ($circuitrow_width - ((2*$circuits_per_row)*($circuit_margin+$circuit_border))) / $circuits_per_row;
-$circuit_height: $circuit_width * .8;
+$circuit_height: $circuit_width * .75;
 $circuit_text_color: #222;
 
-$bar_line_color: #222;
-$beat_line_color: #333;
-$track_line_color: #333;
 
-$note_color: #DDD;
 $note_expander_height: 2px;
 
 $active_color: #FEA;
@@ -74,17 +74,20 @@ $controls_height: 46px;
     border-right: $border;
 }
 
-@mixin circuitry{
-    background-color: #aaa;
-    box-shadow: 0px 0px 7px #333 inset;
-    color: black;
+@mixin circuitry($main, $text){
+    background-color: $main;
+    //box-shadow: 0px 0px 7px $shadow inset;
+    color: $text;
     &.active{ 
+        color: black;
         background-color: #FEA !important; 
     }
     &.recording{ 
+        color: black;
         background-color: #DFD !important; 
     }
     &.selected{ 
+        color: black;
         background-color: #DDD;
     }
 }
@@ -103,7 +106,7 @@ body{
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: $slider_color;
+    background-color: $trim_color;
     outline: 1px solid $case_color;
 }
 
@@ -266,16 +269,16 @@ a{
         width: 72px;
         padding: 0px 2px;
         margin: 0px 2px;
-        background-color: $drawer_input_color;
+        background-color: $dark_color;
         color: white;
         border: 1px solid #333;
         //border: none;
     }
     select{
-        background-color: $drawer_input_color;
+        background-color: $dark_color;
         color: white;
         -webkit-appearance: none;
-        //border-color: $drawer_input_color;
+        //border-color: $dark_color;
         border: none;
         margin: 0px 2px;
     }
@@ -291,7 +294,7 @@ a{
         }
         input[type=range] {
             -webkit-appearance: none;
-            background-color: $drawer_input_color;
+            background-color: $dark_color;
             height:12px;
             cursor: ew-resize;
             width: 188px;
@@ -299,7 +302,7 @@ a{
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            background-color: $slider_color;
+            background-color: $trim_color;
             width: $slider_width;
             height: 10px;
         }
@@ -337,10 +340,10 @@ a{
     .drawer_content{
         overflow-y: auto;
         .drawer_section{
-            border-bottom: 1px solid white;
+            border-bottom: 1px solid $note_color;
 
             .ds_heading{
-                background-color: #333;
+                background-color: $dark_color;
                 font-size: 14px;
                 overflow: hidden;
                 .heading_select, .heading_text{
@@ -350,10 +353,10 @@ a{
             }
             .ds_body{
                 .drawer_division{
-                    border-top: 1px solid #aaa;
+                    border-top: 1px solid $chill_color;
                     .dd_heading{
                         overflow: hidden;
-                        background-color: #333;
+                        background-color: $dark_color;
                         font-size: 11px;
                     }
                     .dd_body{
@@ -428,7 +431,7 @@ a{
                     height: 100%;
                     border-left: 1px dotted $circuit_text_color;
                     .circuitTrack{
-                        @include track(1px solid $track_line_color);
+                        @include track(1px solid $dark_color);
                         height: 100%;
                         .noteCapsule{
                             position: absolute;
@@ -473,10 +476,10 @@ a{
                     width: 100%;
                     .bar{
                         width: 100%;
-                        border-bottom: 1px solid $bar_line_color;
+                        border-bottom: 1px solid $dark_color;
                         .beat{
                             width: 100%;
-                            border-bottom: 1px dotted $beat_line_color;
+                            border-bottom: 1px dotted $dark_color;
                         }
                     }
                     .loop{
@@ -499,16 +502,16 @@ a{
             position: absolute;
             bottom: $instrumentation_height + $component_padding;
             border-left: 1px solid $circuit_text_color;
-            border-top: 1px solid $circuit_text_color;
             border-bottom: 1px solid $circuit_text_color;
             .trackSwitch{
                 cursor: pointer;
                 height: $track_width;
                 line-height: $track_width;
-                color: $circuit_text_color;
+                font-size: 16px;
+                color: $note_color;
                 text-align: center;
                 @include track(1px solid $circuit_text_color);
-                @include circuitry;
+                background-color: $light_color;
             }
         }
 
@@ -521,55 +524,42 @@ a{
                 overflow: hidden;
             }
 
-
-            #machines{
-                background-color: $machine_color;
-                .machine{
-                    width: (($machine_width - 9px) / 10);
-                    margin-right: 1px;
-                    border-bottom: 0px;
-                    height: $circuit_height - (2*$circuit_margin);
-                    font-size: 14px;
-                    line-height: 30px;
-                    text-align: center;
-                    background-color: $case_color;
-                    color: white;
-                    vertical-align: top;
-                    cursor: pointer;
-                    &:last-child{
-                        margin-right: 0px;
-                    }
-                }
-            }
-            #circuits{
-                .circuits{
+            
+            #circuits, #machines{
+                //.circuits{
                     width: $machine_width;
                     background-color: $case_color;
-                    .circuitRow{
-                        float:left;
-                        width: $circuitrow_width;
-                        margin: $circuitrow_margin;
+                //}
+                .circuitRow{
+                    //float:left;
+                    width: $circuitrow_width;
+                    margin: $circuitrow_margin;
 
-                        .circuit{
-                            border-radius: 3px;
-                            border: $circuit_border solid black;
-                            width: $circuit_width;
-                            height: $circuit_height;
-                            margin: $circuit_margin;
-                            text-align: center;
-                            line-height: $circuit_height;
-                            @include unselectable;
-                            @include circuitry;
-                            cursor: pointer;
-                        }
+                    .circuit, .machine{
+                        //border-radius: 3px;
+                        //border: $circuit_border solid black;
+                        font-size: 16px;
+                        width: $circuit_width;
+                        height: $circuit_height;
+                        margin: $circuit_margin;
+                        text-align: center;
+                        line-height: $circuit_height;
+                        @include unselectable;
+                        cursor: pointer;
                     }
-                    .touchpad{
-                        width: $touchpad_dimension;
-                        height: $touchpad_dimension;
-                        border: 1px solid $machine_color;
-                        margin: 62px auto;
-                        border-radius: 5px;
+                    .circuit{
+                        @include circuitry($light_color, #FFF);
                     }
+                    .machine{
+                        @include circuitry($mid_color, #FFF);
+                    }
+                }
+                .touchpad{
+                    width: $touchpad_dimension;
+                    height: $touchpad_dimension;
+                    border: 1px solid $case_color;
+                    margin: 62px auto;
+                    border-radius: 5px;
                 }
             }
         }

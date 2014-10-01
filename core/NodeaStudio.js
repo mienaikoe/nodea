@@ -71,8 +71,12 @@ function NodeaStudio(editorContainer, project) {
 	
 	// === Instantiate Machines ===
 	this.machineContainer = $(this.instrumentationContainer).find("#machines");
+	
+	var sinistraRow = $('<div/>',{class: 'circuitRow sinistra'}).appendTo(this.machineContainer);
+	var dextraRow = $('<div/>',{class: 'circuitRow dextra'}).appendTo(this.machineContainer);
+	
 	for( var i=0; i<10; i++){
-		$("<div class='placeholder machine'></div>").appendTo(self.machineContainer);
+		$("<div class='placeholder machine'></div>").appendTo(i<5 ? sinistraRow : dextraRow);
 	}
 	this.circuitsContainer = $(this.instrumentationContainer).find("#circuits");
 	this.machines = {};

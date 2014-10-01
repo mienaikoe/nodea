@@ -252,7 +252,7 @@ Machine.prototype.select = function(){
 	$(".machine").removeAttr("style");
 	$("#circuits .circuits").hide();
 	
-	this.tab.attr("style", "background: linear-gradient("+this.color+", #444);");
+	this.tab.attr("style", "background-color: "+this.color+"; color: black;");
 	this.circuitsContainer.show();
 	
 	if(!this.selectedCircuit){
