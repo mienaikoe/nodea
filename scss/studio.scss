@@ -23,13 +23,14 @@ $instrumentation_height: 192px; // required for correct positioning of tracks
 
 
 $case_color: #222; //rgba(100,100,100,0.62);
-$mid_color: #333;
 $light_color: #444;
 $dark_color: #111;
 //$trim_color: #DA3;
 $trim_color: #D82;
 $note_color: #DDD;
 $chill_color: #AAA;
+
+$circuit_text_color: #222;
 
 $slider_width: 4px;
 
@@ -41,7 +42,7 @@ $circuit_border: 1px;
 $circuits_per_row: 5;
 $circuit_width: ($circuitrow_width - ((2*$circuits_per_row)*($circuit_margin+$circuit_border))) / $circuits_per_row;
 $circuit_height: $circuit_width * .75;
-$circuit_text_color: #222;
+
 
 
 $note_expander_height: 2px;
@@ -511,7 +512,7 @@ a{
                 color: $note_color;
                 text-align: center;
                 @include track(1px solid $circuit_text_color);
-                background-color: $light_color;
+                background-color: $dark_color;
             }
         }
 
@@ -548,10 +549,10 @@ a{
                         cursor: pointer;
                     }
                     .circuit{
-                        @include circuitry($light_color, #FFF);
+                        @include circuitry($dark_color, #FFF);
                     }
                     .machine{
-                        @include circuitry($mid_color, #FFF);
+                        @include circuitry($dark_color, #FFF);
                     }
                 }
                 .touchpad{
