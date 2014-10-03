@@ -59,10 +59,11 @@ Delay.INPUT_ATTRIBUTES = {
 	}
 };
 
-Delay.prototype.render = function(division) {
+Delay.prototype.render = function(division, type) {
+	Effect.prototype.render.call(this, division, type);
 	for( var key in Delay.INPUT_ATTRIBUTES ){
 		var input = Delay.INPUT_ATTRIBUTES[key];
-		DrawerUtils.createSlider(key, input.attributes, input.valuer(this), input.changer.bind(this), division );
+		DrawerUtils.createSlider(key, input.attributes, input.valuer(this), input.changer.bind(this), division.body );
 	}
 };
 

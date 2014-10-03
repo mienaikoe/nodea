@@ -8,7 +8,7 @@ var EffectsChain = function(ctx, destination, type){
 	this.ctx = ctx;
 	this.type = type;
 	
-	this.source = new Effect(this.ctx, this.replacementCallback());
+	this.source = new Effect(this.ctx, this.getReplacementCallback());
 	this.input = this.source.input;
 	
 	this.destination = {input: destination, output: destination};
@@ -114,33 +114,29 @@ EffectsChain.prototype.render = function(section){
 	this.section = section;
 	var self = this;
 	DrawerUtils.makeSectionAddable(section, function(ev){
-		var effect = new Effect(self.ctx, self.replacementCallback());
+		var effect = new Effect(self.ctx, self.getReplacementCallback());
 		self.chain.push(effect);
 		var effectIndex = self.chain.length - 1;
-		var division = DrawerUtils.createDivision(section,"Effect");
-		DrawerUtils.makeDivisionRemovable(division, function(ev){
-			self.remove(effectIndex);
-			$(division).parent().remove();
-		});
-		effect.render(division.body, self.type);
-	});
-	
+		this.renderDivision(effect, effectIndex);
+	}.bind(this));
 	this.rerender();
 };
 
 EffectsChain.prototype.rerender = function(){
 	if( this.section ){
 		this.section.empty();
-		var self = this;
-		this.chain.forEach(function(effect, effectIndex){ 
-			var division = DrawerUtils.createDivision(this.section, effect.constructor.name);
-			DrawerUtils.makeDivisionRemovable(division, function(ev){
-				self.remove(effectIndex);
-				$(division).parent().remove();
-			});
-			effect.render(division.body, self.type);
-		}, this);
+		this.chain.forEach(this.renderDivision, this);
 	}
+};
+
+EffectsChain.prototype.renderDivision = function(effect, effectIndex){
+	var division = DrawerUtils.createDivision(this.section, "");
+	var self = this;
+	DrawerUtils.makeDivisionRemovable(division, function(ev){
+		self.remove(effectIndex);
+		$(division).remove();
+	});
+	effect.render(division, self.type);
 };
 
 
@@ -152,10 +148,10 @@ EffectsChain.prototype.marshal = function(){
 	 });
 };
 
-EffectsChain.prototype.replacementCallback = function(){
+EffectsChain.prototype.getReplacementCallback = function(){
 	var self = this;
-	return function(oldEffect, newHandle){
-		 self.replaceEffect(oldEffect, newHandle);
+	return function(newHandle){
+		 self.replaceEffect(this, newHandle);
 	};
 };
 
@@ -163,7 +159,7 @@ EffectsChain.prototype.load = function(chainSettings){
 	chainSettings.forEach(function(effectSettings){
 		var self = this;			
 
-		var newEffect = new window[effectSettings.handle](self.ctx, self.replacementCallback());
+		var newEffect = new window[effectSettings.handle](self.ctx, self.getReplacementCallback());
 		newEffect.load(effectSettings);
 		self.push( newEffect );
 		self.rerender();
@@ -172,7 +168,7 @@ EffectsChain.prototype.load = function(chainSettings){
 };
 
 EffectsChain.prototype.loadDefault = function(){
-	this.push(new Envelope(this.ctx, this.replacementCallback()));
+	this.push(new Envelope(this.ctx, this.getReplacementCallback()));
 };
 
 
@@ -187,7 +183,7 @@ EffectsChain.prototype.replaceEffect = function( oldEffect, newHandle ){
 
 	oldEffect.output.disconnect(0);
 
-	var newEffect = new window[newHandle](self.ctx, self.replacementCallback());
+	var newEffect = new window[newHandle](self.ctx, self.getReplacementCallback());
 	self.chain[idx] = newEffect;
 
 	var prevEffect = self.get(idx-1);

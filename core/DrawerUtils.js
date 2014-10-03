@@ -3,7 +3,7 @@ var DrawerUtils = {
 		className = className ? className : '';
 		var drawerSection = $("<div/>", {class: "drawer_section"}).appendTo(container);
 		drawerSection.head = $("<div/>", {class: "ds_heading"}).appendTo(drawerSection);
-		$("<div/>", {class: "heading_text sinistra", text: '>> '}).appendTo(drawerSection.head);
+		//$("<div/>", {class: "heading_text sinistra", text: ''}).appendTo(drawerSection.head);
 		if(title){
 			$("<div/>", {class: "heading_text sinistra", text: title}).appendTo(drawerSection.head);
 		}
@@ -21,13 +21,16 @@ var DrawerUtils = {
 				adderCallback();
 			});
 	},
-
+	
 	createDivision: function(section, title, className){
 		className = className ? className : '';
 		var drawerDivision = $("<div/>", {class: "drawer_division toggle"}).appendTo(section);
-		if( title !== null ){
+		if( title != null){
 			drawerDivision.header = $("<div/>", {class: "dd_heading"}).appendTo(drawerDivision);
-			$("<div/>", {class: "heading_text sinistra toggler", text: '>> '+title}).appendTo(drawerDivision.header);
+			$("<div/>", {class: "heading_text sinistra toggler", text: '>> '}).appendTo(drawerDivision.header);
+			if(title != ""){
+				$("<div/>", {class: "heading_text sinistra", text: title}).appendTo(drawerDivision.header);
+			}
 		}
 		drawerDivision.body = $("<div/>", {class: "dd_body togglee "+className}).appendTo(drawerDivision);
 		return drawerDivision;

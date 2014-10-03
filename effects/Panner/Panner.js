@@ -22,10 +22,11 @@ Panner.extends(Effect);
 Panner.DIRECTION_ATTRIBUTES = {min: -90, max: 90, step: 1, default: 0};
 
 
-Panner.prototype.render = function(division) {
+Panner.prototype.render = function(division, type) {
+	Effect.prototype.render.call(this, division, type);
 	DrawerUtils.createSlider("direction", Panner.DIRECTION_ATTRIBUTES, this.direction, function(key, value){
 		this.setPan(value);
-	}.bind(this), division);
+	}.bind(this), division.body);
 };
 
 

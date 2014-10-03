@@ -59,8 +59,9 @@ Filter.FILTER_TYPES = {
 
 
 
-Filter.prototype.render = function(division) {
+Filter.prototype.render = function(division, type) {
 	var self = this;
+	Effect.prototype.render.call(this, division, type);
 	
 	var typeContainer = $("<spiv></spiv>").appendTo(division);
 	var typeChooser = $("<select></select>",{id: "type_chooser"}).appendTo(typeContainer).on("change", function(){
@@ -78,7 +79,7 @@ Filter.prototype.render = function(division) {
 			this.input[key].value = value;
 			studio.invalidateSavedStatus();
 		}.bind(this);
-		DrawerUtils.createSlider(key, attributes, this.input[key].value, changer, division);
+		DrawerUtils.createSlider(key, attributes, this.input[key].value, changer, division.body);
 	}
 	
 	for(key in Filter.ENVELOPE_ATTRIBUTES){
@@ -87,7 +88,7 @@ Filter.prototype.render = function(division) {
 			this[key] = value;
 			studio.invalidateSavedStatus();
 		}.bind(this);
-		DrawerUtils.createSlider(key, attributes, this[key], changer, division);
+		DrawerUtils.createSlider(key, attributes, this[key], changer, division.body);
 	}
 };
 

@@ -33,14 +33,15 @@ Compressor.SLIDER_ATTRIBUTES = {
 	release:	{min: 0.00, max: 1.00, step: 0.05,	default: 0.05}
 };
 
-Compressor.prototype.render = function(division) {
+Compressor.prototype.render = function(division, type) {
+	Effect.prototype.render.call(this, division, type);
 	for(key in Compressor.SLIDER_ATTRIBUTES){
 		var attributes = Compressor.SLIDER_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this.input[key].value = value;
 			studio.invalidateSavedStatus();
 		}.bind(this);
-		DrawerUtils.createSlider(key, attributes, this.input[key].value, changer, division );
+		DrawerUtils.createSlider(key, attributes, this.input[key].value, changer, division.body );
 	}
 };
 

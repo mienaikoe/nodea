@@ -20,8 +20,14 @@ function Effect(ctx, effectReplacementCallback) {
 
 
 
-Effect.prototype.render = function(divisionBody, type) {
-	var selector = $("<select/>").appendTo(divisionBody);
+Effect.prototype.render = function(division, type) {
+	var self = this;	
+	var selector = DrawerUtils.createSelector(
+			Effect.effectsManifest[type], this.constructor.name, this.effectReplacementCallback.bind(this), division.head).
+			addClass("heading_select").addClass("sinistra");
+	$(selector).appendTo(division.header);
+	
+	/*var selector = $("<select/>").appendTo(division.body);
 	Effect.effectsManifest[type].forEach(function(effectName){
 		$("<option/>",{
 			html: effectName, 
@@ -30,13 +36,14 @@ Effect.prototype.render = function(divisionBody, type) {
 		}).appendTo(selector);
 	}, this);
 	
-	var commiter = $("<button>Change</button>").appendTo(divisionBody);
+	var commiter = $("<button>Change</button>").appendTo(division.body);
 	var self = this;
 	$(commiter).on("click",function(){
 		if( $(selector).val()){
 			self.effectReplacementCallback(self, $(selector).val());
 		}
 	});
+	*/
 };
 
 Effect.prototype.start = function(now) {
@@ -63,6 +70,6 @@ Effect.prototype.load = function(settings){
 
 // TODO: Mark that Envelope is exclusively for circuits
 Effect.effectsManifest = {
-	machines: ["","Compressor","Reverb","Delay","Panner"],
-	circuits: ["","Compressor","Reverb","Delay","Filter","Panner"]
+	machines: ["Effect","Compressor","Reverb","Delay","Panner"],
+	circuits: ["Effect","Compressor","Reverb","Delay","Filter","Panner"]
 };

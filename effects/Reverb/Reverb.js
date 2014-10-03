@@ -38,12 +38,18 @@ Reverb.prototype.setConvolution = function(convolution){
 
 
 
-Reverb.prototype.render = function(division) {
+Reverb.prototype.render = function(division, type) {
+	Effect.prototype.render.call(this, division, type);
 	var self = this;
-	var convoChooser = $("<select></select>",{id: "convolution_chooser"}).appendTo(division).on("change", function(){
+	
+	var container = $("<div/>",{"class":"envelope_slider"}).appendTo(division.body);
+	
+	$("<label>",{html: "space"}).appendTo(container);
+	
+	var convoChooser = $("<select></select>",{id: "convolution_chooser"}).on("change", function(){
 		self.setConvolution(this.value);
 		studio.invalidateSavedStatus();
-	});
+	}).appendTo(container);
 	
 	Reverb.CONVOLUTIONS.forEach( function(convo){
 		$("<option></option>",{html: convo, selected: (convo === self.convolution)}).appendTo(convoChooser);

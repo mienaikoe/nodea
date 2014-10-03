@@ -359,6 +359,10 @@ a{
                         overflow: hidden;
                         background-color: $dark_color;
                         font-size: 11px;
+                        .heading_select, .heading_text{
+                            margin: $ds_element_padding - 3px;
+                            font-size: 11px;
+                        }
                     }
                     .dd_body{
                         padding: 10px;
