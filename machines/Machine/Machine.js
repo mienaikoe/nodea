@@ -212,7 +212,6 @@ Machine.prototype.generateDrawer = function(){
 	var effectsElement = $("#effects_controls");
 	effectsElement.empty();
 	this.chain.render( DrawerUtils.createSection(effectsElement, "Effects").body, "machines" );
-	DrawerUtils.activateDrawerToggles(effectsElement);
 	
 	return machineSection;
 };

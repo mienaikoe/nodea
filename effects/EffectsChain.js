@@ -126,6 +126,7 @@ EffectsChain.prototype.rerender = function(){
 	if( this.section ){
 		this.section.empty();
 		this.chain.forEach(this.renderDivision, this);
+		DrawerUtils.activateDrawerToggles(this.section);
 	}
 };
 

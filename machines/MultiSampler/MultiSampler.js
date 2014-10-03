@@ -170,12 +170,14 @@ MultiSampler.prototype.generateMachineBody = function(machineBody){
 	});
 };
 
+MultiSampler.prototype.generateMachineDivision = function(sectionBody) {
+	Machine.prototype.generateMachineDivision.call(this, sectionBody);
+	this.templateSampler.generateEnvelopeDivision(sectionBody);
+};
+
+
 MultiSampler.prototype.generateDrawer = function(){	
-	var machineSection = Machine.prototype.generateDrawer.call(this);
-	
-	// Render Template Oscillator	
-	this.templateSampler.generateEnvelopeDivision(machineSection.body);
-	
+	Machine.prototype.generateDrawer.call(this);
 	this.bindControls(this.templateSampler.controls);	
 };
 

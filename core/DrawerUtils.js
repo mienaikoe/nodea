@@ -50,10 +50,13 @@ var DrawerUtils = {
 	activateDrawerToggles: function(drawer){
 		$(drawer).find(".toggler").each(function(idx, toggler){
 			var togglee = $(toggler).closest(".toggle").find('.togglee');
-			var hoverFunc = function(){ $(this).toggleClass("hover"); };
-			$(toggler).
-					hover( hoverFunc, hoverFunc ).
-					on("click", function(){ togglee.toggle(); });
+			var hoverFunc = function(){ 
+				$(this).toggleClass("hover"); 
+			};
+			$(toggler).hover( hoverFunc, hoverFunc ).
+					on("click", function(){ 
+						togglee.toggle(); 
+					});
 		});
 	},
 	
