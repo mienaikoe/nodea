@@ -240,6 +240,36 @@ MultiSampler.prototype.marshalSettings = function(){
 
 
 MultiSampler.INSTRUMENTS = {
+	piano: {
+		"B4": "piano_B4.wav",
+		"C2": "piano_C2.wav",
+		"C#6": "piano_Cs6.wav",
+		"D4": "piano_D4.wav",
+		"D#3": "piano_Ds3.wav",
+		"D#5": "piano_Ds5.wav",
+		"E2": "piano_E2.wav",
+		"F#3": "piano_Fs3.wav",
+		"G2": "piano_G2.wav",
+		"G6": "piano_G6.wav",
+		"G#4": "piano_Gs4.wav"
+	},
+	upright_bass: {
+		"A1": "p-1A.wav",
+		"B1": "p-1B.wav",
+		"C1": "p-1C.wav",
+		"D1": "p-1D.wav",
+		"E1": "p-1E.wav",
+		"F1": "p-1F.wav",
+		"G1": "p-1G.wav",
+		"A2": "p-2A.wav",
+		"B2": "p-2B.wav",
+		"C2": "p-2C.wav",
+		"D2": "p-2D.wav",
+		"E2": "p-2E.wav",
+		"F2": "p-2F.wav",
+		"G2": "p-2G.wav",
+		"A3": "p-3A.wav"
+	},
 	clavichord: {
 		"A#2": "ClavichordAs2.wav",
 		"A2": "ClavichordA2.wav",
