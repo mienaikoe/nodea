@@ -11,8 +11,12 @@ Curent Work is underway. Please see Issues list for work being done and work bei
 
 ####Contributors:
 1. [mienaikoe](http://www.github.com/mienaikoe) - Lead Developer
-2. [SplendidStrontium](http://www.github.com/SplendidStrontium) - QA
-3. [Gerald Evans](http://thirdminddesign.tumblr.com/) - UX/Design
+
+
+
+####Resources:
+Instrument Samples - Berklee College of Music Free Samples Library
+Impulse Responses - Noise Vault (http://www.noisevault.com), Echo Chamber (http://www.echochamber.ch/)
 
 
 
