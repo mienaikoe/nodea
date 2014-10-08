@@ -61,7 +61,7 @@ Oscillator.LFO.prototype.connect = function(signal){
 
 
 Oscillator.LFO.prototype.render = function(oscContainer){
-	this.container = $("<div/>",{class: "lfoContainer"}).appendTo(oscContainer);
+	this.container = $("<div/>",{class: "lfoContainer" + (this.bypass ? ' bypass' : '')}).appendTo(oscContainer);
 	
 	var signalTypeDiv = $("<div/>",{class:"envelope_slider"}).appendTo(this.container);
 	$("<label/>",{text:"signal type"}).appendTo(signalTypeDiv);

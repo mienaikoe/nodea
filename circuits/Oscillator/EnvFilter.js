@@ -62,7 +62,7 @@ Oscillator.EnvFilter.default = function(ctx, oscillator){
 
 
 Oscillator.EnvFilter.prototype.render = function(oscContainer){
-	this.container = $("<div/>",{class: "filterContainer"}).appendTo(oscContainer);
+	this.container = $("<div/>",{class: "filterContainer" + (this.bypass ? ' bypass' : '')}).appendTo(oscContainer);
 	
 	var filterTypeDiv = $("<div/>",{class:"envelope_slider"}).appendTo(this.container);
 	$("<label/>",{text:"filter type"}).appendTo(filterTypeDiv);

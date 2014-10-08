@@ -62,13 +62,18 @@ body, html{
 }
 
 
-.toggler{
+.toggler, .actor{
     cursor: pointer;
 }
 
 .hover{
     color: #fea;
 }
+
+.bypass{
+    display: none;
+}
+
 
 .thicket{  
     color: white;

@@ -244,7 +244,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 	
 	// Oscillator.LFO
 	var lfoLabel = $("<div/>",{class:"fieldLabel sub", text: "LFO"}).appendTo(signalBody);
-	var lfoBypass = $("<div/>",{class:"toggler dextra",text:(signal.lfo.bypass ? "off" : "on")}).appendTo(lfoLabel);
+	var lfoBypass = $("<div/>",{class:"actor dextra",text:(signal.lfo.bypass ? "off" : "on")}).appendTo(lfoLabel);
 	signal.lfo.bypassToggler = lfoBypass;
 	lfoBypass.
 			mouseover(function(ev){
@@ -261,7 +261,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 	
 	// Oscillator.EnvFilter
 	var filterLabel = $("<div/>",{class:"fieldLabel sub", text: "Filter"}).appendTo(signalBody);
-	var filterBypass = $("<div/>",{class:"toggler dextra",text:(signal.filter.bypass ? "off" : "on")}).appendTo(filterLabel);
+	var filterBypass = $("<div/>",{class:"actor dextra",text:(signal.filter.bypass ? "off" : "on")}).appendTo(filterLabel);
 	signal.filter.bypassToggler = filterBypass;
 	filterBypass.
 			mouseover(function(ev){
