@@ -482,6 +482,9 @@ a{
                     .bar{
                         width: 100%;
                         border-bottom: 1px solid $dark_color;
+                        &.final{
+                            border-top: 1px solid $chill_color;
+                        }
                         .beat{
                             width: 100%;
                             border-bottom: 1px dotted $dark_color;

@@ -32,7 +32,8 @@ function NodeaStudio(editorContainer, project) {
 		});
 	});
 
-	this.ideasContainer = $(editorContainer).find("#ideas").
+	var ideasWindow = $(editorContainer).find("#idea_window");
+	ideasWindow.
 		on('mousewheel', function(ev){ 
 			self.advance((ev.originalEvent.wheelDelta > 0) ? self.advanceAmount : -self.advanceAmount); 
 		}).on("mousedown",function(ev){
@@ -41,6 +42,7 @@ function NodeaStudio(editorContainer, project) {
 			self.startSelectBox(ev.pageX, ev.pageY);
 		});
 		
+	this.ideasContainer = $(editorContainer).find("#ideas");	
 		
 	this.barsContainer = $('<div id="barlines"></div>').appendTo(this.ideasContainer);
 	// === Loopin Bars ===
@@ -177,7 +179,10 @@ function NodeaStudio(editorContainer, project) {
 	    on("keyup",      function(ev){ ev.stopPropagation(); });
 	this.barCountBox = $("#bar_count");
 	this.barCountBox.
-		change(		function(){ self.setBarCount(this.value); }).
+		change(	function(){ 
+			self.setBarCount(this.value);
+			$(this).val(self.bar_count);
+		}).
 	    on("keydown",    function(ev){ ev.stopPropagation(); }).
 	    on("keyup",      function(ev){ ev.stopPropagation(); });
 	$('#name').
@@ -441,19 +446,27 @@ NodeaStudio.prototype.setBarCount = function(howmany, duringStartup){
 		if( howmany === this.bar_count ){
 			return;
 		}
+		var newMaximum = howmany*this.pixels_per_bar;
+		if(newMaximum < Note.maximum){
+			howmany = Math.ceil(Note.maximum / this.pixels_per_bar);
+			newMaximum = howmany*this.pixels_per_bar;
+		}
+		
 		var difference = howmany - this.bar_count;
-		this.maxLocation += difference*this.pixels_per_bar;
+		this.maxLocation = newMaximum;
 		this.ideasContainer.css("height", this.maxLocation+'px');
 
 		if( howmany > this.bar_count ){
+			this.barsContainer.find(".bar.final").removeClass("final");
 			for( var i = difference; i > 0; i--){
-				var bar = $('<div/>', {class: 'bar', style: 'height: '+(this.pixels_per_bar-1)+'px;'}).appendTo(this.barsContainer);
+				var bar = $('<div/>', {class: "bar"+(i===1 ? " final":""), style: 'height: '+(this.pixels_per_bar-1)+'px;'}).prependTo(this.barsContainer);
 				for( var j = this.beats_per_bar; j>0 ; j-- ){
 					$('<div/>', {class: 'beat', style: 'height: '+(this.pixels_per_beat-1)+'px;'}).appendTo(bar);
 				}
 			}
 		} else{
-			this.barsContainer.find('.bar').splice(0, -difference).forEach(function(el){ el.remove(); });
+			this.barsContainer.find(".bar").splice(0, -difference).forEach(function(el){ el.remove(); });
+			this.barsContainer.find(".bar").first().addClass("final");
 		}
 		this.bar_count = howmany;
 		this.barCountBox.val(howmany);

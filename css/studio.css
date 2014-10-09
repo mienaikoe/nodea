@@ -364,28 +364,31 @@ a {
             width: 100%;
             border-bottom: 1px solid #111111; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003485}}
+            #studio #editor #idea_window #ideas #barlines .bar.final {
+              border-top: 1px solid #aaaaaa; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003488}}
             #studio #editor #idea_window #ideas #barlines .bar .beat {
               width: 100%;
               border-bottom: 1px dotted #111111; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003490}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003493}}
           #studio #editor #idea_window #ideas #barlines .loop {
             position: absolute;
             background-color: #8AF;
             height: 1px;
             width: 100%;
             display: none; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003498}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003501}}
         #studio #editor #idea_window #ideas .noteSelectBox {
           position: absolute;
           border: 1px dashed white;
           cursor: crosshair; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003506}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003509}}
     #studio #editor #swytches {
       position: absolute;
       bottom: 197px;
       border-left: 1px solid #222222;
       border-bottom: 1px solid #222222; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003511}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003514}}
       #studio #editor #swytches .trackSwitch {
         cursor: pointer;
         height: 19px;
@@ -396,22 +399,22 @@ a {
         width: 19px;
         border-right: 1px solid #222222;
         background-color: #111111; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003523}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003526}}
     #studio #editor #instrumentation {
       width: 100%;
       position: absolute; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003528}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003531}}
       #studio #editor #instrumentation div {
         overflow: hidden; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003533}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003536}}
       #studio #editor #instrumentation #circuits, #studio #editor #instrumentation #machines {
         width: 601px;
         background-color: #222222; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003538}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003541}}
         #studio #editor #instrumentation #circuits .circuitRow, #studio #editor #instrumentation #machines .circuitRow {
           width: 288.5px;
           margin: 5px; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003543}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003546}}
           #studio #editor #instrumentation #circuits .circuitRow .circuit, #studio #editor #instrumentation #circuits .circuitRow .machine, #studio #editor #instrumentation #machines .circuitRow .circuit, #studio #editor #instrumentation #machines .circuitRow .machine {
             font-size: 16px;
             width: 47.7px;
@@ -429,7 +432,7 @@ a {
             -ms-user-select: none;
             user-select: none;
             cursor: pointer; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003555}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003558}}
           #studio #editor #instrumentation #circuits .circuitRow .circuit, #studio #editor #instrumentation #machines .circuitRow .circuit {
             background-color: #111111;
             color: white; }
@@ -445,7 +448,7 @@ a {
             #studio #editor #instrumentation #circuits .circuitRow .circuit.selected, #studio #editor #instrumentation #machines .circuitRow .circuit.selected {
               color: black;
               background-color: #DDD; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003558}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003561}}
           #studio #editor #instrumentation #circuits .circuitRow .machine, #studio #editor #instrumentation #machines .circuitRow .machine {
             background-color: #111111;
             color: white; }
@@ -461,7 +464,7 @@ a {
             #studio #editor #instrumentation #circuits .circuitRow .machine.selected, #studio #editor #instrumentation #machines .circuitRow .machine.selected {
               color: black;
               background-color: #DDD; }
-@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003562}}
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003565}}
         #studio #editor #instrumentation #circuits .touchpad, #studio #editor #instrumentation #machines .touchpad {
           width: 100px;
           height: 100px;
