@@ -34,8 +34,7 @@ function Circuit(ctx, machine, marshaledCircuit, destination, circuitReplacement
 		envelope: {}
 	};
 				
-	this.chain = new EffectsChain(this.ctx, destination, "circuits");
-	this.destination = this.chain.input;
+	this.destination = destination;
 	
 	this.extractSettings(marshaledCircuit.settings);
 	this.extractEnvelopeAttributes(marshaledCircuit.envelopeAttributes);
@@ -53,19 +52,10 @@ Circuit.ENVELOPE_ATTRIBUTES = {
 };
 
 
-Circuit.prototype.extractChain = function(settings){
-	if( settings.chain ){
-		this.chain.load(settings.chain);
-	} else {
-		this.chain.load([]);
-	}
-};
 
 
 Circuit.prototype.extractSettings = function(settings){
-	if( settings ){
-		this.extractChain(settings);
-	}
+	// Overridable
 };
 
 Circuit.prototype.extractEnvelopeAttributes = function(envelopeAttributes){
@@ -105,8 +95,6 @@ Circuit.prototype.generateDrawer = function(){
 		this.generateCircuitDivision(circuitSection.body);
 	}
 	this.generateEnvelopeDivision(circuitSection.body);
-	
-	this.chain.render( DrawerUtils.createSection(detailsElement, "Effects").body );
 	
 	DrawerUtils.activateDrawerToggles($("#circuit_drawer"));
 	
@@ -234,7 +222,7 @@ Circuit.prototype.scheduleCircuitStart = function(startWhen, note){
 	gain.setValueAtTime(gain.value, startWhen);
 	gain.linearRampToValueAtTime(attributes.volume, startWhen + attributes.attack);
 	gain.linearRampToValueAtTime(attributes.sustain*attributes.volume, startWhen + attributes.attack + attributes.decay);
-	return this.chain.start(startWhen);
+	return 0;
 };
 
 Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
@@ -244,7 +232,7 @@ Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
 		note.envelope.gain.setValueAtTime(note.envelope.gain.value, endWhen); 
 	}
 	note.envelope.gain.linearRampToValueAtTime(0.0, endWhen + release);
-	return release + this.chain.stop(endWhen);
+	return release;
 };
 
 
@@ -355,9 +343,7 @@ Circuit.prototype.marshal = function(){
 };
 
 Circuit.prototype.marshalSettings = function(){
-	return {
-		chain: this.chain.marshal()
-	};
+	return {};
 };
 
 
