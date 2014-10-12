@@ -3,60 +3,7 @@
 *= require ../basics
 */
 
-$drawer_font: "kiroregular", "sans-serif";
-$interface_font: "kiroregular", "sans-serif";
-
-$drawer_width: 270px;
-$ds_element_padding: 7px;
-
-$component_padding: 5px;
-
-$track_width: 19px;
-$circuit_padding: 10px;
-$tracks_width: (($track_width+1px)*30) + 1px; //tracks + borders
-
-$swytches_height: $track_width + 1px;
-
-$machine_width: $tracks_width;
-$machine_height: 30px;
-$instrumentation_height: 192px; // required for correct positioning of tracks
-
-
-$case_color: #222; //rgba(100,100,100,0.62);
-$light_color: #444;
-$dark_color: #111;
-//$trim_color: #DA3;
-$trim_color: #D82;
-$note_color: #DDD;
-$chill_color: #AAA;
-
-$circuit_text_color: #222;
-
-$slider_width: 4px;
-
-$circuitrow_margin: 5px;
-$circuitrow_width: ($machine_width/2) - (2*$circuitrow_margin) - 2px;
-
-$circuit_margin: 4px;
-$circuit_border: 1px;
-$circuits_per_row: 5;
-$circuit_width: ($circuitrow_width - ((2*$circuits_per_row)*($circuit_margin+$circuit_border))) / $circuits_per_row;
-$circuit_height: $circuit_width * .75;
-
-
-
-$note_expander_height: 2px;
-
-$active_color: #FEA;
-$warning_color: #FCC;
-$kosher_color: #CFE;
-
-$touchpad_dimension: 100px;
-
-$control_dimension: 20px;
-$controls_padding: 5px;
-$controls_height: 46px;
-
+@import 'vars';
 
 @mixin unselectable{
     -moz-user-select: -moz-none;
@@ -96,29 +43,6 @@ $controls_height: 46px;
 body{
     background-color:#0a0a0a;
     background-image: url('../bg.png');
-}
-
-::-webkit-scrollbar {
-    width: $slider_width;
-}
-
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 $slider_width rgba(0,0,0,0.3);
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: $trim_color;
-    outline: 1px solid $case_color;
-}
-
-div, spiv{
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -o-user-select: none;
-    user-select: none;
 }
 
 a{
@@ -254,7 +178,7 @@ a{
         vertical-align: middle;
     }
     .medium{
-        width: 78px;
+        width: 86px;
         input[type=number]{
             width: 72px;
         }
@@ -267,19 +191,23 @@ a{
     }
 
     input[type=number] {
-        width: 72px;
-        padding: 0px 2px;
+        height: $drawer_input_height;
+        width: 84px;
+        padding: 0px 0px 0px 2px;
         margin: 0px 2px;
         background-color: $dark_color;
         color: white;
-        border: 1px solid #333;
-        //border: none;
+        //border: 1px solid $dark_color;
+        border: none;
     }
     select{
+        height: $drawer_input_height;
+        //-webkit-appearance: none;
+        //-moz-appearance: window;
         background-color: $dark_color;
         color: white;
-        -webkit-appearance: none;
         //border-color: $dark_color;
+        //border: 1px solid $dark_color;
         border: none;
         margin: 0px 2px;
     }
@@ -292,20 +220,45 @@ a{
         }
         input, select{
             vertical-align: middle;
+            font-size: 13px;
+            font-family: $drawer_font
         }
+        
+        // Webkit
         input[type=range] {
             -webkit-appearance: none;
+            -moz-appearance: none;
             background-color: $dark_color;
-            height:12px;
+            height: $drawer_input_height - 2px;
             cursor: ew-resize;
             width: 188px;
+            padding: 0px;
             margin: 0px 2px;
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             background-color: $trim_color;
             width: $slider_width;
-            height: 10px;
+            height: $drawer_input_height - 4px;
+        }
+        
+        // Moz
+        input[type=range]::-moz-range-track {
+            -moz-appearance: none;
+            background-color: $dark_color;
+            height: $drawer_input_height - 2px;
+            cursor: ew-resize;
+            width: 188px;
+            margin: 0px 2px;
+            border: none;
+        }
+        input[type="range"]::-moz-range-thumb {
+            -moz-appearance: none;
+            background-color: $trim_color;
+            width: $slider_width;
+            height: $drawer_input_height - 4px;
+            padding:0;
+            margin:0;
         }
     }
 
@@ -314,15 +267,18 @@ a{
         .thicket{
             position:absolute;
             bottom: 0px;
-            right: 20px;
+            right: 24px;
         }
     }
 
     button{
         margin-top: 2px;
-        height: 20px;
-        line-height: 14px;
+        font-size: 12px;
         vertical-align: top;
+        font-family: $drawer_font;
+        border-width: 0px;
+        padding: 2px 4px;
+        border: 1px solid $dark_color;
     }
 
     .urlarea{
@@ -348,8 +304,15 @@ a{
                 font-size: 14px;
                 overflow: hidden;
                 .heading_select, .heading_text{
-                    margin: $ds_element_padding - 2px;
-                    font-size: 14px;
+                    margin: $ds_element_padding - 1px;
+                    font-size: 16px;
+                    height: 20px;
+                    line-height: 20px;
+                }
+                .heading_button{
+                    padding: $ds_element_padding - 1px; 
+                    height: 20px;
+                    line-height: 20px;
                 }
             }
             .ds_body{
@@ -362,6 +325,13 @@ a{
                         .heading_select, .heading_text{
                             margin: $ds_element_padding - 3px;
                             font-size: 11px;
+                            height: 18px;
+                            line-height:18px;
+                        }
+                        .heading_button{
+                            padding: $ds_element_padding - 3px; 
+                            height: 18px;
+                            line-height:18px;
                         }
                     }
                     .dd_body{
@@ -374,18 +344,20 @@ a{
             }
         }
         .heading_button{
-            padding: $ds_element_padding;
             min-width: 10px;
             text-align: center;
             cursor: pointer;
         }
         .heading_select, .heading_text{
-            margin: $ds_element_padding - 2px;
-            padding: 2px;
+            margin: $ds_element_padding;
+            padding: 0px;
             font-family: $interface_font;
         }
         .heading_select{
             cursor: pointer;
+        }
+        .dd_heading{
+            height: 12px + ($ds_element_padding * 2);
         }
     }
 }

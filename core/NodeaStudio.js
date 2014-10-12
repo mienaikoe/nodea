@@ -764,7 +764,7 @@ NodeaStudio.prototype.keyCodeToAsciiMap = {
 	90:  122,	
 	
 	// punctuation
-	186: 59,	188: 44,	190: 46,	191: 47
+	186: 59,	59: 59,		188: 44,	190: 46,	191: 47
 };
 
 NodeaStudio.MACHINE_SET = {

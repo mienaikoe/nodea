@@ -1,0 +1,54 @@
+$drawer_font: "kiroregular", "sans-serif";
+$interface_font: "kiroregular", "sans-serif";
+
+$drawer_width: 280px;
+$ds_element_padding: 7px;
+
+$component_padding: 5px;
+
+$track_width: 19px;
+$circuit_padding: 10px;
+$tracks_width: (($track_width+1px)*30) + 1px; //tracks + borders
+
+$swytches_height: $track_width + 1px;
+
+$machine_width: $tracks_width;
+$machine_height: 30px;
+$instrumentation_height: 192px; // required for correct positioning of tracks
+
+
+$case_color: #222; //rgba(100,100,100,0.62);
+$light_color: #444;
+$dark_color: #111;
+//$trim_color: #DA3;
+$trim_color: #D82;
+$note_color: #DDD;
+$chill_color: #AAA;
+
+$circuit_text_color: #222;
+
+$slider_width: 4px;
+$drawer_input_height: 16px;
+
+$circuitrow_margin: 5px;
+$circuitrow_width: ($machine_width/2) - (2*$circuitrow_margin) - 2px;
+
+$circuit_margin: 4px;
+$circuit_border: 1px;
+$circuits_per_row: 5;
+$circuit_width: ($circuitrow_width - ((2*$circuits_per_row)*($circuit_margin+$circuit_border))) / $circuits_per_row;
+$circuit_height: $circuit_width * .75;
+
+
+
+$note_expander_height: 2px;
+
+$active_color: #FEA;
+$warning_color: #FCC;
+$kosher_color: #CFE;
+
+$touchpad_dimension: 100px;
+
+$control_dimension: 20px;
+$controls_padding: 5px;
+$controls_height: 46px;
