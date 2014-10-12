@@ -44,25 +44,6 @@ Object.defineProperty(Object.prototype, 'extends', {
 
 
 
-
-AudioNode.prototype.connectSuper = AudioNode.prototype.connect;
-AudioNode.prototype.connect = function(target){
-	AudioNode.prototype.connectSuper.call(this, target);
-	console.log("Connecting "+this.toString()+" to "+target.toString());
-    if( this.forwardConnections ){
-		this.forwardConnections.push(target);
-	} else {
-		this.forwardConnections = [target];
-	}
-	if( target.backwardConnections ){
-		target.backwardConnections.push(this);
-	} else {
-		target.backwardConnections = [this];
-	}
-};
-
-
-
 AudioContext.prototype.fetchBuffer = function(bufferUrl){
 	return new Promise( function(good, bad){
 		var request = new XMLHttpRequest();
@@ -100,3 +81,49 @@ String.prototype.titlecase = function(){
 	});
 	return ret;
 };
+
+
+
+
+
+
+
+// Environments
+
+
+// Beta
+if (window.location.origin.indexOf("mienaikoe.github.io") !== -1) {
+	var _NOTA = {
+		project: "92243eed-e45c-461f-b642-42810381df45",
+		projectProtocol: "http",
+		appDomain: "beta.nota.io"
+	};
+
+	(function() {
+		var n = document.createElement("script");
+		n.type = "text/javascript";
+		n.async = true;
+		n.src = ("https:" === document.location.protocol ? "https://" : "http://") + "beta.nota.io/scripts/build/client/client.bootstrap.js";
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(n, s);
+	})();
+	
+// Development
+} else if(window.location.orgin.indexOf("localhost") !== -1){
+	// Known to cause rapid memory buildup !!
+	AudioNode.prototype.connectSuper = AudioNode.prototype.connect;
+	AudioNode.prototype.connect = function(target){
+		AudioNode.prototype.connectSuper.call(this, target);
+		console.log("Connecting "+this.toString()+" to "+target.toString());
+		if( this.forwardConnections ){
+			this.forwardConnections.push(target);
+		} else {
+			this.forwardConnections = [target];
+		}
+		if( target.backwardConnections ){
+			target.backwardConnections.push(this);
+		} else {
+			target.backwardConnections = [this];
+		}
+	};
+}
