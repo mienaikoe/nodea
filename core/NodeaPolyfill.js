@@ -109,7 +109,7 @@ if (window.location.origin.indexOf("mienaikoe.github.io") !== -1) {
 	})();
 	
 // Development
-} else if(window.location.orgin.indexOf("localhost") !== -1){
+} else if(window.location.origin.indexOf("localhost") !== -1){
 	// Known to cause rapid memory buildup !!
 	AudioNode.prototype.connectSuper = AudioNode.prototype.connect;
 	AudioNode.prototype.connect = function(target){
