@@ -28,7 +28,7 @@
     color: $text;
     &.active{ 
         color: black;
-        background-color: #FEA !important; 
+        background-color: #FFF !important; 
     }
     &.recording{ 
         color: black;
@@ -514,6 +514,13 @@ a{
                     //float:left;
                     width: $circuitrow_width;
                     margin: $circuitrow_margin;
+                    
+                    &.sinistra{
+                        text-align: left;
+                    }
+                    &.dextra{
+                        text-align: right;
+                    }
 
                     .circuit, .machine{
                         //border-radius: 3px;

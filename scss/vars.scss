@@ -14,7 +14,7 @@ $swytches_height: $track_width + 1px;
 
 $machine_width: $tracks_width;
 $machine_height: 30px;
-$instrumentation_height: 192px; // required for correct positioning of tracks
+$instrumentation_height: 184px; // required for correct positioning of tracks
 
 
 $case_color: #222; //rgba(100,100,100,0.62);
@@ -30,13 +30,13 @@ $circuit_text_color: #222;
 $slider_width: 4px;
 $drawer_input_height: 16px;
 
-$circuitrow_margin: 5px;
+$circuitrow_margin: 2px;
 $circuitrow_width: ($machine_width/2) - (2*$circuitrow_margin) - 2px;
 
-$circuit_margin: 4px;
+$circuit_margin: 2px;
 $circuit_border: 1px;
 $circuits_per_row: 5;
-$circuit_width: ($circuitrow_width - ((2*$circuits_per_row)*($circuit_margin+$circuit_border))) / $circuits_per_row;
+$circuit_width: ($circuitrow_width - ((($circuits_per_row+2)*($circuit_margin)) + ((2 * $circuits_per_row)*$circuit_border))) / $circuits_per_row;
 $circuit_height: $circuit_width * .75;
 
 
