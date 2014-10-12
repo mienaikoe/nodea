@@ -240,6 +240,7 @@ MultiSampler.prototype.marshalSettings = function(){
 
 
 MultiSampler.INSTRUMENTS = {
+	/* These need more samples
 	piano: {
 		"B4": "piano_B4.wav",
 		"C2": "piano_C2.wav",
@@ -270,6 +271,7 @@ MultiSampler.INSTRUMENTS = {
 		"G2": "p-2G.wav",
 		"A3": "p-3A.wav"
 	},
+	*/
 	clavichord: {
 		"A#2": "ClavichordAs2.wav",
 		"A2": "ClavichordA2.wav",

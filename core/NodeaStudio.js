@@ -254,7 +254,7 @@ NodeaStudio.prototype.replaceMachine = function( oldMachine, newHandle ){
 		oldMachine.circuitsContainer.replaceWith(machine.circuitsContainer);
 		if( self.selectedMachine === oldMachine ){
 			self.selectMachine(machine.ascii);
-			machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
+			//machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
 		}
 		self.invalidateSavedStatus();
 	});

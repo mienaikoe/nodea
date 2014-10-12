@@ -1,7 +1,10 @@
 var Note = function(options){
 	this.start = options.start;
 	if( options.finish ){ this.finish = options.finish; }
-	if( options.circuit ){ this.circuit = options.circuit; } 
+	if( options.circuit ){ 
+		this.circuit = options.circuit; 
+		this.envelope = this.circuit.allocateEnvelope();
+	} 
 	Note.all.push(this);
 	if( this.finish > Note.maximum ){
 		Note.maximum = this.finish;
