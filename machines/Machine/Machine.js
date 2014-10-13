@@ -342,5 +342,6 @@ Machine.keyCodeToAsciiMap = {
 Machine.machinesManifest = [
 	"Machine",
 	"Synthesizer",
-	"MultiSampler"
+	"MultiSampler",
+	"DrumMachine"
 ];

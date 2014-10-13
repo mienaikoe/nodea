@@ -7,13 +7,21 @@ function Sampler(ctx, machine, marshaledCircuit, destination, circuitReplacement
 // vital to Noda Creation. This Inherits the static values from Circuit
 Sampler.extends(Circuit);
 
-Sampler.templateHTML = "<div id=\"Sampler\">\
-    <div class=\"fieldLabel\">Sample Source</div>\
-    <div class=\"mainFields\">\
-        <textarea id=\"Sampler-Source\" class=\"urlarea\"></textarea>\
-        <input id=\"Sampler-Entire\" type=\"checkbox\"></input>\
-        <label>Play Entire Note</label>\
+Sampler.templateHTML = "<div id='Sampler'>\
+    <div class='fieldLabel'>Sample Source</div>\
+    <div class='mainFields'>\
+        <textarea id='Sampler-Source' class='urlarea'></textarea>\
+		<div id='Sampler-SourceValid'></div> \
     </div>\
+	<div class='mainFields'>\
+		<label>entire</label>\
+		<input id='Sampler-Entire' type='checkbox'></input>\
+	<div>\
+	<div class='mainFields'>\
+		<label>window</label>\
+		<input id='Sampler-Start' type='number' min='0' max='1' step-'0.01'></input>\
+		<input id='Sampler-Stop' type='number' min='-1' max='0' step-'0.01'></input>\
+	<div>\
 </div>";
 
 
@@ -21,6 +29,8 @@ Sampler.prototype.extractSettings = function(settings){
 	Circuit.prototype.extractSettings.call(this, settings);
 	
 	this.playEntire = false;
+	this.start = 0;
+	this.stop = 0;
 	
 	if(settings){
 		if( settings.sourceFile ){
@@ -32,56 +42,93 @@ Sampler.prototype.extractSettings = function(settings){
 		if( settings.playEntire ){
 			this.playEntire = settings.playEntire;
 		}
-	}
+		if( assert(settings.start) ){
+			this.start = settings.start;
+		}
+		if( assert(settings.stop) ){
+			this.stop = settings.stop;
+		}
+	}	
 };
 
 
-Sampler.prototype.generateCircuitBody = function(circuitBody){
+Sampler.prototype.generateCircuitBody = function(circuitDivision){
+	var circuitBody = Circuit.prototype.generateCircuitBody.call(this, circuitDivision);
+	
 	var self = this;
-	$(circuitBody).find("#Sampler-Source").
+	this.controls.source = $(circuitBody).find("#Sampler-Source").
 		text(this.bufferUrl).
 		change(	function(ev){ 
 			self.setBuffer(this.value);
-		}); // TODO: Make this more foolproof.
+		});
 		
-	$(circuitBody).find("#Sampler-Entire").
+	this.controls.valid = $(circuitBody).find("#Sampler-SourceValid");
+	this.validateBuffer();
+		
+	this.controls.entire = $(circuitBody).find("#Sampler-Entire").
 		attr("checked", self.playEntire).
 		on("change", function(ev){
 			self.playEntire = this.checked;
 			$(this).blur();
 			studio.invalidateSavedStatus();
 		});
+		
+	this.controls.start = $(circuitBody).find("#Sampler-Start").
+		val(this.start).
+		on("change", function(ev){
+			self.start = parseFloat(this.value);
+		});
+		
+	this.controls.stop = $(circuitBody).find("#Sampler-Stop").
+		val(this.stop).
+		on("change", function(ev){
+			self.stop = parseFloat(this.value);
+		});
+		
+	return circuitBody;
 };
 
 
 Sampler.prototype.setBuffer = function(bufferUrl){	
 	if( bufferUrl ){
-		this.bufferUrl = bufferUrl; 
-		this.ctx.fetchBuffer(this.bufferUrl).then(
+		this.ctx.fetchBuffer(bufferUrl).then(
 			function(buffer){
+				this.bufferUrl = bufferUrl; 
 				this.buffer = buffer; 
-				this.resetSources();
-				this.bindBufferToNotes();
+				this.bufferChanged();
 			}.bind(this), 
 			function(err){
 				console.error(err);
-				this.unsetBuffer();
+				this.bufferUrl = null;
+				this.buffer = null;
+				this.bufferChanged();
 			}.bind(this)); 
 	} else {
-		this.unsetBuffer();
+		this.bufferUrl = null;
+		this.buffer = null;
+		this.bufferChanged();
 	}
 	if(studio){
 		studio.invalidateSavedStatus(); 
 	}
 };
 
-Sampler.prototype.unsetBuffer = function(){
-	this.bufferUrl = null;
-	this.buffer = null;
+Sampler.prototype.bufferChanged = function(){
 	this.resetSources();
 	this.bindBufferToNotes();
+	this.validateBuffer();
 };
 
+Sampler.prototype.validateBuffer = function(){
+	if(!(this.controls && this.controls.valid)){
+		return;
+	}
+	if( this.buffer ){
+		this.controls.valid.text("valid").attr("class","valid");
+	} else {
+		this.controls.valid.text("invalid").attr("class","invalid");
+	}
+};
 
 
 Sampler.prototype.bindBufferToNotes = function(){
@@ -130,8 +177,9 @@ Sampler.prototype.scheduleCircuitStart = function(startWhen, note){
 		return false;
 	}
 	var delayTime = Circuit.prototype.scheduleCircuitStart.call(this, startWhen, note);
-	note.source.started = startWhen + delayTime; 	
-	note.source.start(note.source.started);
+	note.source.started = startWhen + delayTime;
+	var duration = note.source.buffer.duration - this.start + this.stop;
+	note.source.start(note.source.started, this.start, duration );
 	return delayTime;
 };
 
@@ -214,6 +262,8 @@ Sampler.prototype.off = function(location) {
 Sampler.prototype.marshalSettings = function(){
 	return {
 		bufferUrl: this.bufferUrl,
-		playEntire: this.playEntire
+		playEntire: this.playEntire,
+		start: this.start,
+		stop: this.stop
 	};
 };

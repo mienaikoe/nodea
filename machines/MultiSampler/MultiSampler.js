@@ -96,11 +96,7 @@ MultiSampler.prototype.resetBuffers = function(){
 		var circuit = this.circuits[key];
 		if( circuit.constructor.name === "Sampler" ){
 			var sampleUrl = this.bufferUrlForPitch(this.scale[idx]);
-			if(sampleUrl){
-				circuit.setBuffer(sampleUrl);
-			} else {
-				circuit.unsetBuffer();
-			}
+			circuit.setBuffer(sampleUrl);
 		}
 	}, this);
 };

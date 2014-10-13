@@ -109,13 +109,19 @@ Circuit.prototype.replaceSelf = function(newHandle){
 
 Circuit.prototype.generateCircuitDivision = function(sectionBody) {
 	var division = DrawerUtils.createDivision(sectionBody, null);
-	this.circuitBody = $(this.constructor.templateHTML).appendTo(division.body);
+	this.generateCircuitBody(division);
+};
+
+Circuit.prototype.generateCircuitBody = function(circuitDivision){
+	this.circuitBody = $(this.constructor.templateHTML).appendTo(circuitDivision.body);
 	this.circuitBody.
 		on("keydown",    function(ev){ ev.stopPropagation(); }).
 		on("keyup",      function(ev){ ev.stopPropagation(); });
 
-	this.generateCircuitBody.call(this,this.circuitBody);
+	return this.circuitBody;
 };
+
+
 
 Circuit.prototype.generateEnvelopeDivision = function(sectionBody){	
 	var division = DrawerUtils.createDivision(sectionBody, "Amp Envelope");
@@ -129,13 +135,6 @@ Circuit.prototype.generateEnvelopeDivision = function(sectionBody){
 	}
 };
 
-
-
-
-
-
-Circuit.prototype.generateCircuitBody = function(circuitBody){	
-};
 
 Circuit.prototype.isDisplaying = function(){
 	return this.circuitBody && this.circuitBody.closest("html").length > 0;

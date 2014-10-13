@@ -171,6 +171,9 @@ a{
             border-top: 1px dotted #555;
         }
     }
+    .mainFields{
+        overflow: hidden;
+    }
     label{
         font-size: 10px;
         line-height: 16px;
@@ -510,37 +513,7 @@ a{
                     width: $machine_width;
                     background-color: $case_color;
                 //}
-                .circuitRow{
-                    //float:left;
-                    width: $circuitrow_width;
-                    margin: $circuitrow_margin;
-                    
-                    &.sinistra{
-                        text-align: left;
-                    }
-                    &.dextra{
-                        text-align: right;
-                    }
 
-                    .circuit, .machine{
-                        //border-radius: 3px;
-                        //border: $circuit_border solid black;
-                        font-size: 16px;
-                        width: $circuit_width;
-                        height: $circuit_height;
-                        margin: $circuit_margin;
-                        text-align: center;
-                        line-height: $circuit_height;
-                        @include unselectable;
-                        cursor: pointer;
-                    }
-                    .circuit{
-                        @include circuitry($dark_color, #FFF);
-                    }
-                    .machine{
-                        @include circuitry($dark_color, #FFF);
-                    }
-                }
                 .touchpad{
                     width: $touchpad_dimension;
                     height: $touchpad_dimension;
@@ -553,4 +526,56 @@ a{
 
     }
 
+}
+
+
+
+
+.circuitRow{
+    width: $circuitrow_width;
+    margin: $circuitrow_margin;
+
+    &.tiny{
+        width: 125px;
+        margin: 2px 0px;
+    }
+    
+    &.sinistra{
+        text-align: left;
+        &.tiny{
+            margin-right: 2px;
+        }
+    }
+    &.dextra{
+        text-align: right;
+        &.tiny{
+            margin-left: 2px;
+        }
+    }
+
+    .circuit, .machine{
+        //border-radius: 3px;
+        //border: $circuit_border solid black;
+        font-size: 16px;
+        width: $circuit_width;
+        height: $circuit_height;
+        margin: $circuit_margin;
+        text-align: center;
+        line-height: $circuit_height;
+        @include unselectable;
+        cursor: pointer;
+        
+        &.tiny{
+            width: 21px;
+            height: 21px;
+            line-height: 21px;
+            margin: 2px;
+        }
+    }
+    .circuit{
+        @include circuitry($dark_color, #FFF);
+    }
+    .machine{
+        @include circuitry($dark_color, #FFF);
+    }
 }

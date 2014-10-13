@@ -23,7 +23,7 @@ Oscillator.templateHTML = "<div id='Oscillator'>\
             <div class='thicket'>KEY</div>\
         </spiv>\
         <spiv class='encroach'>\
-            <input type='number' class='medium' id='Oscillator-Octave'></input>\
+            <input type='number' min='0' max='10' class='medium' id='Oscillator-Octave'></input>\
             <div class='thicket'>OCTAVE</div>\
         </spiv>\
     </div>\
@@ -170,7 +170,9 @@ Oscillator.prototype.generateCircuitDivision = function(sectionBody){
 };
 
 
-Oscillator.prototype.generateCircuitBody = function(circuitBody){
+Oscillator.prototype.generateCircuitBody = function(circuitDivision){
+	var circuitBody = Circuit.prototype.generateCircuitBody.call(this, circuitDivision);
+	
 	var self = this;
 	
 	// Pitch
@@ -194,6 +196,8 @@ Oscillator.prototype.generateCircuitBody = function(circuitBody){
 			self.addSignal();
 			studio.invalidateSavedStatus(); 
 		});
+		
+	return circuitBody;
 };
 
 
