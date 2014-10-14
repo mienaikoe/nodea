@@ -91,15 +91,14 @@ Sampler.prototype.generateCircuitBody = function(circuitDivision){
 
 Sampler.prototype.setBuffer = function(bufferUrl){	
 	if( bufferUrl ){
+		this.bufferUrl = bufferUrl; 
 		this.ctx.fetchBuffer(bufferUrl).then(
 			function(buffer){
-				this.bufferUrl = bufferUrl; 
 				this.buffer = buffer; 
 				this.bufferChanged();
 			}.bind(this), 
 			function(err){
 				console.error(err);
-				this.bufferUrl = null;
 				this.buffer = null;
 				this.bufferChanged();
 			}.bind(this)); 
@@ -125,8 +124,10 @@ Sampler.prototype.validateBuffer = function(){
 	}
 	if( this.buffer ){
 		this.controls.valid.text("valid").attr("class","valid");
-	} else {
+	} else if( this.bufferUrl ) {
 		this.controls.valid.text("invalid").attr("class","invalid");
+	} else {
+		this.controls.valid.text("");
 	}
 };
 

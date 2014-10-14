@@ -289,9 +289,9 @@ a{
         height: 70px;
         box-sizing: border-box;
         padding: 5px;
-        background-color: #777;
+        background-color: $dark_color;
         color: white;
-        font-size: 12px;
+        font-size: 11px;
         border: 0px;
     }
     .clearfix{
@@ -577,5 +577,23 @@ a{
     }
     .machine{
         @include circuitry($dark_color, #FFF);
+    }
+}
+
+
+
+
+
+#Sampler-SourceValid{
+    position: relative;
+    top: -22px;
+    left: 4px;
+    font-weight: bold;
+    font-size: 13px;
+    &.valid{
+        color: $kosher_color;
+    }
+    &.invalid{
+        color: $warning_color;
     }
 }

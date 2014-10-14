@@ -226,9 +226,9 @@ a {
     height: 70px;
     box-sizing: border-box;
     padding: 5px;
-    background-color: #777;
+    background-color: #111111;
     color: white;
-    font-size: 12px;
+    font-size: 11px;
     border: 0px; }
 @media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003297}}
   .drawer .clearfix {
@@ -515,3 +515,17 @@ a {
     .circuitRow .machine.selected {
       color: black;
       background-color: #DDD; }
+
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003587}}
+#Sampler-SourceValid {
+  position: relative;
+  top: -22px;
+  left: 4px;
+  font-weight: bold;
+  font-size: 13px; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003593}}
+  #Sampler-SourceValid.valid {
+    color: #ccffee; }
+@media -sass-debug-info{filename{font-family:file\:\/\/C\:\/Users\/Jesse\/Documents\/GitHub\/nodea\/scss\/studio\.scss}line{font-family:\00003596}}
+  #Sampler-SourceValid.invalid {
+    color: #ffcccc; }

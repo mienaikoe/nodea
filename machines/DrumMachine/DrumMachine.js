@@ -63,8 +63,8 @@ DrumMachine.prototype.resetBuffers = function(){
 	}
 	this.studio.keyset.chromaticOrder.forEach(function(key, idx){
 		var circuit = this.circuits[key];
-		if( circuit.constructor.name === "Sampler" ){
-			var sampleUrl = this.instrument[idx];
+		if( circuit.constructor.name === "Sampler" && this.instrument[idx]){
+			var sampleUrl = "machines/DrumMachine/samples/"+this.instrumentName+"/"+this.instrument[idx];
 			circuit.setBuffer(sampleUrl);
 		}
 	}, this);
@@ -122,18 +122,28 @@ DrumMachine.prototype.generateMachineBody = function(machineBody){
 			circuitRowClass = (circuitRowClass === "sinistra" ? "dextra" : "sinistra");
 		}		
 		var circuit = this.circuits[key];
-		$("<spiv/>",{"class":"circuit tiny", "html": String.fromCharCode(key)}).
+		circuit.tinykey = $("<spiv/>",{"class":"circuit tiny", "html": String.fromCharCode(key)}).
 			click(function(ev){
-				// some sort of selection lighting
-				machineBody.find("#Sampler").remove();
-				var fakeDivision = {body: machineBody};
-				circuit.generateCircuitBody(fakeDivision);
+				self.selectCircuit(circuit);
 			}).
 			appendTo(circuitRow);
 	}, this);
+	if( this.selectedCircuit ){
+		this.selectCircuit(this.selectedCircuit);
+	} else {
+		this.selectCircuit(this.circuits[this.studio.keyset.chromaticOrder[0]]);
+	}
 };
 
-
+DrumMachine.prototype.selectCircuit = function(circuit){
+	if(this.selectedCircuit){
+		this.selectedCircuit.body.remove();
+		this.selectedCircuit.tinykey.removeClass("active");
+	}
+	circuit.body = circuit.generateCircuitBody({body: this.machineBody});
+	circuit.tinykey.addClass("active");
+	this.selectedCircuit = circuit;
+};
 
 
 
@@ -149,6 +159,6 @@ DrumMachine.prototype.marshalSettings = function(){
 
 DrumMachine.INSTRUMENTS = {
 	"standard_kit": [
-		"basso.wav"
+		"fingerclick.wav"
 	]
 };

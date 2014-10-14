@@ -217,7 +217,7 @@ MultiSampler.prototype.rescale = function(){
 MultiSampler.prototype.bufferUrlForPitch = function(pitch){
 	var sampleFile = this.instrument[pitch.pitchName()];
 	if(sampleFile){
-		return "samples/" + this.instrumentName + "/" + sampleFile;
+		return "machines/MultiSampler/samples/" + this.instrumentName + "/" + sampleFile;
 	} else {
 		return null;
 	}

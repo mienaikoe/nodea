@@ -75,10 +75,18 @@ Reverb.prototype.render = function(division, type) {
 	}).appendTo(categoryContainer);
 	
 	for( category in Reverb.IMPULSES ){
-		$("<option></option>",{html: category, selected: (category === self.category)}).appendTo(categoryChooser);
+		$("<option></option>",{
+			"value": category, 
+			"html": category.titlecase(), 
+			"selected": (category === self.category)
+		}).appendTo(categoryChooser);
 	}
 	Reverb.IMPULSES[this.category].forEach( function(space){
-		$("<option></option>",{html: space, selected: (space === self.space)}).appendTo(spaceChooser);
+		$("<option></option>",{
+			"value": space,
+			"html": space.titlecase(), 
+			"selected": (space === self.space)
+		}).appendTo(spaceChooser);
 	}, this);
 
 	categoryContainer.appendTo(division.body);
