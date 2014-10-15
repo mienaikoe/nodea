@@ -99,14 +99,14 @@ if (window.location.origin.indexOf("mienaikoe.github.io") !== -1) {
 		appDomain: "beta.nota.io"
 	};
 
-	(function() {
+	$(document).ready(function(){
 		var n = document.createElement("script");
 		n.type = "text/javascript";
 		n.async = true;
 		n.src = ("https:" === document.location.protocol ? "https://" : "http://") + "beta.nota.io/scripts/build/client/client.bootstrap.js";
 		var s = document.getElementsByTagName("script")[0];
 		s.parentNode.insertBefore(n, s);
-	})();
+	});
 	
 // Development
 } else if(window.location.origin.indexOf("localhost") !== -1){
