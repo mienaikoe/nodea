@@ -17,11 +17,6 @@ Sampler.templateHTML = "<div id='Sampler'>\
 		<label>entire</label>\
 		<input id='Sampler-Entire' type='checkbox'></input>\
 	<div>\
-	<div class='mainFields'>\
-		<label>window</label>\
-		<input id='Sampler-Start' type='number' min='0' max='1' step-'0.01'></input>\
-		<input id='Sampler-Stop' type='number' min='-1' max='0' step-'0.01'></input>\
-	<div>\
 </div>";
 
 
@@ -29,8 +24,8 @@ Sampler.prototype.extractSettings = function(settings){
 	Circuit.prototype.extractSettings.call(this, settings);
 	
 	this.playEntire = false;
-	this.start = 0;
-	this.stop = 0;
+	this.start = Sampler.WINDOW_ATTRIBUTES.start.default;
+	this.stop = Sampler.WINDOW_ATTRIBUTES.stop.default;
 	
 	if(settings){
 		if( settings.sourceFile ){
@@ -49,6 +44,12 @@ Sampler.prototype.extractSettings = function(settings){
 			this.stop = settings.stop;
 		}
 	}	
+};
+
+
+Sampler.WINDOW_ATTRIBUTES = {
+	start: {min: 0, max: 1, step: 0.01, default: 0},
+	stop: {min: -1, max: 0, step: 0.01, default: 0}
 };
 
 
@@ -73,17 +74,15 @@ Sampler.prototype.generateCircuitBody = function(circuitDivision){
 			studio.invalidateSavedStatus();
 		});
 		
-	this.controls.start = $(circuitBody).find("#Sampler-Start").
-		val(this.start).
-		on("change", function(ev){
-			self.start = parseFloat(this.value);
-		});
 		
-	this.controls.stop = $(circuitBody).find("#Sampler-Stop").
-		val(this.stop).
-		on("change", function(ev){
-			self.stop = parseFloat(this.value);
-		});
+	var windowFields = $("<div/>",{"class":"mainFields"}).appendTo(circuitBody);
+	for(var windowKey in Sampler.WINDOW_ATTRIBUTES){
+		this.controls[windowKey] = DrawerUtils.createSlider( 
+			windowKey, Sampler.WINDOW_ATTRIBUTES[windowKey], this[windowKey], 
+			function(changerKey, value){
+				self[changerKey] = value;
+			}, windowFields);
+	}
 		
 	return circuitBody;
 };

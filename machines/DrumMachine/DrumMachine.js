@@ -3,6 +3,9 @@ function DrumMachine( ctx, tabDefinition, studio, marshaledMachine, machineRepla
 	
 	this.setInstrument(this.instrumentName);
 	this.resetPlayEntire();
+	for(key in this.circuits){
+		this.circuits[key].setEnvelopeActive(false);
+	}
 };
 
 DrumMachine.extends(Machine);
@@ -32,7 +35,7 @@ DrumMachine.prototype.extractSettings = function(settings){
 	Machine.prototype.extractSettings.call(this, settings);
 	
 	var instrumentName = "standard_kit";
-	this.playEntire = false;
+	this.playEntire = true;
 	
 	if( settings ){
 		if( settings.instrumentName ){
@@ -159,6 +162,16 @@ DrumMachine.prototype.marshalSettings = function(){
 
 DrumMachine.INSTRUMENTS = {
 	"standard_kit": [
-		"fingerclick.wav"
+		"kick1.wav",		"kick2.wav",		"kick4.wav",		"kick5.wav",	"kick6.wav",	
+		"tom1a.wav",		"tom1b.wav",		"tom1c.wav",		"tom2b.wav",	"tom2c.wav",
+		"snare2.wav",		"snare4.wav",		"snare3.wav",		"snare5.wav",	"openhat3.wav",
+		"openhat1.wav",		"hat1.wav",			"hat3.wav",			"hat2.wav",		"hat4.wav",		
+		"cym2.wav",			"cym4.wav",			"cym1.wav",			"cym3.wav",		"cym5.wav",
+		"ride_bell2.wav",	"ride_bell1.wav",	"ride_bell3.wav",	"ride1.wav",	"ride2.wav"
+	],
+	"tabla": [
+		"Dha.wav", "Dhin.wav", "Ge.wav", "Ke.wav", "Na.wav", "Re.wav", "Ta.wav", "Te.wav", "Tin.wav", "Tu.wav",
+		"Dha.wav", "Dhin.wav", "Ge.wav", "Ke.wav", "Na.wav", "Re.wav", "Ta.wav", "Te.wav", "Tin.wav", "Tu.wav",
+		"Dha.wav", "Dhin.wav", "Ge.wav", "Ke.wav", "Na.wav", "Re.wav", "Ta.wav", "Te.wav", "Tin.wav", "Tu.wav"
 	]
 };

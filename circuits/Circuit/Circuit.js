@@ -64,8 +64,12 @@ Circuit.prototype.extractEnvelopeAttributes = function(envelopeAttributes){
 		for( var key in Circuit.ENVELOPE_ATTRIBUTES){
 			this.envelopeAttributes[key] = Circuit.ENVELOPE_ATTRIBUTES[key].default;
 		}
+		this.envelopeAttributes.active = true;
 	} else {
 		this.envelopeAttributes = envelopeAttributes;
+		if(this.envelopeAttributes.active === undefined){
+			this.envelopeAttributes.active = true;
+		}
 	}
 };
 
@@ -149,6 +153,10 @@ Circuit.prototype.allocateEnvelope = function(){
 	return envelope;
 };
 
+Circuit.prototype.setEnvelopeActive = function(active){
+	this.envelopeAttributes.active = active;
+};
+
 // Note Manipulation
 
 Circuit.prototype.addNoteNoUndo = function(note){
@@ -218,20 +226,32 @@ Circuit.prototype.play = function(pixelsPerSecond, startingAt){
 Circuit.prototype.scheduleCircuitStart = function(startWhen, note){
 	var gain = note.envelope.gain;
 	var attributes = this.envelopeAttributes;
-	gain.setValueAtTime(gain.value, startWhen);
-	gain.linearRampToValueAtTime(attributes.volume, startWhen + attributes.attack);
-	gain.linearRampToValueAtTime(attributes.sustain*attributes.volume, startWhen + attributes.attack + attributes.decay);
+	if(attributes.active){
+		gain.setValueAtTime(gain.value, startWhen);
+		gain.linearRampToValueAtTime(attributes.volume, startWhen + attributes.attack);
+		gain.linearRampToValueAtTime(attributes.sustain*attributes.volume, startWhen + attributes.attack + attributes.decay);
+	} else {
+		gain.value = attributes.volume;
+	}
 	return 0;
 };
 
 Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
-	var release = this.envelopeAttributes.release;
-	if( endWhen <= this.ctx.currentTime ){
-		// If this line is on, realtime playback is great, but Recorded playback suffers.
-		note.envelope.gain.setValueAtTime(note.envelope.gain.value, endWhen); 
+	var gain = note.envelope.gain;
+	var attributes = this.envelopeAttributes;
+	if(attributes.active){
+		var release = attributes.release;
+		if( endWhen <= this.ctx.currentTime ){
+			// If this line is on, realtime playback is great, 
+			// but Recorded playback suffers.
+			gain.setValueAtTime(gain.value, endWhen); 
+		}
+		gain.linearRampToValueAtTime(0.0, endWhen + release);
+		return release;
+	} else {
+		gain.setValueAtTime(0, endWhen);
+		return 0;
 	}
-	note.envelope.gain.linearRampToValueAtTime(0.0, endWhen + release);
-	return release;
 };
 
 
