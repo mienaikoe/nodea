@@ -60,14 +60,14 @@ Reverb.prototype.render = function(division, type) {
 	$("<label>",{html: "space"}).appendTo(spaceContainer);
 	var spaceChooser = $("<select></select>",{id: "space_chooser"}).on("change", function(){
 		self.setSpace(this.value);
-		studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	}).appendTo(spaceContainer);
 	
 	var categoryContainer = $("<div/>",{"class":"envelope_slider"});
 	$("<label>",{html: "category"}).appendTo(categoryContainer);
 	var categoryChooser = $("<select></select>",{id: "convolution_chooser"}).on("change", function(){
 		self.setCategory(this.value);
-		studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 		spaceChooser.empty();
 		Reverb.IMPULSES[this.value].forEach( function(impulse){
 			$("<option></option>",{html: impulse}).appendTo(spaceChooser);

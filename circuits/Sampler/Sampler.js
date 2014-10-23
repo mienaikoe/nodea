@@ -71,7 +71,7 @@ Sampler.prototype.generateCircuitBody = function(circuitDivision){
 		on("change", function(ev){
 			self.playEntire = this.checked;
 			$(this).blur();
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		});
 		
 		
@@ -107,7 +107,7 @@ Sampler.prototype.setBuffer = function(bufferUrl){
 		this.bufferChanged();
 	}
 	if(studio){
-		studio.invalidateSavedStatus(); 
+		NodeaStudio.invalidateSavedStatus(); 
 	}
 };
 

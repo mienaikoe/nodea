@@ -203,7 +203,8 @@
         </div>
 
         <script type="text/javascript">
-            $('.control.button:not(.javascript)').
+            $(document).ready(function() {
+                $('.control.button:not(.javascript)').
                     on("mousedown", function() {
                         $(this).addClass('active');
                     }).
@@ -211,21 +212,22 @@
                         $(this).removeClass('active');
                     });
 
-            var studio;
+                var initialize = function(project){
+                    new NodeaStudio(document.getElementById("editor"), project);
+                };
 
-
-            var projectStr = window.localStorage.defaultProject;
-            if (assert(projectStr)) {
-                $(document).ready(function() {
-                    studio = new NodeaStudio(document.getElementById("editor"), JSON.parse(projectStr));
-                });
-            } else {
-                $.get("demos/brandnew.json", function(project) {
-                    $(document).ready(function() {
-                        studio = new NodeaStudio(document.getElementById("editor"), project);
+                var projectStr = window.localStorage.defaultProject;
+                if (assert(projectStr)) {
+                    initialize(JSON.parse(projectStr));
+                } else {
+                    $.getJSON("demos/brandnew.json", function(project) {
+                        initialize(project);
                     });
-                });
-            }
+                }
+            });
+            
+            
+            
         </script>
     </body>
 </html>

@@ -1,5 +1,5 @@
-function DrumMachine( ctx, tabDefinition, studio, marshaledMachine, machineReplacementCallback ){
-	Machine.call(this, ctx, tabDefinition, studio, marshaledMachine, machineReplacementCallback);
+function DrumMachine( ctx, tabDefinition, marshaledMachine, machineReplacementCallback ){
+	Machine.call(this, ctx, tabDefinition, marshaledMachine, machineReplacementCallback);
 	
 	this.setInstrument(this.instrumentName);
 	this.resetPlayEntire();
@@ -64,7 +64,7 @@ DrumMachine.prototype.resetBuffers = function(){
 	if(!this.circuits){
 		return;
 	}
-	this.studio.keyset.chromaticOrder.forEach(function(key, idx){
+	NodeaStudio.instance.keyset.chromaticOrder.forEach(function(key, idx){
 		var circuit = this.circuits[key];
 		if( circuit.constructor.name === "Sampler" && this.instrument[idx]){
 			var sampleUrl = "machines/DrumMachine/samples/"+this.instrumentName+"/"+this.instrument[idx];
@@ -74,7 +74,7 @@ DrumMachine.prototype.resetBuffers = function(){
 };
 
 DrumMachine.prototype.resetPlayEntire = function(){
-	this.studio.keyset.chromaticOrder.forEach(function(key, idx){
+	NodeaStudio.instance.keyset.chromaticOrder.forEach(function(key, idx){
 		var circuit = this.circuits[key];
 		if( circuit.constructor.name === "Sampler" ){
 			circuit.playEntire = this.playEntire;
@@ -105,7 +105,7 @@ DrumMachine.prototype.generateMachineBody = function(machineBody){
 	instrumentSelector.val(this.instrumentName);
 	instrumentSelector.on("change", function(ev){
 		self.setInstrument(this.value);
-		self.studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	});
 	
 	var playEntireBox = machineBody.find("#DrumMachine-PlayEntire");
@@ -119,7 +119,7 @@ DrumMachine.prototype.generateMachineBody = function(machineBody){
 	var circuitsBox = machineBody.find("#DrumMachine-Circuits");
 	var circuitRow = null;
 	var circuitRowClass = "sinistra";
-	this.studio.keyset.chromaticOrder.forEach(function(key, idx){
+	NodeaStudio.instance.keyset.chromaticOrder.forEach(function(key, idx){
 		if(idx % 5 === 0){
 			circuitRow = $("<div/>",{"class":"circuitRow tiny "+circuitRowClass}).prependTo(circuitsBox);
 			circuitRowClass = (circuitRowClass === "sinistra" ? "dextra" : "sinistra");
@@ -134,7 +134,7 @@ DrumMachine.prototype.generateMachineBody = function(machineBody){
 	if( this.selectedCircuit ){
 		this.selectCircuit(this.selectedCircuit);
 	} else {
-		this.selectCircuit(this.circuits[this.studio.keyset.chromaticOrder[0]]);
+		this.selectCircuit(this.circuits[NodeaStudio.instance.keyset.chromaticOrder[0]]);
 	}
 };
 

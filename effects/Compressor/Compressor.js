@@ -39,7 +39,7 @@ Compressor.prototype.render = function(division, type) {
 		var attributes = Compressor.SLIDER_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this.input[key].value = value;
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		}.bind(this);
 		DrawerUtils.createSlider(key, attributes, this.input[key].value, changer, division.body );
 	}

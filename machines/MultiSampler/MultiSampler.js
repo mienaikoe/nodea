@@ -1,5 +1,5 @@
-function MultiSampler( ctx, tabDefinition, studio, marshaledMachine, machineReplacementCallback ){
-	Machine.call(this, ctx, tabDefinition, studio, marshaledMachine, machineReplacementCallback);
+function MultiSampler( ctx, tabDefinition, marshaledMachine, machineReplacementCallback ){
+	Machine.call(this, ctx, tabDefinition, marshaledMachine, machineReplacementCallback);
 	
 	this.setInstrument(this.instrumentName);
 	this.resetPlayEntire();
@@ -80,7 +80,7 @@ MultiSampler.prototype.extractSettings = function(settings){
 	this.scale = Scales.scalePitches(this.scalePitch, this.scaleType, 30 );
 	this.instrumentName = instrumentName;
 	
-	var keySetKey = this.studio.keyset.chromaticOrder[0];
+	var keySetKey = NodeaStudio.instance.keyset.chromaticOrder[0];
 	this.templateSampler = new Sampler(this.ctx, this, this.defaultCircuit(keySetKey), this.ctx.createPassthrough(), function(){});
 };
 
@@ -92,7 +92,7 @@ MultiSampler.prototype.setInstrument = function(instrumentName){
 };
 
 MultiSampler.prototype.resetBuffers = function(){
-	this.studio.keyset.chromaticOrder.forEach(function(key, idx){
+	NodeaStudio.instance.keyset.chromaticOrder.forEach(function(key, idx){
 		var circuit = this.circuits[key];
 		if( circuit.constructor.name === "Sampler" ){
 			var sampleUrl = this.bufferUrlForPitch(this.scale[idx]);
@@ -102,7 +102,7 @@ MultiSampler.prototype.resetBuffers = function(){
 };
 
 MultiSampler.prototype.resetPlayEntire = function(){
-	this.studio.keyset.chromaticOrder.forEach(function(key, idx){
+	NodeaStudio.instance.keyset.chromaticOrder.forEach(function(key, idx){
 		var circuit = this.circuits[key];
 		if( circuit.constructor.name === "Sampler" ){
 			circuit.playEntire = this.playEntire;
@@ -130,21 +130,21 @@ MultiSampler.prototype.generateMachineBody = function(machineBody){
 	Scales.scaleTypeSelector(scaleType, this.scaleType, function(ev){ 
 		self.scaleType = this.value;
 		self.rescale();
-		self.studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	}); 
 	
 	var scaleKey = machineBody.find("#MultiSampler-ScaleKey").val(this.scalePitch.color);
 	Pitch.pitchKeySelector(scaleKey, this.scalePitch.color, function(ev){ 
 		self.scalePitch.color = this.value;
 		self.rescale();
-		self.studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	}); 
 	
 	var scaleOctave = machineBody.find("#MultiSampler-ScaleOctave").val(this.scalePitch.octave);
 	scaleOctave.on("change", function(ev){ 
 		self.scalePitch.octave = parseInt(this.value);
 		self.rescale();
-		self.studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	}); 
 	
 	var instrumentSelector = machineBody.find("#MultiSampler-Instrument");
@@ -154,7 +154,7 @@ MultiSampler.prototype.generateMachineBody = function(machineBody){
 	instrumentSelector.val(this.instrumentName);
 	instrumentSelector.on("change", function(ev){
 		self.setInstrument(this.value);
-		self.studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	});
 	
 	var playEntireBox = machineBody.find("#MultiSampler-PlayEntire");
@@ -192,7 +192,7 @@ MultiSampler.prototype.bindControls = function(controls){
 					samplerCallback(circuit, this);
 				}
 			}
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		};
 	}
 	

@@ -179,7 +179,7 @@ Oscillator.prototype.generateCircuitBody = function(circuitDivision){
 	this.controls.colorSelector = $(circuitBody).find("#Oscillator-Color");
 	Pitch.pitchKeySelector(this.controls.colorSelector, this.pitch.color,	function(ev){ 
 		self.pitch.color = this.value;
-		studio.invalidateSavedStatus(); 
+		NodeaStudio.invalidateSavedStatus(); 
 	});
 	
 	this.controls.octaveSelector = $(circuitBody).find("#Oscillator-Octave");
@@ -187,14 +187,14 @@ Oscillator.prototype.generateCircuitBody = function(circuitDivision){
 		val(this.pitch.octave).
 		change(	function(ev){ 
 			self.pitch.octave = this.value;
-			studio.invalidateSavedStatus(); 
+			NodeaStudio.invalidateSavedStatus(); 
 		});
 		
 	this.controls.signalAdder = $(circuitBody).find("#Oscillator-Add");
 	this.controls.signalAdder.
 		click(	function(ev){ 
 			self.addSignal();
-			studio.invalidateSavedStatus(); 
+			NodeaStudio.invalidateSavedStatus(); 
 		});
 		
 	return circuitBody;
@@ -211,7 +211,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 		function(key, value){
 			signal.volume = value;
 			self.resetSignals();
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		}.bind(this), signalBody);
 
 	// Signal Type
@@ -221,7 +221,7 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
 	var signalTypeSelector = DrawerUtils.createSelector(Oscillator.SIGNAL_TYPES, signal.signalType, function(value){ 
 		signal.signalType = value;
 		this.resetSignals();
-		studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	}.bind(this), signalTypeSpiv).addClass("medium");
 
 	// Semitones

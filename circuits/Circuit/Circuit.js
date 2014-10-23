@@ -22,8 +22,8 @@ function Circuit(ctx, machine, marshaledCircuit, destination, circuitReplacement
 	this.asciiCode = marshaledCircuit.ordinal;
 	this.key = String.fromCharCode(this.asciiCode);
 	
-	this.trackline = machine.studio.tracks[this.asciiCode];
-	this.swytche = machine.studio.swytches[this.asciiCode];
+	this.trackline = NodeaStudio.instance.tracks[this.asciiCode];
+	this.swytche = NodeaStudio.instance.swytches[this.asciiCode];
 	
 	this.container = $('<spiv/>',{class: 'circuit ' + this.handle, id: 'key_'+this.asciiCode, html: this.key});
 	
@@ -133,7 +133,7 @@ Circuit.prototype.generateEnvelopeDivision = function(sectionBody){
 		var attributes = Circuit.ENVELOPE_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this.envelopeAttributes[key] = value;
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		}.bind(this);
 		this.controls.envelope[key] = DrawerUtils.createSlider(key, attributes, this.envelopeAttributes[key], changer, division.body);
 	}

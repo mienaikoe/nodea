@@ -195,6 +195,6 @@ EffectsChain.prototype.replaceEffect = function( oldEffect, newHandle ){
 	newEffect.output.connect(nextEffect.input);
 
 	self.rerender();
-	studio.invalidateSavedStatus();
+	NodeaStudio.invalidateSavedStatus();
 
 };

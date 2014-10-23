@@ -1,5 +1,5 @@
-function Synthesizer( ctx, tabDefinition, studio, marshaledMachine, machineReplacementCallback ){
-	Machine.call(this, ctx, tabDefinition, studio, marshaledMachine, machineReplacementCallback);
+function Synthesizer( ctx, tabDefinition, marshaledMachine, machineReplacementCallback ){
+	Machine.call(this, ctx, tabDefinition, marshaledMachine, machineReplacementCallback);
 	
 	this.rescale();
 };
@@ -37,7 +37,7 @@ Synthesizer.prototype.extractSettings = function(settings){
 	}
 		
 	if(!marshaledTemplateOscillator){
-		var keySetKey = this.studio.keyset.chromaticOrder[0];
+		var keySetKey = NodeaStudio.instance.keyset.chromaticOrder[0];
 		marshaledTemplateOscillator = this.defaultCircuit(keySetKey, new Pitch("C",4));
 	}
 	
@@ -47,7 +47,7 @@ Synthesizer.prototype.extractSettings = function(settings){
 
 
 Synthesizer.prototype.defaultCircuit = function(ordinal, pitch){
-	var idx = this.studio.keyset.chromaticOrder.indexOf(ordinal);
+	var idx = NodeaStudio.instance.keyset.chromaticOrder.indexOf(ordinal);
 
 	return { 
 		id: null, 
@@ -81,7 +81,7 @@ Synthesizer.prototype.generateMachineBody = function(machineBody){
 	Scales.scaleTypeSelector(scaleType, this.scaleType, function(ev){ 
 		self.scaleType = this.value;
 		self.rescale();
-		self.studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	}); 
 };
 
@@ -98,11 +98,11 @@ Synthesizer.prototype.bindControls = function(controls){
 	var oscControls = this.templateOscillator.controls;
 	oscControls.colorSelector.on("change", function(ev){
 		self.rescale();
-		self.studio.invalidateSavedStatus(); 
+		NodeaStudio.invalidateSavedStatus(); 
 	});
 	oscControls.octaveSelector.on("change", function(ev){
 		self.rescale();
-		self.studio.invalidateSavedStatus(); 
+		NodeaStudio.invalidateSavedStatus(); 
 	});
 	
 	
@@ -121,7 +121,7 @@ Synthesizer.prototype.bindControls = function(controls){
 					signalCallback(circuit, signal, this);
 				}
 			}
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		};
 	}
 	
@@ -251,7 +251,7 @@ Synthesizer.prototype.bindControls = function(controls){
 
 Synthesizer.prototype.rescale = function(){
 	this.scale = Scales.scalePitches(this.templateOscillator.pitch, this.scaleType, 30 );
-	this.studio.keyset.chromaticOrder.forEach(function(key, idx){
+	NodeaStudio.instance.keyset.chromaticOrder.forEach(function(key, idx){
 		var circuit = this.circuits[key];
 		if( circuit.constructor.name === "Oscillator" ){
 			circuit.repitch(this.scale[idx]);

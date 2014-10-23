@@ -66,7 +66,7 @@ Filter.prototype.render = function(division, type) {
 	var typeContainer = $("<spiv></spiv>").appendTo(division);
 	var typeChooser = $("<select></select>",{id: "type_chooser"}).appendTo(typeContainer).on("change", function(){
 		self.input.type = this.value;
-		studio.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	});
 	for( var key in Filter.FILTER_TYPES ){
 		$("<option></option>",{value: key, html: Filter.FILTER_TYPES[key], selected: (key===this.input.type)}).appendTo(typeChooser);
@@ -77,7 +77,7 @@ Filter.prototype.render = function(division, type) {
 		var attributes = Filter.FILTER_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this.input[key].value = value;
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		}.bind(this);
 		DrawerUtils.createSlider(key, attributes, this.input[key].value, changer, division.body);
 	}
@@ -86,7 +86,7 @@ Filter.prototype.render = function(division, type) {
 		var attributes = Filter.ENVELOPE_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this[key] = value;
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		}.bind(this);
 		DrawerUtils.createSlider(key, attributes, this[key], changer, division.body);
 	}

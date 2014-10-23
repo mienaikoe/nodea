@@ -39,7 +39,7 @@ Delay.INPUT_ATTRIBUTES = {
 		attributes: {min: 0.00, max: 1.00, step: 0.05, default: 0.05},
 		changer: function(key, value){
 			this.delay.delayTime.value = value;
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		},
 		valuer: function(instance){
 			return instance.delay.delayTime.value;
@@ -51,7 +51,7 @@ Delay.INPUT_ATTRIBUTES = {
 		changer: function(key, value){
 			this.wetGain.gain.value = value;
 			this.dryGain.gain.value = 1.00 - value;
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		},
 		valuer: function(instance){
 			return instance.wetGain.gain.value;

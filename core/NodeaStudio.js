@@ -1,8 +1,10 @@
 function NodeaStudio(editorContainer, project) {
+	// Singleton!
+	NodeaStudio.instance = this;
+	
 	// Convenience Variable for setting event handling.
 	var self = this;
 	
-	// TODO: Don't know if i should add some global filters or effects to this and have those be configurable as well.
 	this.ctx = new AudioContext();
 	
 	// Create space for Circuit-Specific Styles
@@ -227,7 +229,7 @@ NodeaStudio.prototype.initializeMachine = function( tabDefinition, marshaledMach
 	}
 
 	machineConstructor = window[marshaledMachine.handle];
-	var machine = new machineConstructor(self.ctx, tabDefinition, self, marshaledMachine, function(oldMachine, newHandle){
+	var machine = new machineConstructor(self.ctx, tabDefinition,  marshaledMachine, function(oldMachine, newHandle){
 		 self.replaceMachine(oldMachine, newHandle);
 	});
 	self.machines[tabDefinition.ascii] = machine;
@@ -256,7 +258,7 @@ NodeaStudio.prototype.replaceMachine = function( oldMachine, newHandle ){
 			self.selectMachine(machine.ascii);
 			//machine.swytcheSelected(NodeaStudio.defaultCircuitCode); //TODO: Race Condition. Resolve.
 		}
-		self.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	});
 };
 
@@ -308,7 +310,7 @@ NodeaStudio.prototype.snap = function(){
 			}
 		}
 	}, this);
-	this.invalidateSavedStatus();
+	NodeaStudio.invalidateSavedStatus();
 };
 
 
@@ -432,7 +434,7 @@ NodeaStudio.prototype.setBarSize = function(howmany, duringStartup){
 		this.beats_per_bar = howmany;
 		this.barSizeBox.val(howmany);
 		if(!duringStartup){
-			this.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		}
 		this.resetPixelTiming();
 	} catch (ex) {
@@ -471,7 +473,7 @@ NodeaStudio.prototype.setBarCount = function(howmany, duringStartup){
 		this.bar_count = howmany;
 		this.barCountBox.val(howmany);
 		if(!duringStartup){
-			this.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		}
 	} catch( ex ) {
 		this.notify('Invalid Value for Count. Please Enter a Number', ex.message);
@@ -484,7 +486,7 @@ NodeaStudio.prototype.setBPM = function(value){
 		this.beats_per_minute = parseInt(value);
 		this.metronome.setBPM(this.beats_per_minute);
 		this.resetPixelTiming();
-		this.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	} catch( ex ){
 		this.notify('Invalid Value for BPM. Please Enter a Number', ex.message);
 	}
@@ -492,12 +494,12 @@ NodeaStudio.prototype.setBPM = function(value){
 
 NodeaStudio.prototype.setName = function(value){
 	this.project_name = value;
-	this.invalidateSavedStatus();
+	NodeaStudio.invalidateSavedStatus();
 };
 
 NodeaStudio.prototype.setDescription = function(value){
 	this.project_description = value;
-	this.invalidateSavedStatus();
+	NodeaStudio.invalidateSavedStatus();
 };
 
 
@@ -642,11 +644,11 @@ NodeaStudio.prototype.startSelectBox = function(x, y){
 
 NodeaStudio.prototype.pushUndoRedo = function(undo, redo){
 	this.undoList.push(undo, redo);
-	this.invalidateSavedStatus();
+	NodeaStudio.invalidateSavedStatus();
 };
 
-NodeaStudio.prototype.invalidateSavedStatus = function(){
-	this.saved = false;
+NodeaStudio.invalidateSavedStatus = function(){
+	NodeaStudio.instance.saved = false;
 	$('#save').addClass('warning');
 };
 
@@ -729,7 +731,7 @@ NodeaStudio.prototype.deleteNote = function(note){
 	if(note.circuit){
 		note.removeContainer();
 		note.circuit.deleteNote(note);
-		this.invalidateSavedStatus();
+		NodeaStudio.invalidateSavedStatus();
 	}
 };
 

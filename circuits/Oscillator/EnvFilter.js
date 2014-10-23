@@ -79,7 +79,7 @@ Oscillator.EnvFilter.prototype.render = function(oscContainer){
 		var attributes = Oscillator.EnvFilter.FILTER_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this[key] = value;
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		}.bind(this);
 		this.controls[key+"Slider"] = DrawerUtils.createSlider(key, attributes, this[key], changer, this.container);
 	}
@@ -88,7 +88,7 @@ Oscillator.EnvFilter.prototype.render = function(oscContainer){
 		var attributes = Filter.ENVELOPE_ATTRIBUTES[key];
 		var changer = function(key, value){
 			this[key] = value;
-			studio.invalidateSavedStatus();
+			NodeaStudio.invalidateSavedStatus();
 		}.bind(this);
 		this.controls[key+"Slider"] = DrawerUtils.createSlider(key, attributes, this[key], changer, this.container);
 	}
