@@ -278,7 +278,7 @@ Machine.prototype.swytcheSelected = function(ordinal){
 
 
 Machine.prototype.invalidateSavedStatus = function(){
-	this.NodeaStudio.invalidateSavedStatus();
+	NodeaStudio.invalidateSavedStatus();
 };
 
 Machine.prototype.marshal = function(){
