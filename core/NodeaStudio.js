@@ -368,11 +368,11 @@ NodeaStudio.prototype.pause = function(){
 		for( mkey in this.machines ){
 			var machine = this.machines[mkey];
 			for( ckey in machine.circuits ){
-				var circuit = machine.circuits[ckey];
-				circuit.pause();
-				if( this.recordingNodas.indexOf(circuit) !== -1){
-					this.noteOff(circuit);
-				}
+				var circuit = machine.circuits[ckey].off(this.location);
+				//circuit.pause();
+				//if( this.recordingNodas.indexOf(circuit) !== -1){
+				//	this.selectedMachine.circuitOff(ckey);
+				//}
 			}
 		}
 		
