@@ -172,7 +172,7 @@ Circuit.prototype.addNote = function(note){
 	this.addNoteNoUndo(note);
 	
 	var self = this;
-	studio.pushUndoRedo(
+	NodeaStudio.instance.pushUndoRedo(
 		function(){self.deleteNoteNoUndo(note);}, 
 		function(){self.addNoteNoUndo(note);}
 	);
@@ -197,7 +197,7 @@ Circuit.prototype.deleteNote = function(note){
 	this.deleteNoteNoUndo(note);
 	
 	var self = this;
-	studio.pushUndoRedo(
+	NodeaStudio.instance.pushUndoRedo(
 		function(){self.addNoteNoUndo(note);}, 
 		function(){self.deleteNoteNoUndo(note);}
 	);
