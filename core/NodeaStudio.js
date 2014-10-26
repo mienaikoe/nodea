@@ -280,7 +280,11 @@ NodeaStudio.prototype.resetPixelTiming = function(){
 
 NodeaStudio.prototype.toggleRecording = function(){
 	if( this.recording ) {
-		this.recordingNodas.forEach(function(noda){ this.noteOff(noda);}, this);
+		this.recordingNodas.forEach(function(noda){ 
+			this.selectedMachine.circuitOff(noda.asciiCode);
+			// TODO: Performance
+			//this.noteOff(noda);
+		}, this);
 	}
 	this.recording = !this.recording;
 	$('#mode_controls #record').toggleClass("active");
