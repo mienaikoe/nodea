@@ -106,6 +106,10 @@ a{
             width: $control_dimension;
             cursor: pointer;
             color: $circuit_text_color;
+            font-size: 13px;
+            &:before{
+                vertical-align: middle;
+            }
             &.kosher{
                 background-color: $kosher_color;
                 box-shadow: none;
