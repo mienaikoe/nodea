@@ -189,7 +189,7 @@ Machine.prototype.circuitOff = function( circuit ){
 	} else {
 		circuit.off();
 	}
-	
+	circuit.pause();
 	circuit.keydown = false;
 };
 
@@ -203,9 +203,9 @@ Machine.prototype.circuitOffAscii = function( ordinal ){
 
 
 Machine.prototype.off = function(){
-	this.circuits.forEach(function(circuit){
-		this.circuitOff(circuit);
-	}, this);
+	for( var ordinal in this.circuits ){
+		this.circuitOffAscii(ordinal);
+	};
 };
 
 

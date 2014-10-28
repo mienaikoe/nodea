@@ -365,22 +365,16 @@ NodeaStudio.prototype.pause = function(){
 	    $('#playpause').removeClass("active");
 		this.metronome.stop();
 		
+		/*
 		this.recordingNodas.forEach(function(circuit){
 			circuit.off(this.location);
 		}, this);
-		
-		/*
-		for( mkey in this.machines ){
-			var machine = this.machines[mkey];
-			for( ckey in machine.circuits ){
-				machine.circuits[ckey].off(this.location);
-				//circuit.pause();
-				//if( this.recordingNodas.indexOf(circuit) !== -1){
-				//	this.selectedMachine.circuitOff(ckey);
-				//}
-			}
-		}
 		*/
+		
+		for( mkey in this.machines ){
+			this.machines[mkey].off();
+		}
+		
 	   
 	   
 	   
