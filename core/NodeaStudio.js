@@ -116,7 +116,7 @@ function NodeaStudio(editorContainer, project) {
 			//if( ev.shiftKey ){
 			//	self.selectedMachine.swytcheSelected(self.keyCodeToAsciiMap[key]);
 			//} else {
-				self.selectedMachine.circuitOn(self.keyCodeToAsciiMap[key]);		
+				self.selectedMachine.circuitOnAscii(self.keyCodeToAsciiMap[key]);		
 			//}
 			ev.preventDefault();
 	    } else if ( key >= 48 && key <= 57 ){ // machine
@@ -131,7 +131,7 @@ function NodeaStudio(editorContainer, project) {
 	}).on("keyup",function(ev) {
 		var key = ev.keyCode;
 	    if( key in self.keyCodeToAsciiMap ){
-			self.selectedMachine.circuitOff(self.keyCodeToAsciiMap[key]);
+			self.selectedMachine.circuitOffAscii(self.keyCodeToAsciiMap[key]);
 			ev.preventDefault();
 	    } else if( key in self.eventControlMap ){
 	        // do nothing
@@ -280,8 +280,8 @@ NodeaStudio.prototype.resetPixelTiming = function(){
 
 NodeaStudio.prototype.toggleRecording = function(){
 	if( this.recording ) {
-		this.recordingNodas.forEach(function(noda){ 
-			this.selectedMachine.circuitOff(noda.asciiCode);
+		this.recordingNodas.forEach(function(circuit){ 
+			this.selectedMachine.circuitOff(circuit);
 			// TODO: Performance
 			//this.noteOff(noda);
 		}, this);
@@ -365,17 +365,25 @@ NodeaStudio.prototype.pause = function(){
 	    $('#playpause').removeClass("active");
 		this.metronome.stop();
 		
+		this.recordingNodas.forEach(function(circuit){
+			circuit.off(this.location);
+		}, this);
+		
+		/*
 		for( mkey in this.machines ){
 			var machine = this.machines[mkey];
 			for( ckey in machine.circuits ){
-				var circuit = machine.circuits[ckey].off(this.location);
+				machine.circuits[ckey].off(this.location);
 				//circuit.pause();
 				//if( this.recordingNodas.indexOf(circuit) !== -1){
 				//	this.selectedMachine.circuitOff(ckey);
 				//}
 			}
 		}
-		
+		*/
+	   
+	   
+	   
 		this.startTime = null;
 	    this.startFrameTimestamp = null;
 	}

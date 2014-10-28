@@ -117,11 +117,11 @@ Machine.prototype.eagerInitializeCircuit = function(marshalledCircuit){
 	var self = this;
 	circuit.container.
 			on("mousedown",function(ev){ 
-				self.circuitOn(circuit.asciiCode);
+				self.circuitOn(circuit);
 				self.mousedCircuits[circuit.asciiCode] = circuit;
 				ev.stopPropagation(); }).
 			on("mouseup",function(ev){ 
-				self.circuitOff(circuit.asciiCode); 
+				self.circuitOff(circuit); 
 				delete self.mousedCircuits[circuit.asciiCode];
 			}).
 			on("click", function(ev){ ev.stopPropagation(); });
@@ -156,12 +156,7 @@ Machine.prototype.mouseup = function(){
 
 // Playback
 
-Machine.prototype.circuitOn = function( ordinal ){
-	var circuit = this.circuits[ordinal];
-	if( circuit.keydown || circuit.mousedown ){
-		return;
-	}
-	
+Machine.prototype.circuitOn = function( circuit ){	
 	if( NodeaStudio.instance.recording ){
 		circuit.on(NodeaStudio.instance.pixelFor(Date.now()));
 		NodeaStudio.instance.recordingNodas.push(circuit);
@@ -172,23 +167,45 @@ Machine.prototype.circuitOn = function( ordinal ){
 	circuit.keydown = true;	
 };
 
-
-Machine.prototype.circuitOff = function( ordinal ){
+Machine.prototype.circuitOnAscii = function( ordinal ){
 	var circuit = this.circuits[ordinal];
-	if(!circuit){
+	if( !circuit || circuit.keydown || circuit.mousedown ){
 		return;
 	}
-	
+	this.circuitOn(circuit);
+};
+
+
+Machine.prototype.circuitOff = function( circuit ){
 	if( NodeaStudio.instance.recording ){
 		circuit.off(NodeaStudio.instance.location);
 		this.invalidateSavedStatus();
+		
 		var recordingNodas = NodeaStudio.instance.recordingNodas;
-		recordingNodas.splice(recordingNodas.indexOf(circuit), 1);
+		var rn_indx = recordingNodas.indexOf(circuit);
+		if( rn_indx > -1 ){
+			recordingNodas.splice(rn_indx, 1);
+		}
 	} else {
 		circuit.off();
 	}
 	
 	circuit.keydown = false;
+};
+
+Machine.prototype.circuitOffAscii = function( ordinal ){
+	var circuit = this.circuits[ordinal];
+	if(!circuit){
+		return;
+	}
+	this.circuitOff(circuit);
+};
+
+
+Machine.prototype.off = function(){
+	this.circuits.forEach(function(circuit){
+		this.circuitOff(circuit);
+	}, this);
 };
 
 

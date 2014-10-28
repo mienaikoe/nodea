@@ -60,7 +60,7 @@
 
                     <spiv class="group spacer" id="save_controls">
                         <spiv class="button_box">
-                            <div class="control button javascript" id="save" onclick="studio.save();">&#x5b58;</div>
+                            <div class="control button javascript" id="save" onclick="NodeaStudio.instance.save();">&#x5b58;</div>
                             <div class="thicket">SAVE</div>
                         </spiv>
                     </spiv>
@@ -78,7 +78,7 @@
                         </spiv>
 <!--
                         <spiv class="button_box">
-                            <div class="control button javascript" id="loopToggle" onclick="studio.toggleLooping();">&#x8f2a;</div>
+                            <div class="control button javascript" id="loopToggle" onclick="NodeaStudio.instance.toggleLooping();">&#x8f2a;</div>
                             <div class="thicket">LOOP</div>
                         </spiv>
 -->
@@ -105,7 +105,7 @@
                             <div class="thicket">BPM</div>
                         </spiv>
                         <spiv class="button_box">
-                            <div class="control button javascript" id="metronome" onclick="studio.metronome.toggleArmament();">&#x62dc;</div>
+                            <div class="control button javascript" id="metronome" onclick="NodeaStudio.instance.metronome.toggleArmament();">&#x62dc;</div>
                             <div class="thicket">METRO</div>
                         </spiv>
                     </spiv>
@@ -130,11 +130,11 @@
                             <div class="thicket">ADVANCEMENT</div>
                         </spiv>
                         <spiv class="button_box">
-                            <div class="control button" id="head" onclick="studio.head();">&#x982d;</div>
+                            <div class="control button" id="head" onclick="NodeaStudio.instance.head();">&#x982d;</div>
                             <div class="thicket">HEAD</div>
                         </spiv>
                         <spiv class="button_box">
-                            <div class="control button" id="tail" onclick="studio.tail();">&#x672b;</div>
+                            <div class="control button" id="tail" onclick="NodeaStudio.instance.tail();">&#x672b;</div>
                             <div class="thicket">TAIL</div>
                         </spiv>
                     </spiv>
@@ -156,7 +156,7 @@
                             <div class="thicket">SNAP TO</div>
                         </spiv>
                         <spiv class="button_box">
-                            <div class="control button" id="snap" onclick="studio.snap();">&#x982d;</div>
+                            <div class="control button" id="snap" onclick="NodeaStudio.instance.snap();">&#x982d;</div>
                             <div class="thicket">SNAP</div>
                         </spiv>
                     </spiv>
