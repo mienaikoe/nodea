@@ -171,7 +171,7 @@ Note.prototype.move = function( newStart ){
 	this.moveNoUndo(newStart);
 	
 	var self = this;
-	studio.pushUndoRedo(
+	NodeaStudio.instance.pushUndoRedo(
 		function(){self.moveNoUndo(oldStart);}, 
 		function(){self.moveNoUndo(newStart);}
 	);
@@ -195,7 +195,7 @@ Note.prototype.newStart = function( newStart ){
 	this.newStartNoUndo(newStart);
 	
 	var self = this;
-	studio.pushUndoRedo(
+	NodeaStudio.intance.pushUndoRedo(
 		function(){self.newStartNoUndo(oldStart);}, 
 		function(){self.newStartNoUndo(newStart);}
 	);
@@ -219,7 +219,7 @@ Note.prototype.newFinish = function( newFinish ){
 	this.newFinishNoUndo(newFinish);
 	
 	var self = this;
-	studio.pushUndoRedo(
+	NodeaStudio.instance.pushUndoRedo(
 		function(){self.newFinishNoUndo(oldFinish);}, 
 		function(){self.newFinishNoUndo(newFinish);}
 	);

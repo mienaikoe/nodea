@@ -841,7 +841,14 @@ NodeaStudio.prototype.ctrlKeyControlMap = {
 
 	// ctrl-s
 	83:	function(studio){ studio.save(); },
-		
+	// ctrl-r
+	82: function(studio){ studio.toggleRecording(); },
+	
+	// ctrl-m
+	77: function(studio){ studio.metronome.toggleArmament(); },
+	// ctrl-a
+	65: function(studio){ studio.snap(); },
+	
 	// ctrl-z
 	90:	function(studio){ studio.undoList.undo(); },
 	// ctrl-y
