@@ -70,6 +70,11 @@ function NodeaStudio(editorContainer, project) {
 		this.tracks[ordinal] = $('<spiv/>',{id: 'track_'+ordinal, class:'circuitTrack'}).
 				appendTo(this.tracksContainer);
 	}, this);
+	// numeric tracks
+	$('<spiv/>',{id: 'swytche_prenumeric', class: 'trackSwitch numeric', html: '&nbsp;'}).prependTo(this.swytchesContainer);
+	$('<spiv/>',{id: 'swytch_postnumeric', class: 'trackSwitch numeric', html: '&nbsp;'}).appendTo(this.swytchesContainer);
+	$('<spiv/>',{id: 'track_prenumeric', class:'circuitTrack numeric'}).prependTo(this.tracksContainer);
+	$('<spiv/>',{id: 'track_postnumeric', class:'circuitTrack numeric'}).appendTo(this.tracksContainer);
 	
 	
 	
@@ -433,7 +438,7 @@ NodeaStudio.prototype.setBarSize = function(howmany, duringStartup){
 					$('<div/>', {class: 'beat', style: 'height: '+(self.pixels_per_beat-1)+'px;'}).appendTo(bar);
 				}
 			} else {
-				bar.find('.beat').splice(0, -difference).forEach(function(el){ el.remove(); });
+				bar.find('.beat').get().reverse().splice(0, -difference).forEach(function(el){ el.remove(); });
 			}
 		});
 		
@@ -444,7 +449,7 @@ NodeaStudio.prototype.setBarSize = function(howmany, duringStartup){
 		}
 		this.resetPixelTiming();
 	} catch (ex) {
-		this.notify("Invalid Value for Bar Size. Please Enter a Number.", ex.getMessage());
+		this.notify("Invalid Value for Bar Size. Please Enter a Number.", ex.message);
 	}
 };
 
@@ -469,7 +474,12 @@ NodeaStudio.prototype.setBarCount = function(howmany, duringStartup){
 			for( var i = difference; i > 0; i--){
 				var bar = $('<div/>', {class: "bar"+(i===1 ? " final":""), style: 'height: '+(this.pixels_per_bar-1)+'px;'}).prependTo(this.barsContainer);
 				for( var j = this.beats_per_bar; j>0 ; j-- ){
-					$('<div/>', {class: 'beat', style: 'height: '+(this.pixels_per_beat-1)+'px;'}).appendTo(bar);
+					var beat = $('<div/>', {class: 'beat', style: 'height: '+(this.pixels_per_beat-1)+'px;'}).appendTo(bar);
+					if( j === this.beats_per_bar ){
+						var barNumber = this.bar_count + (difference-i) + 1;
+						$("<spiv/>",{"class":"sinistra numeric", "html": barNumber}).appendTo(beat);
+						$("<spiv/>",{"class":"dextra numeric", "html": barNumber}).appendTo(beat);
+					}
 				}
 			}
 		} else{

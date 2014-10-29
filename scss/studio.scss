@@ -467,6 +467,10 @@ a{
                         .beat{
                             width: 100%;
                             border-bottom: 1px dotted $dark_color;
+                            .numeric{
+                                font-size: 10px;
+                                color: $note_color;
+                            }
                         }
                     }
                     .loop{

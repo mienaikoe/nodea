@@ -8,13 +8,13 @@ $component_padding: 5px;
 
 $track_width: 19px;
 $circuit_padding: 10px;
-$tracks_width: (($track_width+1px)*30) + 1px; //tracks + borders
+$tracks_width: (($track_width+1px)*30) + 1px + (2 * ($track_width + 1px)); //tracks + borders + numbers
 
 $swytches_height: $track_width + 1px;
 
 $machine_width: $tracks_width;
 $machine_height: 30px;
-$instrumentation_height: 184px; // required for correct positioning of tracks
+$instrumentation_height: 196px; // required for correct positioning of tracks
 
 
 $case_color: #222; //rgba(100,100,100,0.62);
