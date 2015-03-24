@@ -71,13 +71,14 @@ Circuit.prototype.extractEnvelopeAttributes = function(envelopeAttributes){
 			this.envelopeAttributes.active = true;
 		}
 	}
+	this.envelope = this.allocateEnvelope();
 };
 
 
 Circuit.prototype.extractNotes = function(notes){
 	notes.forEach( function(persistedNote){ 
 		var studioNote = new Note(persistedNote);
-		studioNote.envelope = this.allocateEnvelope();
+		studioNote.envelope = this.envelope;
 		studioNote.circuit = this;
 		studioNote.createContainer().prependTo(this.trackline);
 		this.addNoteNoUndo(studioNote);
@@ -182,7 +183,6 @@ Circuit.prototype.addNote = function(note){
 
 
 Circuit.prototype.deleteNoteNoUndo = function(note){
-	note.envelope.disconnect(0);
 	var idx = this.notes.indexOf(note);
 	if( idx !== -1 ){
 		this.notes.splice(idx, 1);
@@ -256,6 +256,8 @@ Circuit.prototype.scheduleCircuitStop = function(endWhen, note){
 
 
 Circuit.prototype.pause = function(){
+	this.envelope.gain.cancelScheduledValues(0);
+	this.envelope.gain.value = 0;
     this.lightOff('active');
 };
 
@@ -273,7 +275,7 @@ Circuit.prototype.on = function(location) {
 	}
 	if(location){
 		this.recordingNote = new Note({start: location, circuit: this});
-		this.recordingNote.envelope = this.allocateEnvelope();
+		this.recordingNote.envelope = this.envelope;
 		this.recordingNote.createContainer();
 		this.lightOn('recording');
 	} else {

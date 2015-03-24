@@ -11,6 +11,8 @@ function Oscillator(ctx, machine, marshaledCircuit, destination, circuitReplacem
 	this.controls.signals = [];
 	
 	this.signalNodes = [];
+	
+	this.resetSignals();
 };
 
 Oscillator.extends(Circuit);
@@ -307,17 +309,20 @@ Oscillator.prototype.generateSignalBody = function(signal, signalList, idx){
  */
 Oscillator.prototype.addNoteNoUndo = function(note){
 	Circuit.prototype.addNoteNoUndo.call(this, note);
-	note.signals = this.allocateSignals();
-	note.signals.forEach(function(signal){
+	note.signals = this.signals;
+	/*note.signals.forEach(function(signal){
 		signal.gainer.connect(note.envelope);
-	});
+	});*/
 };
+
+/*
 Oscillator.prototype.deleteNote = function(note){	
 	note.signals.forEach(function(signal){
 		this.deallocateSignal(signal);
 	}, this);
 	Circuit.prototype.deleteNote.call(this, note);
 };
+*/
 
 Oscillator.prototype.allocateSignals = function(){
 	var signals = [];
@@ -338,6 +343,8 @@ Oscillator.prototype.allocateSignals = function(){
 		oscNode.lfoIn.connect(signalAttributes.filter.input);
 		signalAttributes.filter.output.connect(oscNode.gainer);
 		
+		oscNode.start(0);
+
 		signals.push(oscNode);
 	}, this);
 	return signals;
@@ -368,7 +375,6 @@ Oscillator.prototype.scheduleCircuitStart = function(startWhen, note){
 	startWhen += delayTime;
 	note.signals.forEach(function(signal){
 		signal.filter.start(startWhen);
-		signal.start(startWhen);
 	});
 	return delayTime;
 };
@@ -378,7 +384,6 @@ Oscillator.prototype.scheduleCircuitStop = function(endWhen, note){
 	endWhen += delayTime;
 	note.signals.forEach(function(signal){
 		signal.filter.stop(endWhen);
-		signal.stop(endWhen);
 	});
 	return delayTime;
 };
@@ -390,15 +395,17 @@ Oscillator.prototype.pause = function(){
 
 
 
+// @TODO: No need to reallocate signals. Use the envelope gainer instead
+// @TODO: Each note gets its own envelope? wtf
 Oscillator.prototype.resetSignals = function(){
-	this.notes.forEach(function(note){ 
-		note.signals.forEach(function(osc){
-			this.deallocateSignal(osc);
+	if( this.signals ){
+		this.signals.forEach(function(signal){ 
+			this.deallocateSignal(signal);
 		}, this);
-		note.signals = this.allocateSignals();
-		note.signals.forEach(function(signal){
-			signal.gainer.connect(note.envelope);
-		});
+	}
+	this.signals = this.allocateSignals();
+	this.signals.forEach(function(signal){
+		signal.gainer.connect(this.envelope);
 	}, this);
 };
 
@@ -421,22 +428,15 @@ Oscillator.prototype.resetSignals = function(){
  */
 
 Oscillator.prototype.on = function(location) {
-	this.envelope = this.allocateEnvelope();
-	this.signalNodes.forEach(function(osc){
-		this.deallocateSignal(osc);
-	}, this);
-	this.signalNodes = this.allocateSignals();
-	this.signalNodes.forEach(function(oscNode){
-		oscNode.gainer.connect(this.envelope);
-	}, this);
-	this.scheduleCircuitStart(this.ctx.currentTime, {signals: this.signalNodes, envelope: this.envelope});
+	//this.envelope = this.allocateEnvelope();
+	this.scheduleCircuitStart(this.ctx.currentTime, {signals: this.signals, envelope: this.envelope});
 	return Circuit.prototype.on.call(this, location);
 };
 
 
 Oscillator.prototype.off = function(location) {
-	if( this.signalNodes && this.envelope ){
-		this.scheduleCircuitStop(this.ctx.currentTime, {signals: this.signalNodes, envelope: this.envelope});
+	if( this.signals && this.envelope ){
+		this.scheduleCircuitStop(this.ctx.currentTime, {signals: this.signals, envelope: this.envelope});
 	}
 	return Circuit.prototype.off.call(this, location);
 };
