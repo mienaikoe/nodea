@@ -189,7 +189,6 @@ Machine.prototype.circuitOff = function( circuit ){
 	} else {
 		circuit.off();
 	}
-	circuit.pause();
 	circuit.keydown = false;
 };
 
@@ -206,6 +205,25 @@ Machine.prototype.off = function(){
 	for( var ordinal in this.circuits ){
 		this.circuitOffAscii(ordinal);
 	};
+};
+
+Machine.prototype.pause = function(){
+	for( var ordinal in this.circuits ){
+		this.circuitPauseAscii(ordinal);
+	};
+};
+
+Machine.prototype.circuitPauseAscii = function(ordinal){
+	var circuit = this.circuits[ordinal];
+	if(!circuit){
+		return;
+	}
+	this.circuitPause(circuit);
+};
+
+Machine.prototype.circuitPause = function(circuit){
+	this.circuitOff(circuit);
+	circuit.pause();
 };
 
 

@@ -377,7 +377,7 @@ NodeaStudio.prototype.pause = function(){
 		*/
 		
 		for( mkey in this.machines ){
-			this.machines[mkey].off();
+			this.machines[mkey].pause();
 		}
 		
 	   

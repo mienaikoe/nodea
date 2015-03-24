@@ -180,10 +180,10 @@ MultiSampler.prototype.generateDrawer = function(){
 
 
 MultiSampler.prototype.bindControls = function(controls){
-	// Callbacks on Osc Controls
+	// Callbacks on Sampler Controls
 	var self = this;
 	
-	// Callbacks on each Oscillator
+	// Callbacks on each Sampler
 	function eachCallbackConstructor(samplerCallback){
 		return function(ev){
 			for( ordinal in self.circuits ){
