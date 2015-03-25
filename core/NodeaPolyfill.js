@@ -92,7 +92,8 @@ String.prototype.titlecase = function(){
 
 
 // Beta
-if (window.location.origin.indexOf("mienaikoe.github.io") !== -1) {
+//if (window.location.origin.indexOf("mienaikoe.github.io") !== -1) {
+if( false ) {
 	var _NOTA = {
 		project: "92243eed-e45c-461f-b642-42810381df45",
 		projectProtocol: "http",
