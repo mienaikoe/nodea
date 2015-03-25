@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>nodea studio | introduction</title>
+        <link href="fonts/kiroregular/stylesheet.css" media="all" rel="stylesheet" />
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        
+        <!-- CSS -->
+        <link href="css/basics.css" media="all" rel="stylesheet" />
+        <link href="css/studio.css" media="all" rel="stylesheet" />
+        
+        
+        <style type='text/css'>
+            #controls{
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1;
+            }
+            #controls a{
+                height: 36px;
+                line-height: 36px;
+                background-color: #555;
+                color: #CCC;
+                padding: 6px 16px;
+                border-radius: 18px; 
+                transition: all 0.3s ease;
+                font-size: 11pt;
+            }
+            #controls a:hover{
+                background-color: #777;
+                color: white;
+            }
+            .marketing{
+                color: white;
+                position: absolute;
+                top: 0px;
+                width: 100vw;
+            }
+            .marketing .slide{
+                height: 100vh;
+                width: 100%;
+                overflow: hidden;
+            }
+            .marketing .slide h1{
+                letter-spacing: 0.07em;
+                margin-top: 2.5em;
+                margin-bottom: 2em;
+                text-align: center;
+                font-size: 3.4em;
+            }
+            .marketing .slide li{
+                width: 720px;
+                line-height: 2em;
+                margin: 1em auto;
+                font-size: 1.8em;
+                text-align: left;
+                letter-spacing: 0.03em;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="controls">
+            <div class="centering">
+                <div class="drawer sinistra" id="logo_drawer">
+                    nodea studio
+                </div>
+                <div class="main"></div>
+                <div class="drawer dextra">
+                    <a href='index.html'>Test Drive It!</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="marketing">
+            <div class="slide">
+                <h1>Compose Freely</h1>
+                <ul>
+                    <li>
+                        No extra hardware needed. Just a computer or tablet.
+                    </li>
+                    <li>
+                        Write your ideas quickly, while they're fresh. Tweak your sound afterward.
+                    </li>
+                    <li>
+                        No need to sign-up or log-in to work on your newest stroke of genius.
+                    </li>
+                </ul>
+            </div>
+            <div class="slide">
+                <h1>Doing is Knowing</h1>
+                <ul>
+                    <li>
+                        Learn how to make digital music by playing other peoples' creations
+                    </li>
+                    <li>
+                        Tutorial Mode to explain what all of the buttons and knobs do
+                    </li>
+                </ul>
+            </div>
+            <div class="slide">
+                <h1>Keep it Cheap</h1>
+                <ul>
+                    <li>
+                        Your ideas are priceless. So we don't charge you to make or share them.
+                    </li>
+                    <li>
+                        If you find that you have a lot of really good ideas through nodea, 
+                        we can take our relationship to the next level.
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <script src="lib/jquery-2.1.0.min.js"></script>
+        <script type='text/javascript'>
+            var slidePosition = 0;
+            $(document.body).keydown(function(ev){
+               if( ev.which === 40 ) {
+                   var slideHeight = $(".slide").height();
+                   var marketing = $(".marketing");
+                   slidePosition++;
+                   var newTop = (-slideHeight) * slidePosition;
+                   if( newTop <= -marketing.height() || newTop > 0 ){
+                       slidePosition--;
+                       return;
+                   }
+                   marketing.animate({"top": newTop}, 300);
+               } else if( ev.which === 38 ){
+                   var slideHeight = $(".slide").height();
+                   var marketing = $(".marketing");
+                   slidePosition--;
+                   var newTop = (-slideHeight) * slidePosition;
+                   if( newTop <= -marketing.height() || newTop > 0 ){
+                       slidePosition++;
+                       return;
+                   }
+                   marketing.animate({"top": newTop}, 300);
+               } else {
+                   console.log(ev.which);
+               }
+            });
+        </script>
+    </body>
+</html>
